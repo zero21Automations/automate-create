@@ -14,7 +14,300 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assemblies: {
+        Row: {
+          created_at: string
+          duration: number | null
+          id: string
+          idea_id: string
+          platform_versions: Json | null
+          script_id: string
+          status: string
+          thumbnail_url: string | null
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration?: number | null
+          id?: string
+          idea_id: string
+          platform_versions?: Json | null
+          script_id: string
+          status?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration?: number | null
+          id?: string
+          idea_id?: string
+          platform_versions?: Json | null
+          script_id?: string
+          status?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assemblies_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: true
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assemblies_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assets: {
+        Row: {
+          created_at: string
+          file_url: string | null
+          id: string
+          idea_id: string
+          metadata: Json | null
+          script_id: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          idea_id: string
+          metadata?: Json | null
+          script_id?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          idea_id?: string
+          metadata?: Json | null
+          script_id?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assets_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideas: {
+        Row: {
+          created_at: string
+          description: string | null
+          hashtags: string[] | null
+          id: string
+          metadata: Json | null
+          project_id: string
+          score: number | null
+          source: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          hashtags?: string[] | null
+          id?: string
+          metadata?: Json | null
+          project_id: string
+          score?: number | null
+          source?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          hashtags?: string[] | null
+          id?: string
+          metadata?: Json | null
+          project_id?: string
+          score?: number | null
+          source?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          brand_kit: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          posting_rules: Json | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_kit?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          posting_rules?: Json | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_kit?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          posting_rules?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      publications: {
+        Row: {
+          assembly_id: string
+          caption: string | null
+          created_at: string
+          hashtags: string[] | null
+          id: string
+          metrics: Json | null
+          platform: string
+          platform_post_id: string | null
+          published_at: string | null
+          scheduled_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          assembly_id: string
+          caption?: string | null
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          metrics?: Json | null
+          platform: string
+          platform_post_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          assembly_id?: string
+          caption?: string | null
+          created_at?: string
+          hashtags?: string[] | null
+          id?: string
+          metrics?: Json | null
+          platform?: string
+          platform_post_id?: string | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "publications_assembly_id_fkey"
+            columns: ["assembly_id"]
+            isOneToOne: false
+            referencedRelation: "assemblies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scripts: {
+        Row: {
+          beats: string[] | null
+          created_at: string
+          cta: string | null
+          hook: string | null
+          id: string
+          idea_id: string
+          quality_scores: Json | null
+          read_time: number | null
+          status: string
+          updated_at: string
+          voice_style: string | null
+        }
+        Insert: {
+          beats?: string[] | null
+          created_at?: string
+          cta?: string | null
+          hook?: string | null
+          id?: string
+          idea_id: string
+          quality_scores?: Json | null
+          read_time?: number | null
+          status?: string
+          updated_at?: string
+          voice_style?: string | null
+        }
+        Update: {
+          beats?: string[] | null
+          created_at?: string
+          cta?: string | null
+          hook?: string | null
+          id?: string
+          idea_id?: string
+          quality_scores?: Json | null
+          read_time?: number | null
+          status?: string
+          updated_at?: string
+          voice_style?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scripts_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: true
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
