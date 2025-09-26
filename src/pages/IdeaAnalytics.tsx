@@ -21,6 +21,7 @@ import {
   Download,
   RefreshCw
 } from "lucide-react";
+import { PipelineNav } from "@/components/PipelineNav";
 
 const IdeaAnalytics = () => {
   const navigate = useNavigate();
@@ -69,6 +70,8 @@ const IdeaAnalytics = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Pipeline Navigation */}
+      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="analytics" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

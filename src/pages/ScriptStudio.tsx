@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image } from "lucide-react";
+import { PipelineNav } from "@/components/PipelineNav";
 
 const ScriptStudio = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const ScriptStudio = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Pipeline Navigation */}
+      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="script" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

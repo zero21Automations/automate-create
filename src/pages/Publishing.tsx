@@ -26,6 +26,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { format } from "date-fns";
+import { PipelineNav } from "@/components/PipelineNav";
 
 const Publishing = () => {
   const navigate = useNavigate();
@@ -119,6 +120,8 @@ const Publishing = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Pipeline Navigation */}
+      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="publishing" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

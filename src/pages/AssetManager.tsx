@@ -19,6 +19,7 @@ import {
   Volume2,
   ArrowLeft
 } from "lucide-react";
+import { PipelineNav } from "@/components/PipelineNav";
 
 const AssetManager = () => {
   const navigate = useNavigate();
@@ -50,6 +51,8 @@ const AssetManager = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Pipeline Navigation */}
+      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="assets" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
