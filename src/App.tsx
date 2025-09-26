@@ -15,6 +15,7 @@ import ScriptStudio from "./pages/ScriptStudio";
 import AssetManager from "./pages/AssetManager";
 import Assembly from "./pages/Assembly";
 import Publishing from "./pages/Publishing";
+import GlobalAnalytics from "./pages/GlobalAnalytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,7 +38,8 @@ const App = () => (
             <Route path="projects/:projectId/ideas/:ideaId/script" element={<ScriptStudio />} />
             <Route path="projects/:projectId/ideas/:ideaId/assets" element={<AssetManager />} />
             <Route path="projects/:projectId/ideas/:ideaId/assembly" element={<Assembly />} />
-            <Route path="projects/:projectId/ideas/:ideaId/publish" element={<Publishing />} />
+            <Route path="projects/:projectId/ideas/:ideaId/publishing" element={<Publishing />} />
+            <Route path="projects/:projectId/ideas/:ideaId/analytics" element={<GlobalAnalytics />} />
             <Route path="setup" element={<ProjectSetup />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

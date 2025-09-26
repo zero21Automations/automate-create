@@ -57,6 +57,13 @@ const ScriptStudio = () => {
             <Save className="h-4 w-4 mr-2" />
             Save Script
           </Button>
+          <Button 
+            onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/assembly`)}
+            className="bg-gradient-factory text-white"
+          >
+            <Video className="h-4 w-4 mr-2" />
+            Next: Assembly
+          </Button>
         </div>
       </div>
 

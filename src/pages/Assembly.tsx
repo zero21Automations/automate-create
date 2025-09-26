@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,11 +25,13 @@ import {
   EyeOff,
   Lock,
   Unlock,
-  ArrowLeft
+  ArrowLeft,
+  Share2
 } from "lucide-react";
 
 const Assembly = () => {
   const navigate = useNavigate();
+  const { projectId, ideaId } = useParams();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration] = useState(150); // 2:30 in seconds
@@ -175,6 +177,13 @@ const Assembly = () => {
           <Button variant="factory">
             <Upload className="h-4 w-4 mr-2" />
             Render All
+          </Button>
+          <Button 
+            onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/publishing`)}
+            className="bg-gradient-factory text-white"
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            Next: Publishing
           </Button>
         </div>
       </div>

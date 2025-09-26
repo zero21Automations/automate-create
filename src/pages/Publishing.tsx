@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ import { format } from "date-fns";
 
 const Publishing = () => {
   const navigate = useNavigate();
+  const { projectId, ideaId } = useParams();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [autoSchedule, setAutoSchedule] = useState(true);
   
@@ -145,6 +146,13 @@ const Publishing = () => {
           <Button variant="factory">
             <Upload className="h-4 w-4 mr-2" />
             Publish Now
+          </Button>
+          <Button 
+            onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/analytics`)}
+            className="bg-gradient-factory text-white"
+          >
+            <TrendingUp className="h-4 w-4 mr-2" />
+            Next: Analytics
           </Button>
         </div>
       </div>
