@@ -25,7 +25,6 @@ import {
   FileText,
   Video,
   Upload,
-  Mic,
   Filter,
   Edit,
   ArrowRight,
