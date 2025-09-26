@@ -24,7 +24,8 @@ import {
   Lightbulb,
   FileText,
   Video,
-  Upload
+  Upload,
+  Mic
 } from "lucide-react";
 
 // Individual Project Dashboard Page
@@ -159,12 +160,13 @@ export default function ProjectDetail() {
       {/* Content */}
       <div className="flex-1 p-6 overflow-auto">
         <Tabs defaultValue="overview" className="h-full">
-          <TabsList className="grid w-full grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-7 mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="ideas">Ideas</TabsTrigger>
             <TabsTrigger value="scripts">Scripts</TabsTrigger>
-            <TabsTrigger value="production">Production</TabsTrigger>
-            <TabsTrigger value="published">Published</TabsTrigger>
+            <TabsTrigger value="assets">Assets</TabsTrigger>
+            <TabsTrigger value="assembly">Assembly</TabsTrigger>
+            <TabsTrigger value="publishing">Publishing</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
@@ -372,7 +374,7 @@ export default function ProjectDetail() {
                     <h3 className="text-lg font-semibold mb-2">Ready to Create Scripts</h3>
                     <p className="text-muted-foreground mb-4">Transform your ideas into platform-optimized scripts</p>
                     <Button onClick={() => navigate("/script-studio")} className="btn-factory">
-                      <FileText className="w-4 h-4 mr-2" />
+                      <FileText className="w-4 w-4 mr-2" />
                       Open Script Studio
                     </Button>
                   </div>
@@ -381,20 +383,20 @@ export default function ProjectDetail() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="production">
+          <TabsContent value="assets">
             <Card>
               <CardHeader>
-                <CardTitle>Production Pipeline</CardTitle>
-                <CardDescription>Asset generation and video assembly</CardDescription>
+                <CardTitle>Asset Generation</CardTitle>
+                <CardDescription>Generate voice, music, captions, and B-roll assets</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-center py-12">
                   <div className="text-center">
-                    <Video className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Ready for Production</h3>
-                    <p className="text-muted-foreground mb-4">Generate voice, music, captions, and B-roll assets</p>
+                    <Mic className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Ready for Asset Generation</h3>
+                    <p className="text-muted-foreground mb-4">Create voice, music, captions, and visual assets</p>
                     <Button onClick={() => navigate("/asset-manager")} className="btn-factory">
-                      <Video className="w-4 h-4 mr-2" />
+                      <Mic className="w-4 w-4 mr-2" />
                       Open Asset Manager
                     </Button>
                   </div>
@@ -403,18 +405,44 @@ export default function ProjectDetail() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="published">
+          <TabsContent value="assembly">
             <Card>
               <CardHeader>
-                <CardTitle>Published Content</CardTitle>
-                <CardDescription>View and manage your live content</CardDescription>
+                <CardTitle>Post-Production Assembly</CardTitle>
+                <CardDescription>Combine assets into finished videos with timeline editing</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-center py-12">
                   <div className="text-center">
-                    <CheckCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Published Content Coming Soon</h3>
-                    <p className="text-muted-foreground">Published content management will be available here</p>
+                    <Video className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Ready for Video Assembly</h3>
+                    <p className="text-muted-foreground mb-4">Edit timeline, sync assets, and render final videos</p>
+                    <Button onClick={() => navigate("/assembly")} className="btn-factory">
+                      <Video className="w-4 w-4 mr-2" />
+                      Open Assembly Studio
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="publishing">
+            <Card>
+              <CardHeader>
+                <CardTitle>Publishing & Scheduling</CardTitle>
+                <CardDescription>Schedule and distribute content across platforms</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Ready to Publish</h3>
+                    <p className="text-muted-foreground mb-4">Schedule posts and manage platform distribution</p>
+                    <Button onClick={() => navigate("/publishing")} className="btn-factory">
+                      <Upload className="w-4 w-4 mr-2" />
+                      Open Publishing Hub
+                    </Button>
                   </div>
                 </div>
               </CardContent>

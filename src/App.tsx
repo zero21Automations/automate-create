@@ -11,6 +11,8 @@ import Research from "./pages/Research";
 import ProjectSetup from "./pages/ProjectSetup";
 import ScriptStudio from "./pages/ScriptStudio";
 import AssetManager from "./pages/AssetManager";
+import Assembly from "./pages/Assembly";
+import Publishing from "./pages/Publishing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
             <Route path="setup" element={<ProjectSetup />} />
             <Route path="script-studio" element={<ScriptStudio />} />
             <Route path="asset-manager" element={<AssetManager />} />
+            <Route path="assembly" element={<Assembly />} />
+            <Route path="publishing" element={<Publishing />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
