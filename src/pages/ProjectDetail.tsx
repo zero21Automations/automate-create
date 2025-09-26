@@ -354,7 +354,7 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Manage and validate content ideas</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate("/research")}>
+                  <Button variant="outline" onClick={() => navigate("/ideas")}>
                     <Plus className="w-4 h-4 mr-2" />
                     Generate Ideas
                   </Button>
@@ -633,7 +633,7 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Multi-platform content distribution</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate("/publishing")}>
+                  <Button variant="outline">
                     <Calendar className="w-4 h-4 mr-2" />
                     Content Calendar
                   </Button>
@@ -688,36 +688,21 @@ export default function ProjectDetail() {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <div className="space-y-6">
-              {/* Header with Actions */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">Analytics Dashboard</h2>
-                  <p className="text-muted-foreground">Performance insights and optimization</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Report
-                  </Button>
-                  <Button variant="outline">
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Refresh Data
-                  </Button>
-                </div>
-              </div>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-center py-12">
-                    <div className="text-center">
-                      <BarChart3 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">Analytics Dashboard Coming Soon</h3>
-                      <p className="text-muted-foreground">Performance analytics will be available here</p>
-                    </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Analytics Dashboard</CardTitle>
+                <CardDescription>Performance insights and optimization recommendations</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <BarChart3 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Analytics Dashboard Coming Soon</h3>
+                    <p className="text-muted-foreground">Performance analytics will be available here</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
