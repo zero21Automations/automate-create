@@ -342,18 +342,18 @@ export default function ProjectDetail() {
           <TabsContent value="ideas">
             <Card>
               <CardHeader>
-                <CardTitle>Ideas Pipeline</CardTitle>
+                <CardTitle>Ideas Hub</CardTitle>
                 <CardDescription>Manage your content ideas and validation queue</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-center py-12">
                   <div className="text-center">
                     <Lightbulb className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Ideas Coming Soon</h3>
-                    <p className="text-muted-foreground mb-4">Ideas management interface will be available here</p>
+                    <h3 className="text-lg font-semibold mb-2">Ready to Generate Ideas</h3>
+                    <p className="text-muted-foreground mb-4">Discover trending topics and validate content ideas</p>
                     <Button onClick={() => navigate("/research")} className="btn-factory">
-                      <Plus className="w-4 h-4" />
-                      Generate Ideas
+                      <Plus className="w-4 h-4 mr-2" />
+                      Open Ideas Hub
                     </Button>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,10 +16,12 @@ import {
   Check, 
   X, 
   Play,
-  Volume2
+  Volume2,
+  ArrowLeft
 } from "lucide-react";
 
 const AssetManager = () => {
+  const navigate = useNavigate();
   const [assets, setAssets] = useState({
     voice: { status: 'ready', progress: 100, url: '/voice-sample.mp3' },
     music: { status: 'generating', progress: 65, url: null },
@@ -49,9 +52,18 @@ const AssetManager = () => {
     <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-factory-gradient">Asset Manager</h1>
-          <p className="text-muted-foreground">Stage 3: Generate and manage production assets</p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-factory-gradient">Asset Manager</h1>
+            <p className="text-muted-foreground">Stage 3: Generate and manage production assets</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="badge-factory">

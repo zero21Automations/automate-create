@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,10 +24,12 @@ import {
   Eye,
   EyeOff,
   Lock,
-  Unlock
+  Unlock,
+  ArrowLeft
 } from "lucide-react";
 
 const Assembly = () => {
+  const navigate = useNavigate();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration] = useState(150); // 2:30 in seconds
@@ -148,9 +151,18 @@ const Assembly = () => {
     <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-factory-gradient">Assembly Studio</h1>
-          <p className="text-muted-foreground">Stage 4: Post-production timeline editor and video rendering</p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-factory-gradient">Assembly Studio</h1>
+            <p className="text-muted-foreground">Stage 4: Post-production timeline editor and video rendering</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="badge-factory">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,11 +22,13 @@ import {
   CheckCircle,
   AlertCircle,
   Play,
-  Edit
+  Edit,
+  ArrowLeft
 } from "lucide-react";
 import { format } from "date-fns";
 
 const Publishing = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [autoSchedule, setAutoSchedule] = useState(true);
   
@@ -117,9 +120,18 @@ const Publishing = () => {
     <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-factory-gradient">Publishing Hub</h1>
-          <p className="text-muted-foreground">Stage 5: Schedule and distribute content across platforms</p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-factory-gradient">Publishing Hub</h1>
+            <p className="text-muted-foreground">Stage 5: Schedule and distribute content across platforms</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="badge-factory">

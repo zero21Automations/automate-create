@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,9 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft } from "lucide-react";
 
 const ScriptStudio = () => {
+  const navigate = useNavigate();
   const [script, setScript] = useState({
     hook: "",
     beats: [{ id: 1, text: "", stageDirections: "" }],
@@ -25,9 +27,18 @@ const ScriptStudio = () => {
     <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-factory-gradient">Script Studio</h1>
-          <p className="text-muted-foreground">Stage 2: Transform ideas into platform-optimized scripts</p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-factory-gradient">Script Studio</h1>
+            <p className="text-muted-foreground">Stage 2: Transform ideas into platform-optimized scripts</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="badge-factory">

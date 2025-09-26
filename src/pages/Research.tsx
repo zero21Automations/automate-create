@@ -214,8 +214,8 @@ export default function Research() {
       <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center justify-between p-6">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Research Hub</h1>
-            <p className="text-muted-foreground">AI-powered content idea generation and trend analysis</p>
+            <h1 className="text-2xl font-bold text-foreground">Ideas Hub</h1>
+            <p className="text-muted-foreground">Stage 1: Discover trending topics and validate content ideas</p>
           </div>
           <div className="flex items-center gap-3">
             <Button 
