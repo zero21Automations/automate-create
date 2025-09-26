@@ -9,6 +9,8 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Research from "./pages/Research";
 import ProjectSetup from "./pages/ProjectSetup";
+import ScriptStudio from "./pages/ScriptStudio";
+import AssetManager from "./pages/AssetManager";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,8 @@ const App = () => (
             <Route path="projects/:projectId" element={<ProjectDetail />} />
             <Route path="research" element={<Research />} />
             <Route path="setup" element={<ProjectSetup />} />
+            <Route path="script-studio" element={<ScriptStudio />} />
+            <Route path="asset-manager" element={<AssetManager />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

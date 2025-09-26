@@ -369,8 +369,12 @@ export default function ProjectDetail() {
                 <div className="flex items-center justify-center py-12">
                   <div className="text-center">
                     <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Script Studio Coming Soon</h3>
-                    <p className="text-muted-foreground">Script editing interface will be available here</p>
+                    <h3 className="text-lg font-semibold mb-2">Ready to Create Scripts</h3>
+                    <p className="text-muted-foreground mb-4">Transform your ideas into platform-optimized scripts</p>
+                    <Button onClick={() => navigate("/script-studio")} className="btn-factory">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Open Script Studio
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -387,8 +391,12 @@ export default function ProjectDetail() {
                 <div className="flex items-center justify-center py-12">
                   <div className="text-center">
                     <Video className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Production Studio Coming Soon</h3>
-                    <p className="text-muted-foreground">Video production interface will be available here</p>
+                    <h3 className="text-lg font-semibold mb-2">Ready for Production</h3>
+                    <p className="text-muted-foreground mb-4">Generate voice, music, captions, and B-roll assets</p>
+                    <Button onClick={() => navigate("/asset-manager")} className="btn-factory">
+                      <Video className="w-4 h-4 mr-2" />
+                      Open Asset Manager
+                    </Button>
                   </div>
                 </div>
               </CardContent>
