@@ -57,16 +57,17 @@ const ProjectDetail = () => {
     }
   }, [projects, projectId]);
 
-  // Auto-create demo project if visiting fitlife and it doesn't exist
+  // Auto-create demo project if visiting specific project that doesn't exist
   useEffect(() => {
-    if (projectId === 'fitlife' && projects.length > 0 && !project) {
+    if (projectId && projects.length > 0 && !project && !projectId.includes('-')) {
+      // Only create if it looks like a real project name, not a UUID
       createProject({
-        name: 'FitLife Motivation',
-        description: 'AI-powered fitness content for young professionals',
+        name: `${projectId.charAt(0).toUpperCase()}${projectId.slice(1)} Project`,
+        description: 'AI-powered content creation pipeline',
         status: 'active'
       }).then((newProject) => {
         if (newProject) setProject(newProject as Project);
-      });
+      }).catch(console.error);
     }
   }, [projectId, projects, project, createProject]);
 
