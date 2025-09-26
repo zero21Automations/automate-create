@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,29 +48,50 @@ const ProjectDetail = () => {
   const navigate = useNavigate();
   const { projects, createProject } = useProjects();
   const [project, setProject] = useState<Project | null>(null);
+  const creatingRef = useRef(false);
+  const isUuid = (val?: string) => !!val && /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i.test(val);
   // Use the actual project UUID once available; avoid passing slugs like "fitlife"
   const { ideas, loading: ideasLoading, generateIdeas } = useIdeas(project?.id || '');
 
   useEffect(() => {
-    if (projects.length > 0 && projectId) {
-      const foundProject = projects.find(p => p.id === projectId);
-      setProject(foundProject || null);
+    if (!projectId) return;
+
+    // Prefer matching by exact UUID id
+    if (isUuid(projectId)) {
+      const byId = projects.find((p) => p.id === projectId);
+      if (byId) setProject(byId);
+      return;
+    }
+
+    // Non-UUID param (e.g., "fitlife"): try to match by name prefix
+    const lower = projectId.toLowerCase();
+    const byName = projects.find((p) => p.name?.toLowerCase().startsWith(lower));
+    if (byName) {
+      setProject(byName);
     }
   }, [projects, projectId]);
 
-  // Auto-create demo project if visiting specific project that doesn't exist
+  // Auto-create demo project when visiting a slug (non-UUID) and none exists yet
   useEffect(() => {
-    if (projectId && projects.length > 0 && !project && !projectId.includes('-')) {
-      // Only create if it looks like a real project name, not a UUID
-      createProject({
-        name: `${projectId.charAt(0).toUpperCase()}${projectId.slice(1)} Project`,
-        description: 'AI-powered content creation pipeline',
-        status: 'active'
-      }).then((newProject) => {
-        if (newProject) setProject(newProject as Project);
-      }).catch(console.error);
-    }
-  }, [projectId, projects, project, createProject]);
+    if (!projectId || isUuid(projectId) || project || creatingRef.current) return;
+    creatingRef.current = true;
+    createProject({
+      name: `${projectId.charAt(0).toUpperCase()}${projectId.slice(1)} Project`,
+      description: 'AI-powered content creation pipeline',
+      status: 'active',
+    })
+      .then((newProject) => {
+        if (newProject) {
+          setProject(newProject as Project);
+          // Navigate to canonical UUID route to keep everything consistent
+          navigate(`/projects/${(newProject as Project).id}`, { replace: true });
+        }
+      })
+      .catch(console.error)
+      .finally(() => {
+        creatingRef.current = false;
+      });
+  }, [projectId, project, createProject, navigate]);
 
   if (!project && projects.length > 0) {
     return (
