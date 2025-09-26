@@ -351,7 +351,7 @@ export default function ProjectDetail() {
                     <Lightbulb className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                     <h3 className="text-lg font-semibold mb-2">Ready to Generate Ideas</h3>
                     <p className="text-muted-foreground mb-4">Discover trending topics and validate content ideas</p>
-                    <Button onClick={() => navigate("/research")} className="btn-factory">
+                    <Button onClick={() => navigate("/ideas")} className="btn-factory">
                       <Plus className="w-4 h-4 mr-2" />
                       Open Ideas Hub
                     </Button>

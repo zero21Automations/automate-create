@@ -13,6 +13,8 @@ import ScriptStudio from "./pages/ScriptStudio";
 import AssetManager from "./pages/AssetManager";
 import Assembly from "./pages/Assembly";
 import Publishing from "./pages/Publishing";
+import GlobalResearch from "./pages/GlobalResearch";
+import GlobalAnalytics from "./pages/GlobalAnalytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,7 +30,9 @@ const App = () => (
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:projectId" element={<ProjectDetail />} />
-            <Route path="research" element={<Research />} />
+            <Route path="research" element={<GlobalResearch />} />
+            <Route path="analytics" element={<GlobalAnalytics />} />
+            <Route path="ideas" element={<Research />} />
             <Route path="setup" element={<ProjectSetup />} />
             <Route path="script-studio" element={<ScriptStudio />} />
             <Route path="asset-manager" element={<AssetManager />} />
