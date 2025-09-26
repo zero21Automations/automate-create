@@ -110,9 +110,11 @@ export function Sidebar() {
               {/* New Project Button */}
               {!collapsed && (
                 <div className="pt-2">
-                  <Button className="w-full btn-factory">
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Project
+                  <Button className="w-full btn-factory" asChild>
+                    <Link to="/setup">
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Project
+                    </Link>
                   </Button>
                 </div>
               )}

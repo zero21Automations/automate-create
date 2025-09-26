@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -141,6 +142,7 @@ export default function Projects() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [nicheFilter, setNicheFilter] = useState("all");
+  const navigate = useNavigate();
 
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -157,7 +159,7 @@ export default function Projects() {
           <h1 className="text-3xl font-bold text-factory-gradient">Projects</h1>
           <p className="text-muted-foreground">Your content factory workspace directory</p>
         </div>
-        <Button variant="factory" size="lg">
+        <Button variant="factory" size="lg" onClick={() => navigate("/setup")}>
           <Plus className="h-5 w-5 mr-2" />
           New Project
         </Button>
@@ -243,7 +245,7 @@ export default function Projects() {
       {/* Projects Grid/List */}
       <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" : "space-y-4"}>
         {filteredProjects.map((project) => (
-          <Card key={project.id} className="card-factory-glow p-6 cursor-pointer hover:scale-[1.02] transition-transform">
+          <Card key={project.id} className="card-factory-glow p-6 cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => navigate(`/projects/${project.id}`)}>
             {/* Project Header */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
