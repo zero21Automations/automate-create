@@ -238,10 +238,10 @@ const ProjectDetail = () => {
         </div>
       </header>
 
-      <Tabs defaultValue="overview" className="space-y-6">
+      <Tabs defaultValue="pipeline" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="pipeline">Ideas Pipeline ({totalIdeas})</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
@@ -335,19 +335,63 @@ const ProjectDetail = () => {
                     </div>
                   </Button>
                   
-                  <Button asChild variant="outline" className="h-auto p-4 justify-start">
-                    <Link to={`/projects/${projectId}/ideas`}>
-                      <div className="flex items-center gap-3">
-                        <div className="bg-secondary/50 rounded-lg p-2">
-                          <Eye className="h-5 w-5 text-secondary-foreground" />
+                  <Dialog open={isAddingIdea} onOpenChange={setIsAddingIdea}>
+                    <DialogTrigger asChild>
+                      <Button className="h-auto p-4 justify-start">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary/10 rounded-lg p-2">
+                            <Plus className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="text-left">
+                            <div className="font-medium">Add Idea</div>
+                            <div className="text-sm text-muted-foreground">Manual entry</div>
+                          </div>
                         </div>
-                        <div className="text-left">
-                          <div className="font-medium">Ideas Pipeline</div>
-                          <div className="text-sm text-muted-foreground">Manage ideas ({totalIdeas})</div>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Add New Idea</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="title">Title</Label>
+                          <Input
+                            id="title"
+                            value={newIdea.title}
+                            onChange={(e) => setNewIdea(prev => ({ ...prev, title: e.target.value }))}
+                            placeholder="Enter idea title..."
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="description">Description</Label>
+                          <Textarea
+                            id="description"
+                            value={newIdea.description}
+                            onChange={(e) => setNewIdea(prev => ({ ...prev, description: e.target.value }))}
+                            placeholder="Describe your idea..."
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="hashtags">Hashtags (comma-separated)</Label>
+                          <Input
+                            id="hashtags"
+                            value={newIdea.hashtags}
+                            onChange={(e) => setNewIdea(prev => ({ ...prev, hashtags: e.target.value }))}
+                            placeholder="fitness, motivation, wellness"
+                          />
                         </div>
                       </div>
-                    </Link>
-                  </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setIsAddingIdea(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleAddIdea}>
+                          Add Idea
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardContent>
             </Card>

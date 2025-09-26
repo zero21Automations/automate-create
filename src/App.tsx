@@ -9,7 +9,6 @@ import { Layout } from "@/components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
-import Research from "./pages/Research";
 import ProjectSetup from "./pages/ProjectSetup";
 import ScriptStudio from "./pages/ScriptStudio";
 import AssetManager from "./pages/AssetManager";
@@ -33,9 +32,7 @@ const App = () => (
               <Route path="/" element={<Layout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="projects" element={<Projects />} />
-                <Route path="projects/:projectId" element={<ProjectDetail />} />
-            {/* Project-scoped routes only */}
-            <Route path="projects/:projectId/ideas" element={<Research />} />
+            <Route path="projects/:projectId" element={<ProjectDetail />} />
             <Route path="projects/:projectId/ideas/:ideaId/script" element={<ScriptStudio />} />
             <Route path="projects/:projectId/ideas/:ideaId/assets" element={<AssetManager />} />
             <Route path="projects/:projectId/ideas/:ideaId/assembly" element={<Assembly />} />
