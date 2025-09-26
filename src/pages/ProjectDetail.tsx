@@ -436,10 +436,6 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Platform-optimized content scripts</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate("/script-studio")}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Script
-                  </Button>
                   <Button variant="outline">
                     <Filter className="w-4 h-4 mr-2" />
                     Filter
@@ -503,13 +499,13 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Voice, music, captions, and visual assets</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate("/asset-manager")}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Generate Assets
-                  </Button>
                   <Button variant="outline">
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Custom
+                  </Button>
+                  <Button variant="outline">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
                   </Button>
                 </div>
               </div>
@@ -570,13 +566,13 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Video timeline editing and rendering</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate("/assembly")}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Assembly
-                  </Button>
                   <Button variant="outline">
                     <Download className="w-4 h-4 mr-2" />
                     Export All
+                  </Button>
+                  <Button variant="outline">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
                   </Button>
                 </div>
               </div>
@@ -637,13 +633,13 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Multi-platform content distribution</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate("/publishing")}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Schedule Post
-                  </Button>
                   <Button variant="outline">
                     <Calendar className="w-4 h-4 mr-2" />
                     Content Calendar
+                  </Button>
+                  <Button variant="outline">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
                   </Button>
                 </div>
               </div>
