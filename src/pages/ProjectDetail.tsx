@@ -354,7 +354,7 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Manage and validate content ideas</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate("/ideas")}>
+                  <Button variant="outline" onClick={() => navigate("/research")}>
                     <Plus className="w-4 h-4 mr-2" />
                     Generate Ideas
                   </Button>
@@ -378,7 +378,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Score: 92%</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?idea=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio")}>
                         <Play className="w-3 w-3 mr-1" />
                         Create Script
                       </Button>
@@ -397,7 +397,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Score: 87%</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?idea=meal-prep")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio")}>
                         <Play className="w-3 w-3 mr-1" />
                         Create Script
                       </Button>
@@ -456,11 +456,11 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">2:30 duration</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?script=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio")}>
                         <Edit className="w-3 w-3 mr-1" />
                         Edit
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager?script=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager")}>
                         <ArrowRight className="w-3 w-3 mr-1" />
                         Generate Assets
                       </Button>
@@ -479,7 +479,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Draft</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?script=meal-prep")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio")}>
                         <Edit className="w-3 w-3 mr-1" />
                         Continue
                       </Button>
@@ -523,11 +523,11 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">4/4 Assets</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager?project=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager")}>
                         <Edit className="w-3 w-3 mr-1" />
                         Manage
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly?assets=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly")}>
                         <ArrowRight className="w-3 w-3 mr-1" />
                         Assemble
                       </Button>
@@ -546,7 +546,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">1/4 Assets</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager?project=meal-prep")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager")}>
                         <RefreshCw className="w-3 w-3 mr-1" />
                         Monitor
                       </Button>
@@ -590,11 +590,11 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">4 Videos</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly?video=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly")}>
                         <Edit className="w-3 w-3 mr-1" />
                         Edit
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing?video=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing")}>
                         <ArrowRight className="w-3 w-3 mr-1" />
                         Publish
                       </Button>
@@ -613,7 +613,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">65% Done</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly?video=meal-prep")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly")}>
                         <Eye className="w-3 w-3 mr-1" />
                         Monitor
                       </Button>
@@ -633,7 +633,7 @@ export default function ProjectDetail() {
                   <p className="text-muted-foreground">Multi-platform content distribution</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={() => navigate("/publishing")}>
                     <Calendar className="w-4 h-4 mr-2" />
                     Content Calendar
                   </Button>
@@ -657,7 +657,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">3 Platforms</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing?post=morning-workout")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/global-analytics")}>
                         <BarChart3 className="w-3 w-3 mr-1" />
                         Analytics
                       </Button>
@@ -676,7 +676,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">2 Platforms</Badge>
-                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing?post=meal-prep")}>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing")}>
                         <Edit className="w-3 w-3 mr-1" />
                         Edit Schedule
                       </Button>
