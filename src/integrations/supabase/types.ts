@@ -121,43 +121,70 @@ export type Database = {
       }
       ideas: {
         Row: {
+          call_to_action: string | null
+          complexity_level: string | null
+          content_pillars: string[] | null
           created_at: string
           description: string | null
           hashtags: string[] | null
+          hook_type: string | null
           id: string
           metadata: Json | null
           project_id: string
           score: number | null
           source: string | null
           status: string
+          target_duration: number | null
+          target_platforms: string[] | null
           title: string
+          tone: string | null
           updated_at: string
+          video_concept: string | null
+          visual_style: string | null
         }
         Insert: {
+          call_to_action?: string | null
+          complexity_level?: string | null
+          content_pillars?: string[] | null
           created_at?: string
           description?: string | null
           hashtags?: string[] | null
+          hook_type?: string | null
           id?: string
           metadata?: Json | null
           project_id: string
           score?: number | null
           source?: string | null
           status?: string
+          target_duration?: number | null
+          target_platforms?: string[] | null
           title: string
+          tone?: string | null
           updated_at?: string
+          video_concept?: string | null
+          visual_style?: string | null
         }
         Update: {
+          call_to_action?: string | null
+          complexity_level?: string | null
+          content_pillars?: string[] | null
           created_at?: string
           description?: string | null
           hashtags?: string[] | null
+          hook_type?: string | null
           id?: string
           metadata?: Json | null
           project_id?: string
           score?: number | null
           source?: string | null
           status?: string
+          target_duration?: number | null
+          target_platforms?: string[] | null
           title?: string
+          tone?: string | null
           updated_at?: string
+          video_concept?: string | null
+          visual_style?: string | null
         }
         Relationships: [
           {

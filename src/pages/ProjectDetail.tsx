@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useProjects, type Project } from "@/hooks/useProjects";
 import { useIdeas, type Idea } from "@/hooks/useIdeas";
 import { useToast } from "@/hooks/use-toast";
+import EnhancedIdeaForm from "@/components/EnhancedIdeaForm";
 import {
   ArrowLeft,
   Plus,
@@ -47,6 +48,7 @@ import {
   Monitor,
   Smartphone,
   Tablet,
+  Palette,
 } from "lucide-react";
 
 const ProjectDetail = () => {
@@ -59,11 +61,7 @@ const ProjectDetail = () => {
   const [sortBy, setSortBy] = useState<string>("created_at");
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingIdea, setIsAddingIdea] = useState(false);
-  const [newIdea, setNewIdea] = useState({
-    title: "",
-    description: "",
-    hashtags: ""
-  });
+  // Remove the old newIdea state as we're using EnhancedIdeaForm
   const creatingRef = useRef(false);
   const isUuid = (val?: string) => !!val && /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i.test(val);
   // Use the actual project UUID once available; avoid passing slugs like "fitlife"
@@ -165,26 +163,14 @@ const ProjectDetail = () => {
     }
   };
 
-  const handleAddIdea = async () => {
-    if (!newIdea.title.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter an idea title",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleAddIdea = async (ideaData: Partial<Idea>) => {
     try {
       await createIdea({
-        title: newIdea.title,
-        description: newIdea.description,
-        hashtags: newIdea.hashtags.split(",").map(tag => tag.trim()).filter(Boolean),
-        score: Math.floor(Math.random() * 40) + 60, // Random score between 60-100
-        status: "generated",
+        ...ideaData,
+        status: 'generated',
+        score: Math.floor(Math.random() * 40) + 60, // Random score 60-100
       });
-      
-      setNewIdea({ title: "", description: "", hashtags: "" });
+
       setIsAddingIdea(false);
       
       toast({
@@ -192,6 +178,7 @@ const ProjectDetail = () => {
         description: "Your idea has been added to the pipeline",
       });
     } catch (error) {
+      console.error('Error adding idea:', error);
       toast({
         title: "Error adding idea",
         description: "Please try again later",
@@ -349,48 +336,16 @@ const ProjectDetail = () => {
                         </div>
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Add New Idea</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="title">Title</Label>
-                          <Input
-                            id="title"
-                            value={newIdea.title}
-                            onChange={(e) => setNewIdea(prev => ({ ...prev, title: e.target.value }))}
-                            placeholder="Enter idea title..."
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="description">Description</Label>
-                          <Textarea
-                            id="description"
-                            value={newIdea.description}
-                            onChange={(e) => setNewIdea(prev => ({ ...prev, description: e.target.value }))}
-                            placeholder="Describe your idea..."
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="hashtags">Hashtags (comma-separated)</Label>
-                          <Input
-                            id="hashtags"
-                            value={newIdea.hashtags}
-                            onChange={(e) => setNewIdea(prev => ({ ...prev, hashtags: e.target.value }))}
-                            placeholder="fitness, motivation, wellness"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setIsAddingIdea(false)}>
-                          Cancel
-                        </Button>
-                        <Button onClick={handleAddIdea}>
-                          Add Idea
-                        </Button>
-                      </div>
-                    </DialogContent>
+                  <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Add New Content Idea</DialogTitle>
+                    </DialogHeader>
+                    <EnhancedIdeaForm
+                      onSubmit={handleAddIdea}
+                      onCancel={() => setIsAddingIdea(false)}
+                      loading={ideasLoading}
+                    />
+                  </DialogContent>
                   </Dialog>
                 </div>
               </CardContent>
@@ -450,48 +405,6 @@ const ProjectDetail = () => {
                       Add Idea
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Add New Idea</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="title">Title</Label>
-                        <Input
-                          id="title"
-                          value={newIdea.title}
-                          onChange={(e) => setNewIdea(prev => ({ ...prev, title: e.target.value }))}
-                          placeholder="Enter idea title..."
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                          id="description"
-                          value={newIdea.description}
-                          onChange={(e) => setNewIdea(prev => ({ ...prev, description: e.target.value }))}
-                          placeholder="Describe your idea..."
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="hashtags">Hashtags (comma-separated)</Label>
-                        <Input
-                          id="hashtags"
-                          value={newIdea.hashtags}
-                          onChange={(e) => setNewIdea(prev => ({ ...prev, hashtags: e.target.value }))}
-                          placeholder="fitness, motivation, wellness"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setIsAddingIdea(false)}>
-                        Cancel
-                      </Button>
-                      <Button onClick={handleAddIdea}>
-                        Add Idea
-                      </Button>
-                    </div>
-                  </DialogContent>
                 </Dialog>
                 <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
                   {ideasLoading ? (
@@ -663,6 +576,56 @@ const ProjectDetail = () => {
                                 <Badge variant="outline">Score: {idea.score}%</Badge>
                               </div>
                               <p className="text-muted-foreground mb-3">{idea.description}</p>
+                              
+                              {/* Enhanced idea details */}
+                              {idea.video_concept && (
+                                <div className="mb-3">
+                                  <p className="text-sm text-muted-foreground">
+                                    <Video className="inline h-3 w-3 mr-1" />
+                                    {idea.video_concept}
+                                  </p>
+                                </div>
+                              )}
+                              
+                              {/* Quick info badges */}
+                              <div className="flex gap-2 mb-3 flex-wrap">
+                                {idea.target_duration && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    {idea.target_duration}s
+                                  </Badge>
+                                )}
+                                {idea.tone && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    <Target className="h-3 w-3 mr-1" />
+                                    {idea.tone}
+                                  </Badge>
+                                )}
+                                {idea.visual_style && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    <Palette className="h-3 w-3 mr-1" />
+                                    {idea.visual_style}
+                                  </Badge>
+                                )}
+                              </div>
+                              
+                              {/* Platform badges */}
+                              {idea.target_platforms && idea.target_platforms.length > 0 && (
+                                <div className="flex gap-1 mb-2">
+                                  {idea.target_platforms.map((platform, index) => (
+                                    <Badge key={index} variant="outline" className="text-xs">
+                                      {platform === 'tiktok' && '🎵'} 
+                                      {platform === 'youtube' && '📺'}
+                                      {platform === 'instagram' && '📷'}
+                                      {platform === 'twitter' && '🐦'}
+                                      {platform === 'linkedin' && '💼'}
+                                      {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              {/* Hashtags */}
                               <div className="flex gap-1 flex-wrap">
                                 {idea.hashtags?.map((tag, index) => (
                                   <Badge key={index} variant="outline" className="text-xs">

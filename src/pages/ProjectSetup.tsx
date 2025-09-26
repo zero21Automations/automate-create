@@ -260,10 +260,13 @@ export default function ProjectSetup() {
                   ...formData,
                   project: { ...formData.project, description: e.target.value }
                 })}
-                placeholder="Describe your content strategy and goals..."
+                placeholder="Describe your content strategy, target audience, and video concepts..."
                 className="mt-2"
-                rows={3}
+                rows={4}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                This will help inform AI-generated ideas with detailed video concepts, target platforms, and content strategy.
+              </p>
             </div>
           </div>
         );
