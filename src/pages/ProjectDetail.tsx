@@ -25,7 +25,13 @@ import {
   FileText,
   Video,
   Upload,
-  Mic
+  Mic,
+  Filter,
+  Edit,
+  ArrowRight,
+  RefreshCw,
+  Download,
+  XCircle
 } from "lucide-react";
 
 // Individual Project Dashboard Page
@@ -340,113 +346,349 @@ export default function ProjectDetail() {
           </TabsContent>
 
           <TabsContent value="ideas">
-            <Card>
-              <CardHeader>
-                <CardTitle>Ideas Hub</CardTitle>
-                <CardDescription>Manage your content ideas and validation queue</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <Lightbulb className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Ready to Generate Ideas</h3>
-                    <p className="text-muted-foreground mb-4">Discover trending topics and validate content ideas</p>
-                    <Button onClick={() => navigate("/ideas")} className="btn-factory">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Open Ideas Hub
-                    </Button>
-                  </div>
+            <div className="space-y-6">
+              {/* Header with Actions */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">Ideas Pipeline</h2>
+                  <p className="text-muted-foreground">Manage and validate content ideas</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => navigate("/ideas")}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Generate Ideas
+                  </Button>
+                  <Button variant="outline">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                  </Button>
+                </div>
+              </div>
+
+              {/* Ideas List */}
+              <div className="space-y-4">
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">Generated</Badge>
+                      <div>
+                        <h3 className="font-medium">5-Minute Morning Workout Transformation</h3>
+                        <p className="text-sm text-muted-foreground">Quick HIIT routine for busy professionals</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Score: 92%</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?idea=morning-workout")}>
+                        <Play className="w-3 w-3 mr-1" />
+                        Create Script
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+                
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="default">Validated</Badge>
+                      <div>
+                        <h3 className="font-medium">Meal Prep Hacks for Weight Loss</h3>
+                        <p className="text-sm text-muted-foreground">Healthy meal preparation shortcuts</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Score: 87%</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?idea=meal-prep")}>
+                        <Play className="w-3 w-3 mr-1" />
+                        Create Script
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="destructive">Rejected</Badge>
+                      <div>
+                        <h3 className="font-medium text-muted-foreground">Advanced Gym Equipment Reviews</h3>
+                        <p className="text-sm text-muted-foreground">Too niche for target audience</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Score: 34%</Badge>
+                      <Button variant="ghost" size="sm" disabled>
+                        <XCircle className="w-3 w-3 mr-1" />
+                        Rejected
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="scripts">
-            <Card>
-              <CardHeader>
-                <CardTitle>Script Studio</CardTitle>
-                <CardDescription>Write and optimize your content scripts</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Ready to Create Scripts</h3>
-                    <p className="text-muted-foreground mb-4">Transform your ideas into platform-optimized scripts</p>
-                    <Button onClick={() => navigate("/script-studio")} className="btn-factory">
-                      <FileText className="w-4 w-4 mr-2" />
-                      Open Script Studio
-                    </Button>
-                  </div>
+            <div className="space-y-6">
+              {/* Header with Actions */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">Script Studio</h2>
+                  <p className="text-muted-foreground">Platform-optimized content scripts</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => navigate("/script-studio")}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Script
+                  </Button>
+                  <Button variant="outline">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                  </Button>
+                </div>
+              </div>
+
+              {/* Scripts List */}
+              <div className="space-y-4">
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="default">Ready</Badge>
+                      <div>
+                        <h3 className="font-medium">5-Minute Morning Workout Transformation</h3>
+                        <p className="text-sm text-muted-foreground">Hook: "Stop wasting your mornings..." • 3 beats • CTA</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">2:30 duration</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?script=morning-workout")}>
+                        <Edit className="w-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager?script=morning-workout")}>
+                        <ArrowRight className="w-3 w-3 mr-1" />
+                        Generate Assets
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">Draft</Badge>
+                      <div>
+                        <h3 className="font-medium">Meal Prep Hacks for Weight Loss</h3>
+                        <p className="text-sm text-muted-foreground">In progress • Hook completed • 2/3 beats</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Draft</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/script-studio?script=meal-prep")}>
+                        <Edit className="w-3 w-3 mr-1" />
+                        Continue
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="assets">
-            <Card>
-              <CardHeader>
-                <CardTitle>Asset Generation</CardTitle>
-                <CardDescription>Generate voice, music, captions, and B-roll assets</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <Mic className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Ready for Asset Generation</h3>
-                    <p className="text-muted-foreground mb-4">Create voice, music, captions, and visual assets</p>
-                    <Button onClick={() => navigate("/asset-manager")} className="btn-factory">
-                      <Mic className="w-4 w-4 mr-2" />
-                      Open Asset Manager
-                    </Button>
-                  </div>
+            <div className="space-y-6">
+              {/* Header with Actions */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">Asset Manager</h2>
+                  <p className="text-muted-foreground">Voice, music, captions, and visual assets</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => navigate("/asset-manager")}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Generate Assets
+                  </Button>
+                  <Button variant="outline">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Custom
+                  </Button>
+                </div>
+              </div>
+
+              {/* Assets List */}
+              <div className="space-y-4">
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="default">Complete</Badge>
+                      <div>
+                        <h3 className="font-medium">5-Minute Morning Workout</h3>
+                        <p className="text-sm text-muted-foreground">Voice ✓ Music ✓ Captions ✓ B-roll ✓</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">4/4 Assets</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager?project=morning-workout")}>
+                        <Edit className="w-3 w-3 mr-1" />
+                        Manage
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly?assets=morning-workout")}>
+                        <ArrowRight className="w-3 w-3 mr-1" />
+                        Assemble
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">Generating</Badge>
+                      <div>
+                        <h3 className="font-medium">Meal Prep Hacks</h3>
+                        <p className="text-sm text-muted-foreground">Voice ✓ Music 🔄 Captions ⏳ B-roll ⏳</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">1/4 Assets</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/asset-manager?project=meal-prep")}>
+                        <RefreshCw className="w-3 w-3 mr-1" />
+                        Monitor
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="assembly">
-            <Card>
-              <CardHeader>
-                <CardTitle>Post-Production Assembly</CardTitle>
-                <CardDescription>Combine assets into finished videos with timeline editing</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <Video className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Ready for Video Assembly</h3>
-                    <p className="text-muted-foreground mb-4">Edit timeline, sync assets, and render final videos</p>
-                    <Button onClick={() => navigate("/assembly")} className="btn-factory">
-                      <Video className="w-4 w-4 mr-2" />
-                      Open Assembly Studio
-                    </Button>
-                  </div>
+            <div className="space-y-6">
+              {/* Header with Actions */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">Post-Production Assembly</h2>
+                  <p className="text-muted-foreground">Video timeline editing and rendering</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => navigate("/assembly")}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Assembly
+                  </Button>
+                  <Button variant="outline">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export All
+                  </Button>
+                </div>
+              </div>
+
+              {/* Assembly List */}
+              <div className="space-y-4">
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="default">Rendered</Badge>
+                      <div>
+                        <h3 className="font-medium">5-Minute Morning Workout</h3>
+                        <p className="text-sm text-muted-foreground">TikTok ✓ YouTube ✓ Instagram ✓ • 4 formats ready</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">4 Videos</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly?video=morning-workout")}>
+                        <Edit className="w-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing?video=morning-workout")}>
+                        <ArrowRight className="w-3 w-3 mr-1" />
+                        Publish
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">Rendering</Badge>
+                      <div>
+                        <h3 className="font-medium">Meal Prep Hacks</h3>
+                        <p className="text-sm text-muted-foreground">TikTok 🔄 YouTube ⏳ Instagram ⏳ • 65% complete</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">65% Done</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/assembly?video=meal-prep")}>
+                        <Eye className="w-3 w-3 mr-1" />
+                        Monitor
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="publishing">
-            <Card>
-              <CardHeader>
-                <CardTitle>Publishing & Scheduling</CardTitle>
-                <CardDescription>Schedule and distribute content across platforms</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Ready to Publish</h3>
-                    <p className="text-muted-foreground mb-4">Schedule posts and manage platform distribution</p>
-                    <Button onClick={() => navigate("/publishing")} className="btn-factory">
-                      <Upload className="w-4 w-4 mr-2" />
-                      Open Publishing Hub
-                    </Button>
-                  </div>
+            <div className="space-y-6">
+              {/* Header with Actions */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">Publishing & Scheduling</h2>
+                  <p className="text-muted-foreground">Multi-platform content distribution</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => navigate("/publishing")}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Schedule Post
+                  </Button>
+                  <Button variant="outline">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Content Calendar
+                  </Button>
+                </div>
+              </div>
+
+              {/* Publishing List */}
+              <div className="space-y-4">
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="default">Published</Badge>
+                      <div>
+                        <h3 className="font-medium">5-Minute Morning Workout</h3>
+                        <p className="text-sm text-muted-foreground">TikTok: 12.3K views • Instagram: 8.1K views • YouTube: 5.2K views</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">3 Platforms</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing?post=morning-workout")}>
+                        <BarChart3 className="w-3 w-3 mr-1" />
+                        Analytics
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="card-factory-glow p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">Scheduled</Badge>
+                      <div>
+                        <h3 className="font-medium">Meal Prep Hacks</h3>
+                        <p className="text-sm text-muted-foreground">TikTok: Tomorrow 7PM • Instagram: Tomorrow 8PM</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">2 Platforms</Badge>
+                      <Button variant="outline" size="sm" onClick={() => navigate("/publishing?post=meal-prep")}>
+                        <Edit className="w-3 w-3 mr-1" />
+                        Edit Schedule
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics">
