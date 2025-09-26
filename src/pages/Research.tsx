@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,12 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, TrendingUp, Users, Target, Zap, Eye, Search, Filter, Download, Upload, MoreHorizontal, Play, ThumbsUp, MessageCircle, Share2, Bookmark, Clock, CheckCircle, XCircle, AlertCircle, BarChart3, Lightbulb, RefreshCw, Settings } from "lucide-react";
+import { Plus, TrendingUp, Users, Target, Zap, Eye, Search, Filter, Download, Upload, MoreHorizontal, Play, ThumbsUp, MessageCircle, Share2, Bookmark, Clock, CheckCircle, XCircle, AlertCircle, BarChart3, Lightbulb, RefreshCw, Settings, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 // Research Stage - Idea Generation Flow
 export default function Research() {
+  const navigate = useNavigate();
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -213,9 +215,18 @@ export default function Research() {
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center justify-between p-6">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Ideas Hub</h1>
-            <p className="text-muted-foreground">Stage 1: Discover trending topics and validate content ideas</p>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Ideas Hub</h1>
+              <p className="text-muted-foreground">Stage 1: Discover trending topics and validate content ideas</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Button 
