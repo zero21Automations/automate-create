@@ -1,25 +1,16 @@
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  ArrowLeft, 
-  Settings, 
-  Play, 
-  TrendingUp, 
-  Users, 
-  Calendar,
-  Eye,
-  Heart,
-  MessageCircle,
-  Share2,
+import { Progress } from "@/components/ui/progress";
+import { useProjects, type Project } from "@/hooks/useProjects";
+import { useIdeas } from "@/hooks/useIdeas";
+import {
+  ArrowLeft,
   Plus,
-  MoreHorizontal,
-  CheckCircle,
-  Clock,
-  AlertCircle,
+  Play,
   BarChart3,
   Lightbulb,
   FileText,
@@ -28,713 +19,375 @@ import {
   Filter,
   Edit,
   ArrowRight,
-  RefreshCw,
+  Clock,
+  Eye,
+  Calendar,
+  Settings,
+  TrendingUp,
+  Users,
+  DollarSign,
+  Target,
+  CheckCircle,
+  PlayCircle,
+  PauseCircle,
+  RotateCcw,
   Download,
-  XCircle
+  Share2,
+  Archive,
+  AlertCircle,
+  Zap,
+  Layers,
+  Globe,
+  Monitor,
+  Smartphone,
+  Tablet,
 } from "lucide-react";
 
-// Individual Project Dashboard Page
-export default function ProjectDetail() {
+const ProjectDetail = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { projects, createProject } = useProjects();
+  const { ideas, loading: ideasLoading, generateIdeas } = useIdeas(projectId || '');
+  const [project, setProject] = useState<Project | null>(null);
 
-  // Mock project data - in real app, fetch from Supabase
-  const project = {
-    id: "fitlife",
-    name: "FitLife Motivation",
-    emoji: "🔥",
-    description: "Motivational fitness content for young professionals",
-    tags: ["fitness", "wellness", "motivation"],
-    status: "active",
-    created: "2025-09-19",
-    niche: ["Fitness", "Wellness"],
-    pipeline: {
-      ideas: 12,
-      scripts: 8,
-      videos: 7,
-      live: 11
-    },
-    metrics: {
-      views: "22.1K",
-      engagement: "8.4%",
-      followers: "+847",
-      revenue: "$1,240"
+  useEffect(() => {
+    if (projects.length > 0 && projectId) {
+      const foundProject = projects.find(p => p.id === projectId);
+      setProject(foundProject || null);
     }
-  };
+  }, [projects, projectId]);
 
-  const recentContent = [
-    {
-      id: "1",
-      title: "5 Minute Morning Workout",
-      type: "video",
-      status: "published",
-      platform: "tiktok",
-      views: "12.3K",
-      engagement: "9.2%",
-      published: "2 hours ago"
-    },
-    {
-      id: "2", 
-      title: "Healthy Meal Prep Hacks",
-      type: "script",
-      status: "production",
-      platform: "youtube",
-      progress: 75,
-      updated: "5 hours ago"
-    },
-    {
-      id: "3",
-      title: "Gym Anxiety Solutions",
-      type: "idea",
-      status: "validated",
-      score: 0.89,
-      created: "1 day ago"
+  // Auto-create demo project if visiting fitlife and it doesn't exist
+  useEffect(() => {
+    if (projectId === 'fitlife' && projects.length > 0 && !project) {
+      createProject({
+        name: 'FitLife Motivation',
+        description: 'AI-powered fitness content for young professionals',
+        status: 'active'
+      }).then((newProject) => {
+        if (newProject) setProject(newProject as Project);
+      });
     }
-  ];
+  }, [projectId, projects, project, createProject]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "published": return "success";
-      case "production": return "warning"; 
-      case "validated": return "info";
-      case "draft": return "secondary";
-      default: return "secondary";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "published": return <CheckCircle className="w-4 h-4" />;
-      case "production": return <Clock className="w-4 h-4" />;
-      case "validated": return <AlertCircle className="w-4 h-4" />;
-      default: return <FileText className="w-4 h-4" />;
-    }
-  };
-
-  if (!project) {
+  if (!project && projects.length > 0) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Project Not Found</h2>
-          <p className="text-muted-foreground mb-4">The project you're looking for doesn't exist.</p>
-          <Button onClick={() => navigate("/projects")} variant="outline">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Projects
+          <h1 className="text-2xl font-bold text-destructive">Project Not Found</h1>
+          <p className="text-muted-foreground mt-2">The project you're looking for doesn't exist.</p>
+          <Button asChild className="mt-4">
+            <Link to="/projects">Back to Projects</Link>
           </Button>
         </div>
       </div>
     );
   }
 
+  const getIdeasByStatus = (status: string) => {
+    return ideas.filter(idea => idea.status === status);
+  };
+
+  const ideaStats = {
+    generated: getIdeasByStatus('generated').length,
+    validated: getIdeasByStatus('validated').length,
+    scripted: getIdeasByStatus('scripted').length,
+    assets_ready: getIdeasByStatus('assets_ready').length,
+    assembled: getIdeasByStatus('assembled').length,
+    published: getIdeasByStatus('published').length,
+  };
+
+  const totalIdeas = ideas.length;
+  const progressPercentage = totalIdeas > 0 ? (ideaStats.published / totalIdeas) * 100 : 0;
+
   return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="flex items-center justify-between p-6">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => navigate("/projects")}
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <span className="text-2xl">{project.emoji}</span>
-                <h1 className="text-2xl font-bold text-foreground">{project.name}</h1>
-                <Badge variant={project.status === "active" ? "success" : "secondary"}>
-                  {project.status}
-                </Badge>
-              </div>
-              <p className="text-muted-foreground">{project.description}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon">
-              <Settings className="w-4 h-4" />
-            </Button>
-            <Button className="btn-factory">
-              <Plus className="w-4 h-4" />
-              New Content
-            </Button>
+    <div className="container mx-auto px-4 py-8">
+      <header className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/projects")}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Projects
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">{project?.name || 'Loading...'}</h1>
+            <p className="text-muted-foreground">
+              {project?.description || 'AI-powered content pipeline'} • Active since {project?.created_at ? new Date(project.created_at).toLocaleDateString() : '...'}
+            </p>
           </div>
         </div>
-      </div>
+        <div className="flex items-center gap-2">
+          <Badge variant={project?.status === 'active' ? 'default' : 'secondary'}>
+            {project?.status || 'Loading'}
+          </Badge>
+          <Button variant="outline" size="sm">
+            <Settings className="h-4 w-4 mr-2" />
+            Settings
+          </Button>
+        </div>
+      </header>
 
-      {/* Content */}
-      <div className="flex-1 p-6 overflow-auto">
-        <Tabs defaultValue="overview" className="h-full">
-          <TabsList className="grid w-full grid-cols-7 mb-6">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="ideas">Ideas</TabsTrigger>
-            <TabsTrigger value="scripts">Scripts</TabsTrigger>
-            <TabsTrigger value="assets">Assets</TabsTrigger>
-            <TabsTrigger value="assembly">Assembly</TabsTrigger>
-            <TabsTrigger value="publishing">Publishing</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="ideas">Ideas ({totalIdeas})</TabsTrigger>
+          <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            {/* Pipeline Overview */}
-            <div className="grid grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Ideas</CardTitle>
-                  <Lightbulb className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.pipeline.ideas}</div>
-                  <p className="text-xs text-muted-foreground">
-                    +3 this week
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Scripts</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.pipeline.scripts}</div>
-                  <p className="text-xs text-muted-foreground">
-                    +2 this week
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">In Production</CardTitle>
-                  <Video className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.pipeline.videos}</div>
-                  <p className="text-xs text-muted-foreground">
-                    +1 this week
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Published</CardTitle>
-                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.pipeline.live}</div>
-                  <p className="text-xs text-muted-foreground">
-                    +4 this week
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Performance Metrics */}
-            <div className="grid md:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Views</CardTitle>
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.metrics.views}</div>
-                  <p className="text-xs text-success">
-                    +12.3% from last month
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Engagement Rate</CardTitle>
-                  <Heart className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.metrics.engagement}</div>
-                  <p className="text-xs text-success">
-                    +2.1% from last month
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">New Followers</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.metrics.followers}</div>
-                  <p className="text-xs text-success">
-                    +23% from last month
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{project.metrics.revenue}</div>
-                  <p className="text-xs text-success">
-                    +18% from last month
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Recent Content */}
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Content</CardTitle>
-                <CardDescription>Latest activity in your content pipeline</CardDescription>
+                <CardTitle>Pipeline Progress</CardTitle>
+                <CardDescription>
+                  Track your content through each stage
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentContent.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                  <div className="flex justify-between text-sm">
+                    <span>Overall Progress</span>
+                    <span>{Math.round(progressPercentage)}%</span>
+                  </div>
+                  <Progress value={progressPercentage} className="h-2" />
+                  
+                  <div className="grid grid-cols-6 gap-2 mt-6">
+                    <div className="text-center">
+                      <div className="bg-primary/10 rounded-lg p-3 mb-2">
+                        <Lightbulb className="h-6 w-6 mx-auto text-primary" />
+                      </div>
+                      <div className="text-2xl font-bold">{ideaStats.generated}</div>
+                      <div className="text-xs text-muted-foreground">Generated</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-blue-50 rounded-lg p-3 mb-2">
+                        <CheckCircle className="h-6 w-6 mx-auto text-blue-600" />
+                      </div>
+                      <div className="text-2xl font-bold">{ideaStats.validated}</div>
+                      <div className="text-xs text-muted-foreground">Validated</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-green-50 rounded-lg p-3 mb-2">
+                        <FileText className="h-6 w-6 mx-auto text-green-600" />
+                      </div>
+                      <div className="text-2xl font-bold">{ideaStats.scripted}</div>
+                      <div className="text-xs text-muted-foreground">Scripted</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-purple-50 rounded-lg p-3 mb-2">
+                        <Upload className="h-6 w-6 mx-auto text-purple-600" />
+                      </div>
+                      <div className="text-2xl font-bold">{ideaStats.assets_ready}</div>
+                      <div className="text-xs text-muted-foreground">Assets</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-yellow-50 rounded-lg p-3 mb-2">
+                        <Video className="h-6 w-6 mx-auto text-yellow-600" />
+                      </div>
+                      <div className="text-2xl font-bold">{ideaStats.assembled}</div>
+                      <div className="text-xs text-muted-foreground">Assembled</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-orange-50 rounded-lg p-3 mb-2">
+                        <Globe className="h-6 w-6 mx-auto text-orange-600" />
+                      </div>
+                      <div className="text-2xl font-bold">{ideaStats.published}</div>
+                      <div className="text-xs text-muted-foreground">Published</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>
+                  Start creating content
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <Button 
+                    className="h-auto p-4 justify-start" 
+                    onClick={generateIdeas}
+                    disabled={ideasLoading}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 rounded-lg p-2">
+                        <Plus className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-medium">Generate Ideas</div>
+                        <div className="text-sm text-muted-foreground">AI research agent</div>
+                      </div>
+                    </div>
+                  </Button>
+                  
+                  <Button asChild variant="outline" className="h-auto p-4 justify-start">
+                    <Link to={`/projects/${projectId}/ideas`}>
                       <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(item.status)}
-                          <div>
-                            <p className="font-medium">{item.title}</p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Badge variant="outline" className="text-xs">
-                                {item.type}
-                              </Badge>
-                              {item.platform && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {item.platform}
-                                </Badge>
-                              )}
-                              <span>
-                                {item.published && `Published ${item.published}`}
-                                {item.updated && `Updated ${item.updated}`}
-                                {item.created && `Created ${item.created}`}
-                              </span>
-                            </div>
-                          </div>
+                        <div className="bg-secondary/50 rounded-lg p-2">
+                          <Eye className="h-5 w-5 text-secondary-foreground" />
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium">Ideas Pipeline</div>
+                          <div className="text-sm text-muted-foreground">Manage ideas ({totalIdeas})</div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <Badge variant={getStatusColor(item.status)}>
-                          {item.status}
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {totalIdeas > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Ideas</CardTitle>
+                <CardDescription>Latest ideas in your pipeline</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {ideas.slice(0, 3).map((idea) => (
+                    <div key={idea.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Badge variant={idea.status === 'validated' ? 'default' : 'secondary'}>
+                          {idea.status}
                         </Badge>
-                        {item.views && (
-                          <div className="text-sm text-muted-foreground">
-                            {item.views} views
-                          </div>
+                        <div>
+                          <p className="font-medium">{idea.title}</p>
+                          <p className="text-sm text-muted-foreground">{idea.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">Score: {idea.score}%</Badge>
+                        {idea.status === 'validated' && (
+                          <Button asChild size="sm" variant="outline">
+                            <Link to={`/projects/${projectId}/ideas/${idea.id}/script`}>
+                              <FileText className="h-4 w-4 mr-1" />
+                              Script
+                            </Link>
+                          </Button>
                         )}
-                        {item.progress && (
-                          <div className="flex items-center gap-2 w-24">
-                            <Progress value={item.progress} className="h-2" />
-                            <span className="text-xs text-muted-foreground">{item.progress}%</span>
-                          </div>
-                        )}
-                        {item.score && (
-                          <div className="text-sm text-muted-foreground">
-                            Score: {(item.score * 100).toFixed(0)}%
-                          </div>
-                        )}
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
+        </TabsContent>
 
-          <TabsContent value="ideas">
-            <div className="space-y-6">
-              {/* Header with Actions */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">Ideas Pipeline</h2>
-                  <p className="text-muted-foreground">Manage and validate content ideas</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" asChild>
-                    <Link to={projectId ? `/projects/${projectId}/ideas` : `/ideas`}>
-                      <Plus className="w-4 h-4 mr-2" />
+        <TabsContent value="ideas">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">Ideas Pipeline</h2>
+                <p className="text-muted-foreground">Generate and manage content ideas</p>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={generateIdeas} disabled={ideasLoading}>
+                  {ideasLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4 mr-2" />
                       Generate Ideas
-                    </Link>
-                  </Button>
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
-                  </Button>
-                </div>
-              </div>
-
-              {/* Ideas List */}
-              <div className="space-y-4">
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">Generated</Badge>
-                      <div>
-                        <h3 className="font-medium">5-Minute Morning Workout Transformation</h3>
-                        <p className="text-sm text-muted-foreground">Quick HIIT routine for busy professionals</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">Score: 92%</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/script` : `/script-studio`}>
-                          <Play className="w-3 w-3 mr-1" />
-                          Create Script
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-                
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="default">Validated</Badge>
-                      <div>
-                        <h3 className="font-medium">Meal Prep Hacks for Weight Loss</h3>
-                        <p className="text-sm text-muted-foreground">Healthy meal preparation shortcuts</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">Score: 87%</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/script` : `/script-studio`}>
-                          <Play className="w-3 w-3 mr-1" />
-                          Create Script
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="destructive">Rejected</Badge>
-                      <div>
-                        <h3 className="font-medium text-muted-foreground">Advanced Gym Equipment Reviews</h3>
-                        <p className="text-sm text-muted-foreground">Too niche for target audience</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">Score: 34%</Badge>
-                      <Button variant="ghost" size="sm" disabled>
-                        <XCircle className="w-3 w-3 mr-1" />
-                        Rejected
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
+                    </>
+                  )}
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to={`/projects/${projectId}/ideas`}>
+                    <Eye className="h-4 w-4 mr-2" />
+                    View All
+                  </Link>
+                </Button>
               </div>
             </div>
-          </TabsContent>
 
-          <TabsContent value="scripts">
-            <div className="space-y-6">
-              {/* Header with Actions */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">Script Studio</h2>
-                  <p className="text-muted-foreground">Platform-optimized content scripts</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
+            {totalIdeas === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Lightbulb className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No ideas yet</h3>
+                  <p className="text-muted-foreground text-center mb-4">
+                    Start by generating some content ideas using AI research
+                  </p>
+                  <Button onClick={generateIdeas} disabled={ideasLoading}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Generate First Ideas
                   </Button>
-                </div>
-              </div>
-
-              {/* Scripts List */}
-              <div className="space-y-4">
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="default">Ready</Badge>
-                      <div>
-                        <h3 className="font-medium">5-Minute Morning Workout Transformation</h3>
-                        <p className="text-sm text-muted-foreground">Hook: "Stop wasting your mornings..." • 3 beats • CTA</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {ideas.map((idea) => (
+                  <Card key={idea.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Badge variant={idea.status === 'validated' ? 'default' : 'secondary'}>
+                            {idea.status}
+                          </Badge>
+                          <div>
+                            <h3 className="font-semibold">{idea.title}</h3>
+                            <p className="text-sm text-muted-foreground">{idea.description}</p>
+                            <div className="flex gap-1 mt-2">
+                              {idea.hashtags?.map((tag, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  #{tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">Score: {idea.score}%</Badge>
+                          {idea.status === 'validated' && (
+                            <Button asChild size="sm">
+                              <Link to={`/projects/${projectId}/ideas/${idea.id}/script`}>
+                                <FileText className="h-4 w-4 mr-1" />
+                                Create Script
+                              </Link>
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">2:30 duration</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/script` : `/script-studio`}>
-                          <Edit className="w-3 w-3 mr-1" />
-                          Edit
-                        </Link>
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assets` : `/asset-manager`}>
-                          <ArrowRight className="w-3 w-3 mr-1" />
-                          Generate Assets
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">Draft</Badge>
-                      <div>
-                        <h3 className="font-medium">Meal Prep Hacks for Weight Loss</h3>
-                        <p className="text-sm text-muted-foreground">In progress • Hook completed • 2/3 beats</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">Draft</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/script` : `/script-studio`}>
-                          <Edit className="w-3 w-3 mr-1" />
-                          Continue
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </div>
-          </TabsContent>
+            )}
+          </div>
+        </TabsContent>
 
-          <TabsContent value="assets">
-            <div className="space-y-6">
-              {/* Header with Actions */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">Asset Manager</h2>
-                  <p className="text-muted-foreground">Voice, music, captions, and visual assets</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload Custom
-                  </Button>
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
-                  </Button>
-                </div>
-              </div>
+        <TabsContent value="pipeline">
+          <div className="text-center py-12">
+            <Video className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Pipeline View</h3>
+            <p className="text-muted-foreground">
+              Track content through script → assets → assembly → publish stages
+            </p>
+          </div>
+        </TabsContent>
 
-              {/* Assets List */}
-              <div className="space-y-4">
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="default">Complete</Badge>
-                      <div>
-                        <h3 className="font-medium">5-Minute Morning Workout</h3>
-                        <p className="text-sm text-muted-foreground">Voice ✓ Music ✓ Captions ✓ B-roll ✓</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">4/4 Assets</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assets` : `/asset-manager`}>
-                          <Edit className="w-3 w-3 mr-1" />
-                          Manage
-                        </Link>
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assembly` : `/assembly`}>
-                          <ArrowRight className="w-3 w-3 mr-1" />
-                          Assemble
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">Generating</Badge>
-                      <div>
-                        <h3 className="font-medium">Meal Prep Hacks</h3>
-                        <p className="text-sm text-muted-foreground">Voice ✓ Music 🔄 Captions ⏳ B-roll ⏳</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">1/4 Assets</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/assets` : `/asset-manager`}>
-                          <RefreshCw className="w-3 w-3 mr-1" />
-                          Monitor
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="assembly">
-            <div className="space-y-6">
-              {/* Header with Actions */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">Post-Production Assembly</h2>
-                  <p className="text-muted-foreground">Video timeline editing and rendering</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export All
-                  </Button>
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
-                  </Button>
-                </div>
-              </div>
-
-              {/* Assembly List */}
-              <div className="space-y-4">
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="default">Rendered</Badge>
-                      <div>
-                        <h3 className="font-medium">5-Minute Morning Workout</h3>
-                        <p className="text-sm text-muted-foreground">TikTok ✓ YouTube ✓ Instagram ✓ • 4 formats ready</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">4 Videos</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assembly` : `/assembly`}>
-                          <Edit className="w-3 w-3 mr-1" />
-                          Edit
-                        </Link>
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/publish` : `/publishing`}>
-                          <ArrowRight className="w-3 w-3 mr-1" />
-                          Publish
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">Rendering</Badge>
-                      <div>
-                        <h3 className="font-medium">Meal Prep Hacks</h3>
-                        <p className="text-sm text-muted-foreground">TikTok 🔄 YouTube ⏳ Instagram ⏳ • 65% complete</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">65% Done</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/assembly` : `/assembly`}>
-                          <Eye className="w-3 w-3 mr-1" />
-                          Monitor
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="publishing">
-            <div className="space-y-6">
-              {/* Header with Actions */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">Publishing & Scheduling</h2>
-                  <p className="text-muted-foreground">Multi-platform content distribution</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" asChild>
-                    <Link to={projectId ? `/projects/${projectId}/publishing` : `/publishing`}>
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Content Calendar
-                    </Link>
-                  </Button>
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
-                  </Button>
-                </div>
-              </div>
-
-              {/* Publishing List */}
-              <div className="space-y-4">
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="default">Published</Badge>
-                      <div>
-                        <h3 className="font-medium">5-Minute Morning Workout</h3>
-                        <p className="text-sm text-muted-foreground">TikTok: 12.3K views • Instagram: 8.1K views • YouTube: 5.2K views</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">3 Platforms</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/analytics` : `/analytics`}>
-                          <BarChart3 className="w-3 w-3 mr-1" />
-                          Analytics
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="card-factory-glow p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">Scheduled</Badge>
-                      <div>
-                        <h3 className="font-medium">Meal Prep Hacks</h3>
-                        <p className="text-sm text-muted-foreground">TikTok: Tomorrow 7PM • Instagram: Tomorrow 8PM</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">2 Platforms</Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/publish` : `/publishing`}>
-                          <Edit className="w-3 w-3 mr-1" />
-                          Edit Schedule
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <Card>
-              <CardHeader>
-                <CardTitle>Analytics Dashboard</CardTitle>
-                <CardDescription>Performance insights and optimization recommendations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <BarChart3 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Analytics Dashboard Coming Soon</h3>
-                    <p className="text-muted-foreground">Performance analytics will be available here</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="analytics">
+          <div className="text-center py-12">
+            <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+            <p className="text-muted-foreground">
+              Performance metrics and insights coming soon
+            </p>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
-}
+};
+
+export default ProjectDetail;
