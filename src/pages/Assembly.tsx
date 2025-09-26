@@ -29,6 +29,7 @@ import {
   Share2
 } from "lucide-react";
 import { PipelineNav } from "@/components/PipelineNav";
+import { NextButton } from "@/components/NextButton";
 
 const Assembly = () => {
   const navigate = useNavigate();
@@ -420,6 +421,9 @@ const Assembly = () => {
           </TabsContent>
         </Tabs>
       </Card>
+      
+      {/* Floating Next Button */}
+      <NextButton nextStage="publishing" nextLabel="Next: Publishing" icon={Share2} />
     </div>
   );
 };

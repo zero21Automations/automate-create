@@ -20,6 +20,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { PipelineNav } from "@/components/PipelineNav";
+import { NextButton } from "@/components/NextButton";
 
 const AssetManager = () => {
   const navigate = useNavigate();
@@ -427,6 +428,9 @@ const AssetManager = () => {
           </TabsContent>
         </Tabs>
       </Card>
+      
+      {/* Floating Next Button */}
+      <NextButton nextStage="assembly" nextLabel="Next: Assembly" icon={Video} />
     </div>
   );
 };

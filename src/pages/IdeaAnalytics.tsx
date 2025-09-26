@@ -22,6 +22,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { PipelineNav } from "@/components/PipelineNav";
+import { NextButton } from "@/components/NextButton";
 
 const IdeaAnalytics = () => {
   const navigate = useNavigate();
@@ -286,8 +287,20 @@ const IdeaAnalytics = () => {
               </div>
               <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-700">⏰ Peak engagement happens 2-3 hours after posting</p>
-              </div>
-            </div>
+      </div>
+      
+      {/* Floating Next Button - Return to Project */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={() => navigate(`/projects/${projectId}`)}
+          size="lg"
+          className="bg-gradient-factory text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 px-6 py-3 rounded-full"
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          Back to Project
+        </Button>
+      </div>
+    </div>
           </Card>
         </div>
       </div>

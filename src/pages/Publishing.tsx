@@ -23,10 +23,12 @@ import {
   AlertCircle,
   Play,
   Edit,
-  ArrowLeft
+  ArrowLeft,
+  BarChart3
 } from "lucide-react";
 import { format } from "date-fns";
 import { PipelineNav } from "@/components/PipelineNav";
+import { NextButton } from "@/components/NextButton";
 
 const Publishing = () => {
   const navigate = useNavigate();
@@ -455,6 +457,9 @@ Subscribe for more quick fitness tips! 👆"
           ))}
         </div>
       </Card>
+      
+      {/* Floating Next Button */}
+      <NextButton nextStage="analytics" nextLabel="View Analytics" icon={BarChart3} />
     </div>
   );
 };

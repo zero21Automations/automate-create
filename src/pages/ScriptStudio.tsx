@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image } from "lucide-react";
 import { PipelineNav } from "@/components/PipelineNav";
+import { NextButton } from "@/components/NextButton";
 
 const ScriptStudio = () => {
   const navigate = useNavigate();
@@ -217,8 +218,11 @@ const ScriptStudio = () => {
               </TabsContent>
             </Tabs>
           </Card>
-        </div>
       </div>
+      
+      {/* Floating Next Button */}
+      <NextButton nextStage="assets" nextLabel="Next: Assets" icon={Image} />
+    </div>
     </div>
   );
 };
