@@ -57,6 +57,27 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Factory-specific colors
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        info: "hsl(var(--info))",
+        error: "hsl(var(--error))",
+      },
+      backgroundImage: {
+        'gradient-factory': 'var(--gradient-factory)',
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-secondary': 'var(--gradient-secondary)',
+        'gradient-accent': 'var(--gradient-accent)',
+      },
+      boxShadow: {
+        'factory': 'var(--shadow-factory)',
+        'glow': 'var(--shadow-glow)',
+        'card': 'var(--shadow-card)',
+      },
+      animation: {
+        'factory-pulse': 'factory-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'factory-glow': 'factory-glow 3s ease-in-out infinite alternate',
+        'factory-slide-in': 'factory-slide-in 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
       },
       borderRadius: {
         lg: "var(--radius)",
