@@ -576,6 +576,18 @@ const ProjectDetail = () => {
                     }
                   };
 
+                  const getStatusIcon = (status: string) => {
+                    switch (status) {
+                      case 'generated': return Lightbulb;
+                      case 'validated': return CheckCircle;
+                      case 'scripted': return FileText;
+                      case 'assets_ready': return Upload;
+                      case 'assembled': return Video;
+                      case 'published': return Globe;
+                      default: return Lightbulb;
+                    }
+                  };
+
                   const getNextAction = (status: string) => {
                     switch (status) {
                       case 'generated':
@@ -627,6 +639,7 @@ const ProjectDetail = () => {
 
                   const nextAction = getNextAction(idea.status);
                   const NextIcon = nextAction.icon;
+                  const StatusIcon = getStatusIcon(idea.status);
 
                   return (
                     <Card key={idea.id} className="hover:shadow-md transition-all cursor-pointer group">
@@ -635,7 +648,9 @@ const ProjectDetail = () => {
                           <div className="flex items-center gap-4 flex-1">
                             {/* Status Indicator */}
                             <div className="flex flex-col items-center gap-1">
-                              <div className={`w-4 h-4 rounded-full ${getStatusColor(idea.status)}`}></div>
+                              <div className={`w-8 h-8 rounded-full ${getStatusColor(idea.status)} flex items-center justify-center`}>
+                                <StatusIcon className="h-4 w-4 text-white" />
+                              </div>
                               <span className="text-xs text-muted-foreground capitalize">{idea.status}</span>
                             </div>
                             
