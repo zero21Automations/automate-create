@@ -150,10 +150,9 @@ const ProjectDetail = () => {
       </header>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="ideas">Ideas ({totalIdeas})</TabsTrigger>
-          <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
+          <TabsTrigger value="pipeline">Ideas Pipeline ({totalIdeas})</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
@@ -303,12 +302,12 @@ const ProjectDetail = () => {
           )}
         </TabsContent>
 
-        <TabsContent value="ideas">
+        <TabsContent value="pipeline">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold">Ideas Pipeline</h2>
-                <p className="text-muted-foreground">Generate and manage content ideas</p>
+                <p className="text-muted-foreground">Track your content ideas through each stage</p>
               </div>
               <div className="flex gap-2">
                 <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
@@ -324,14 +323,39 @@ const ProjectDetail = () => {
                     </>
                   )}
                 </Button>
-                <Button asChild variant="outline">
-                  <Link to={`/projects/${projectId}/ideas`}>
-                    <Eye className="h-4 w-4 mr-2" />
-                    View All
-                  </Link>
-                </Button>
               </div>
             </div>
+
+            {/* Pipeline Status Legend */}
+            <Card className="p-4">
+              <h3 className="font-semibold mb-3">Pipeline Stages</h3>
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                  <span className="text-sm">Generated</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <span className="text-sm">Validated</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-sm">Scripted</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                  <span className="text-sm">Assets Ready</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <span className="text-sm">Assembled</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                  <span className="text-sm">Published</span>
+                </div>
+              </div>
+            </Card>
 
             {totalIdeas === 0 ? (
               <Card>
@@ -349,53 +373,103 @@ const ProjectDetail = () => {
               </Card>
             ) : (
               <div className="grid gap-4">
-                {ideas.map((idea) => (
-                  <Card key={idea.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Badge variant={idea.status === 'validated' ? 'default' : 'secondary'}>
-                            {idea.status}
-                          </Badge>
-                          <div>
-                            <h3 className="font-semibold">{idea.title}</h3>
-                            <p className="text-sm text-muted-foreground">{idea.description}</p>
-                            <div className="flex gap-1 mt-2">
-                              {idea.hashtags?.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  #{tag}
-                                </Badge>
-                              ))}
+                {ideas.map((idea) => {
+                  const getStatusColor = (status: string) => {
+                    switch (status) {
+                      case 'generated': return 'bg-gray-400';
+                      case 'validated': return 'bg-blue-500';
+                      case 'scripted': return 'bg-green-500';
+                      case 'assets_ready': return 'bg-purple-500';
+                      case 'assembled': return 'bg-yellow-500';
+                      case 'published': return 'bg-orange-500';
+                      default: return 'bg-gray-400';
+                    }
+                  };
+
+                  const getNextAction = (status: string) => {
+                    switch (status) {
+                      case 'generated':
+                        return { text: 'Validate Idea', icon: CheckCircle, disabled: false };
+                      case 'validated':
+                        return { text: 'Create Script', icon: FileText, disabled: false };
+                      case 'scripted':
+                        return { text: 'Generate Assets', icon: Upload, disabled: false };
+                      case 'assets_ready':
+                        return { text: 'Assemble Video', icon: Video, disabled: false };
+                      case 'assembled':
+                        return { text: 'Publish Content', icon: Globe, disabled: false };
+                      case 'published':
+                        return { text: 'View Analytics', icon: BarChart3, disabled: false };
+                      default:
+                        return { text: 'Continue', icon: ArrowRight, disabled: true };
+                    }
+                  };
+
+                  const nextAction = getNextAction(idea.status);
+                  const NextIcon = nextAction.icon;
+
+                  return (
+                    <Card key={idea.id} className="hover:shadow-md transition-all cursor-pointer group">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 flex-1">
+                            {/* Status Indicator */}
+                            <div className="flex flex-col items-center gap-1">
+                              <div className={`w-4 h-4 rounded-full ${getStatusColor(idea.status)}`}></div>
+                              <span className="text-xs text-muted-foreground capitalize">{idea.status}</span>
+                            </div>
+                            
+                            {/* Idea Content */}
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                                  {idea.title}
+                                </h3>
+                                <Badge variant="outline">Score: {idea.score}%</Badge>
+                              </div>
+                              <p className="text-muted-foreground mb-3">{idea.description}</p>
+                              <div className="flex gap-1 flex-wrap">
+                                {idea.hashtags?.map((tag, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    #{tag}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">Score: {idea.score}%</Badge>
-                          {idea.status === 'validated' && (
-                            <Button asChild size="sm">
-                              <Link to={`/projects/${projectId}/ideas/${idea.id}/script`}>
-                                <FileText className="h-4 w-4 mr-1" />
-                                Create Script
-                              </Link>
+                          
+                          {/* Action Button */}
+                          <div className="flex items-center gap-3">
+                            <div className="text-right text-sm text-muted-foreground">
+                              <div>Created {new Date(idea.created_at).toLocaleDateString()}</div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              disabled={nextAction.disabled}
+                              onClick={() => {
+                                const routes = {
+                                  'generated': `/projects/${projectId}/ideas/${idea.id}`,
+                                  'validated': `/projects/${projectId}/ideas/${idea.id}/script`,
+                                  'scripted': `/projects/${projectId}/ideas/${idea.id}/assets`, 
+                                  'assets_ready': `/projects/${projectId}/ideas/${idea.id}/assembly`,
+                                  'assembled': `/projects/${projectId}/ideas/${idea.id}/publish`,
+                                  'published': `/projects/${projectId}/ideas/${idea.id}/analytics`
+                                };
+                                navigate(routes[idea.status as keyof typeof routes] || `/projects/${projectId}/ideas/${idea.id}`);
+                              }}
+                              className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                            >
+                              <NextIcon className="h-4 w-4 mr-2" />
+                              {nextAction.text}
                             </Button>
-                          )}
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="pipeline">
-          <div className="text-center py-12">
-            <Video className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Pipeline View</h3>
-            <p className="text-muted-foreground">
-              Track content through script → assets → assembly → publish stages
-            </p>
           </div>
         </TabsContent>
 
