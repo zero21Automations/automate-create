@@ -355,7 +355,7 @@ export default function ProjectDetail() {
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" asChild>
-                    <Link to="/research">
+                    <Link to={projectId ? `/projects/${projectId}/ideas` : `/ideas`}>
                       <Plus className="w-4 h-4 mr-2" />
                       Generate Ideas
                     </Link>
@@ -381,7 +381,7 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Score: 92%</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/script-studio">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/script` : `/script-studio`}>
                           <Play className="w-3 w-3 mr-1" />
                           Create Script
                         </Link>
@@ -402,7 +402,7 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Score: 87%</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/script-studio">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/script` : `/script-studio`}>
                           <Play className="w-3 w-3 mr-1" />
                           Create Script
                         </Link>
@@ -463,13 +463,13 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">2:30 duration</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/script-studio">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/script` : `/script-studio`}>
                           <Edit className="w-3 w-3 mr-1" />
                           Edit
                         </Link>
                       </Button>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/asset-manager">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assets` : `/asset-manager`}>
                           <ArrowRight className="w-3 w-3 mr-1" />
                           Generate Assets
                         </Link>
@@ -490,7 +490,7 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Draft</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/script-studio">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/script` : `/script-studio`}>
                           <Edit className="w-3 w-3 mr-1" />
                           Continue
                         </Link>
@@ -536,13 +536,13 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">4/4 Assets</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/asset-manager">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assets` : `/asset-manager`}>
                           <Edit className="w-3 w-3 mr-1" />
                           Manage
                         </Link>
                       </Button>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/assembly">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assembly` : `/assembly`}>
                           <ArrowRight className="w-3 w-3 mr-1" />
                           Assemble
                         </Link>
@@ -563,7 +563,7 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">1/4 Assets</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/asset-manager">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/assets` : `/asset-manager`}>
                           <RefreshCw className="w-3 w-3 mr-1" />
                           Monitor
                         </Link>
@@ -609,13 +609,13 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">4 Videos</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/assembly">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/assembly` : `/assembly`}>
                           <Edit className="w-3 w-3 mr-1" />
                           Edit
                         </Link>
                       </Button>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/publishing">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/morning-workout/publish` : `/publishing`}>
                           <ArrowRight className="w-3 w-3 mr-1" />
                           Publish
                         </Link>
@@ -636,7 +636,7 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">65% Done</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/assembly">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/assembly` : `/assembly`}>
                           <Eye className="w-3 w-3 mr-1" />
                           Monitor
                         </Link>
@@ -658,7 +658,7 @@ export default function ProjectDetail() {
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" asChild>
-                    <Link to="/publishing">
+                    <Link to={projectId ? `/projects/${projectId}/publishing` : `/publishing`}>
                       <Calendar className="w-4 h-4 mr-2" />
                       Content Calendar
                     </Link>
@@ -684,7 +684,7 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">3 Platforms</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/analytics">
+                        <Link to={projectId ? `/projects/${projectId}/analytics` : `/analytics`}>
                           <BarChart3 className="w-3 w-3 mr-1" />
                           Analytics
                         </Link>
@@ -705,7 +705,7 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">2 Platforms</Badge>
                       <Button variant="outline" size="sm" asChild>
-                        <Link to="/publishing">
+                        <Link to={projectId ? `/projects/${projectId}/ideas/meal-prep/publish` : `/publishing`}>
                           <Edit className="w-3 w-3 mr-1" />
                           Edit Schedule
                         </Link>

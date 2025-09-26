@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -69,6 +69,9 @@ const AssetManager = () => {
           <Badge variant="secondary" className="badge-factory">
             3/5 Assets Ready
           </Badge>
+          {useParams().ideaId && (
+            <Badge variant="secondary" className="badge-factory">Idea: {useParams().ideaId}</Badge>
+          )}
           <Button variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
             Regenerate All

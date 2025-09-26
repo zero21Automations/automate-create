@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft } fr
 
 const ScriptStudio = () => {
   const navigate = useNavigate();
+  const { projectId, ideaId } = useParams();
   const [script, setScript] = useState({
     hook: "",
     beats: [{ id: 1, text: "", stageDirections: "" }],
@@ -45,6 +46,9 @@ const ScriptStudio = () => {
             <Clock className="h-3 w-3 mr-1" />
             2:30 read time
           </Badge>
+          {ideaId && (
+            <Badge variant="secondary" className="badge-factory">Idea: {ideaId}</Badge>
+          )}
           <Button variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Regenerate

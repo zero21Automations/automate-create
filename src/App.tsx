@@ -30,6 +30,15 @@ const App = () => (
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:projectId" element={<ProjectDetail />} />
+            {/* Project-scoped routes */}
+            <Route path="projects/:projectId/ideas" element={<Research />} />
+            <Route path="projects/:projectId/ideas/:ideaId/script" element={<ScriptStudio />} />
+            <Route path="projects/:projectId/ideas/:ideaId/assets" element={<AssetManager />} />
+            <Route path="projects/:projectId/ideas/:ideaId/assembly" element={<Assembly />} />
+            <Route path="projects/:projectId/ideas/:ideaId/publish" element={<Publishing />} />
+            <Route path="projects/:projectId/publishing" element={<Publishing />} />
+            <Route path="projects/:projectId/analytics" element={<GlobalAnalytics />} />
+            {/* Global routes */}
             <Route path="research" element={<GlobalResearch />} />
             <Route path="analytics" element={<GlobalAnalytics />} />
             <Route path="ideas" element={<Research />} />
