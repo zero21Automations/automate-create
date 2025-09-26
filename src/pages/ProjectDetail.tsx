@@ -5,8 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProjects, type Project } from "@/hooks/useProjects";
-import { useIdeas } from "@/hooks/useIdeas";
+import { useIdeas, type Idea } from "@/hooks/useIdeas";
+import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft,
   Plus,
@@ -47,11 +53,21 @@ const ProjectDetail = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { projects, createProject } = useProjects();
+  const { toast } = useToast();
   const [project, setProject] = useState<Project | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("created_at");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isAddingIdea, setIsAddingIdea] = useState(false);
+  const [newIdea, setNewIdea] = useState({
+    title: "",
+    description: "",
+    hashtags: ""
+  });
   const creatingRef = useRef(false);
   const isUuid = (val?: string) => !!val && /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i.test(val);
   // Use the actual project UUID once available; avoid passing slugs like "fitlife"
-  const { ideas, loading: ideasLoading, generateIdeas } = useIdeas(project?.id || '');
+  const { ideas, loading: ideasLoading, generateIdeas, updateIdea, createIdea } = useIdeas(project?.id || '');
 
   useEffect(() => {
     if (!projectId) return;
@@ -108,7 +124,80 @@ const ProjectDetail = () => {
   }
 
   const getIdeasByStatus = (status: string) => {
-    return ideas.filter(idea => idea.status === status);
+    return filteredIdeas.filter(idea => idea.status === status);
+  };
+
+  // Filter and sort ideas
+  const filteredIdeas = ideas.filter(idea => {
+    const matchesSearch = 
+      idea.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      idea.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      idea.hashtags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesStatus = filterStatus === "all" || idea.status === filterStatus;
+    
+    return matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case "score":
+        return b.score - a.score;
+      case "title":
+        return a.title.localeCompare(b.title);
+      case "created_at":
+      default:
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+  });
+
+  const handleValidateIdea = async (ideaId: string, newStatus: string) => {
+    try {
+      await updateIdea(ideaId, { status: newStatus as any });
+      toast({
+        title: "Idea updated",
+        description: `Idea status changed to ${newStatus}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating idea",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddIdea = async () => {
+    if (!newIdea.title.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please enter an idea title",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await createIdea({
+        title: newIdea.title,
+        description: newIdea.description,
+        hashtags: newIdea.hashtags.split(",").map(tag => tag.trim()).filter(Boolean),
+        score: Math.floor(Math.random() * 40) + 60, // Random score between 60-100
+        status: "generated",
+      });
+      
+      setNewIdea({ title: "", description: "", hashtags: "" });
+      setIsAddingIdea(false);
+      
+      toast({
+        title: "Idea added",
+        description: "Your idea has been added to the pipeline",
+      });
+    } catch (error) {
+      toast({
+        title: "Error adding idea",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+    }
   };
 
   const ideaStats = {
@@ -120,7 +209,7 @@ const ProjectDetail = () => {
     published: getIdeasByStatus('published').length,
   };
 
-  const totalIdeas = ideas.length;
+  const totalIdeas = filteredIdeas.length;
   const progressPercentage = totalIdeas > 0 ? (ideaStats.published / totalIdeas) * 100 : 0;
 
   return (
@@ -310,6 +399,56 @@ const ProjectDetail = () => {
                 <p className="text-muted-foreground">Track your content ideas through each stage</p>
               </div>
               <div className="flex gap-2">
+                <Dialog open={isAddingIdea} onOpenChange={setIsAddingIdea}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Idea
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Add New Idea</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="title">Title</Label>
+                        <Input
+                          id="title"
+                          value={newIdea.title}
+                          onChange={(e) => setNewIdea(prev => ({ ...prev, title: e.target.value }))}
+                          placeholder="Enter idea title..."
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                          id="description"
+                          value={newIdea.description}
+                          onChange={(e) => setNewIdea(prev => ({ ...prev, description: e.target.value }))}
+                          placeholder="Describe your idea..."
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="hashtags">Hashtags (comma-separated)</Label>
+                        <Input
+                          id="hashtags"
+                          value={newIdea.hashtags}
+                          onChange={(e) => setNewIdea(prev => ({ ...prev, hashtags: e.target.value }))}
+                          placeholder="fitness, motivation, wellness"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => setIsAddingIdea(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleAddIdea}>
+                        Add Idea
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
                   {ideasLoading ? (
                     <>
@@ -318,42 +457,49 @@ const ProjectDetail = () => {
                     </>
                   ) : (
                     <>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Generate Ideas
+                      <Zap className="h-4 w-4 mr-2" />
+                      AI Generate
                     </>
                   )}
                 </Button>
               </div>
             </div>
 
-            {/* Pipeline Status Legend */}
+            {/* Smart Filtering */}
             <Card className="p-4">
-              <h3 className="font-semibold mb-3">Pipeline Stages</h3>
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-                  <span className="text-sm">Generated</span>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex-1 min-w-[200px]">
+                  <Input
+                    placeholder="Search ideas..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-background"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className="text-sm">Validated</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="text-sm">Scripted</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                  <span className="text-sm">Assets Ready</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <span className="text-sm">Assembled</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                  <span className="text-sm">Published</span>
-                </div>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="w-[150px] bg-background">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="generated">Generated</SelectItem>
+                    <SelectItem value="validated">Validated</SelectItem>
+                    <SelectItem value="scripted">Scripted</SelectItem>
+                    <SelectItem value="assets_ready">Assets Ready</SelectItem>
+                    <SelectItem value="assembled">Assembled</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[150px] bg-background">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    <SelectItem value="created_at">Date Created</SelectItem>
+                    <SelectItem value="score">Score</SelectItem>
+                    <SelectItem value="title">Title</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </Card>
 
@@ -373,7 +519,7 @@ const ProjectDetail = () => {
               </Card>
             ) : (
               <div className="grid gap-4">
-                {ideas.map((idea) => {
+                {filteredIdeas.map((idea) => {
                   const getStatusColor = (status: string) => {
                     switch (status) {
                       case 'generated': return 'bg-gray-400';
@@ -389,19 +535,49 @@ const ProjectDetail = () => {
                   const getNextAction = (status: string) => {
                     switch (status) {
                       case 'generated':
-                        return { text: 'Validate Idea', icon: CheckCircle, disabled: false };
+                        return { 
+                          text: 'Validate Idea', 
+                          icon: CheckCircle, 
+                          disabled: false,
+                          action: () => handleValidateIdea(idea.id, 'validated')
+                        };
                       case 'validated':
-                        return { text: 'Create Script', icon: FileText, disabled: false };
+                        return { 
+                          text: 'Create Script', 
+                          icon: FileText, 
+                          disabled: false,
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/script`)
+                        };
                       case 'scripted':
-                        return { text: 'Generate Assets', icon: Upload, disabled: false };
+                        return { 
+                          text: 'Generate Assets', 
+                          icon: Upload, 
+                          disabled: false,
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/assets`)
+                        };
                       case 'assets_ready':
-                        return { text: 'Assemble Video', icon: Video, disabled: false };
+                        return { 
+                          text: 'Assemble Video', 
+                          icon: Video, 
+                          disabled: false,
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/assembly`)
+                        };
                       case 'assembled':
-                        return { text: 'Publish Content', icon: Globe, disabled: false };
+                        return { 
+                          text: 'Publish Content', 
+                          icon: Globe, 
+                          disabled: false,
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/publish`)
+                        };
                       case 'published':
-                        return { text: 'View Analytics', icon: BarChart3, disabled: false };
+                        return { 
+                          text: 'View Analytics', 
+                          icon: BarChart3, 
+                          disabled: false,
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/analytics`)
+                        };
                       default:
-                        return { text: 'Continue', icon: ArrowRight, disabled: true };
+                        return { text: 'Continue', icon: ArrowRight, disabled: true, action: () => {} };
                     }
                   };
 
@@ -446,17 +622,7 @@ const ProjectDetail = () => {
                             <Button 
                               size="sm" 
                               disabled={nextAction.disabled}
-                              onClick={() => {
-                                const routes = {
-                                  'generated': `/projects/${projectId}/ideas/${idea.id}`,
-                                  'validated': `/projects/${projectId}/ideas/${idea.id}/script`,
-                                  'scripted': `/projects/${projectId}/ideas/${idea.id}/assets`, 
-                                  'assets_ready': `/projects/${projectId}/ideas/${idea.id}/assembly`,
-                                  'assembled': `/projects/${projectId}/ideas/${idea.id}/publish`,
-                                  'published': `/projects/${projectId}/ideas/${idea.id}/analytics`
-                                };
-                                navigate(routes[idea.status as keyof typeof routes] || `/projects/${projectId}/ideas/${idea.id}`);
-                              }}
+                              onClick={nextAction.action}
                               className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                             >
                               <NextIcon className="h-4 w-4 mr-2" />
