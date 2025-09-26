@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image } from "lucide-react";
 
 const ScriptStudio = () => {
   const navigate = useNavigate();
@@ -58,11 +58,11 @@ const ScriptStudio = () => {
             Save Script
           </Button>
           <Button 
-            onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/assembly`)}
+            onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
             className="bg-gradient-factory text-white"
           >
-            <Video className="h-4 w-4 mr-2" />
-            Next: Assembly
+            <Image className="h-4 w-4 mr-2" />
+            Next: Assets
           </Button>
         </div>
       </div>

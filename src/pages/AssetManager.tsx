@@ -76,8 +76,12 @@ const AssetManager = () => {
             <RefreshCw className="h-4 w-4 mr-2" />
             Regenerate All
           </Button>
-          <Button variant="factory">
-            Continue to Production
+          <Button 
+            onClick={() => navigate(`/projects/${useParams().projectId}/ideas/${useParams().ideaId}/assembly`)}
+            variant="factory"
+          >
+            <Video className="h-4 w-4 mr-2" />
+            Next: Assembly
           </Button>
         </div>
       </div>
