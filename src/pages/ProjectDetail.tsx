@@ -47,8 +47,9 @@ const ProjectDetail = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { projects, createProject } = useProjects();
-  const { ideas, loading: ideasLoading, generateIdeas } = useIdeas(projectId || '');
   const [project, setProject] = useState<Project | null>(null);
+  // Use the actual project UUID once available; avoid passing slugs like "fitlife"
+  const { ideas, loading: ideasLoading, generateIdeas } = useIdeas(project?.id || '');
 
   useEffect(() => {
     if (projects.length > 0 && projectId) {
@@ -212,7 +213,7 @@ const ProjectDetail = () => {
                   <Button 
                     className="h-auto p-4 justify-start" 
                     onClick={generateIdeas}
-                    disabled={ideasLoading}
+                    disabled={!project?.id || ideasLoading}
                   >
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 rounded-lg p-2">
@@ -289,7 +290,7 @@ const ProjectDetail = () => {
                 <p className="text-muted-foreground">Generate and manage content ideas</p>
               </div>
               <div className="flex gap-2">
-                <Button onClick={generateIdeas} disabled={ideasLoading}>
+                <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
                   {ideasLoading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -319,7 +320,7 @@ const ProjectDetail = () => {
                   <p className="text-muted-foreground text-center mb-4">
                     Start by generating some content ideas using AI research
                   </p>
-                  <Button onClick={generateIdeas} disabled={ideasLoading}>
+                  <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
                     <Plus className="h-4 w-4 mr-2" />
                     Generate First Ideas
                   </Button>
