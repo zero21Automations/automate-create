@@ -26,7 +26,8 @@ import {
   Lock,
   Unlock,
   ArrowLeft,
-  Share2
+  Share2,
+  Video
 } from "lucide-react";
 import { PipelineNav } from "@/components/PipelineNav";
 import { NextButton } from "@/components/NextButton";
@@ -153,42 +154,58 @@ const Assembly = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
-      {/* Pipeline Navigation */}
-      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="assembly" />
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-factory-gradient">Assembly Studio</h1>
-            <p className="text-muted-foreground">Stage 4: Post-production timeline editor and video rendering</p>
+      {/* Unified Header with Integrated Pipeline */}
+      <div className="space-y-6">
+        {/* Project & Idea Context */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div className="text-left">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                <span className="flex items-center gap-1">
+                  💪 <span>Fitlife Project</span>
+                </span>
+                <span>•</span>
+                <span className="text-primary font-medium">5-Minute Morning Workout</span>
+              </div>
+              
+              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
+                <Video className="h-6 w-6" />
+                Assembly Studio
+                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
+                  Stage 4/6
+                </Badge>
+              </h1>
+              
+              <p className="text-muted-foreground">Post-production timeline editor and video rendering</p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="badge-factory">
-            2:30 Duration
-          </Badge>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export Project
-          </Button>
-          <Button variant="factory">
-            <Upload className="h-4 w-4 mr-2" />
-            Render All
-          </Button>
-          <Button 
-            onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/publishing`)}
-            className="bg-gradient-factory text-white"
-          >
-            <Share2 className="h-4 w-4 mr-2" />
-            Next: Publishing
-          </Button>
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="badge-factory">
+              2:30 Duration
+            </Badge>
+            <Button variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export Project
+            </Button>
+            <Button variant="factory">
+              <Upload className="h-4 w-4 mr-2" />
+              Render All
+            </Button>
+            <Button 
+              onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/publishing`)}
+              className="bg-gradient-factory text-white"
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Next: Publishing
+            </Button>
+          </div>
         </div>
       </div>
 

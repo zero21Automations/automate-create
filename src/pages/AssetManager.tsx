@@ -52,41 +52,54 @@ const AssetManager = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
-      {/* Pipeline Navigation */}
-      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="assets" />
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-factory-gradient">Asset Manager</h1>
-            <p className="text-muted-foreground">Stage 3: Generate and manage production assets</p>
+      {/* Unified Header with Integrated Pipeline */}
+      <div className="space-y-6">
+        {/* Project & Idea Context */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div className="text-left">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                <span className="flex items-center gap-1">
+                  💪 <span>Fitlife Project</span>
+                </span>
+                <span>•</span>
+                <span className="text-primary font-medium">5-Minute Morning Workout</span>
+              </div>
+              
+              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
+                <Upload className="h-6 w-6" />
+                Asset Manager
+                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
+                  Stage 3/6
+                </Badge>
+              </h1>
+              
+              <p className="text-muted-foreground">Generate and manage production assets</p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="badge-factory">
-            3/5 Assets Ready
-          </Badge>
-          {useParams().ideaId && (
-            <Badge variant="secondary" className="badge-factory">Idea: {useParams().ideaId}</Badge>
-          )}
-          <Button variant="outline">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Regenerate All
-          </Button>
-          <Button 
-            onClick={() => navigate(`/projects/${useParams().projectId}/ideas/${useParams().ideaId}/assembly`)}
-            variant="factory"
-          >
-            <Video className="h-4 w-4 mr-2" />
-            Next: Assembly
-          </Button>
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="badge-factory">
+              3/5 Assets Ready
+            </Badge>
+            <Button variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Regenerate All
+            </Button>
+            <Button 
+              onClick={() => navigate(`/projects/${useParams().projectId}/ideas/${useParams().ideaId}/assembly`)}
+              variant="factory"
+            >
+              <Video className="h-4 w-4 mr-2" />
+              Next: Assembly
+            </Button>
+          </div>
         </div>
       </div>
 

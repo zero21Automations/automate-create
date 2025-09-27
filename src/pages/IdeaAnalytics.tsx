@@ -71,39 +71,52 @@ const IdeaAnalytics = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
-      {/* Pipeline Navigation */}
-      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="analytics" />
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate(`/projects/${projectId}`)}
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-factory-gradient">Idea Analytics</h1>
-            <p className="text-muted-foreground">Performance tracking for: 5-Minute Morning Workout</p>
+      {/* Unified Header with Integrated Pipeline */}
+      <div className="space-y-6">
+        {/* Project & Idea Context */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(`/projects/${projectId}`)}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div className="text-left">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                <span className="flex items-center gap-1">
+                  💪 <span>Fitlife Project</span>
+                </span>
+                <span>•</span>
+                <span className="text-primary font-medium">5-Minute Morning Workout</span>
+              </div>
+              
+              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
+                <BarChart3 className="h-6 w-6" />
+                Idea Analytics
+                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
+                  Stage 6/6
+                </Badge>
+              </h1>
+              
+              <p className="text-muted-foreground">Performance tracking and insights</p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="badge-factory">
-            <Clock className="h-3 w-3 mr-1" />
-            Published 7 days ago
-          </Badge>
-          {ideaId && (
-            <Badge variant="secondary" className="badge-factory">Idea: {ideaId}</Badge>
-          )}
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export Data
-          </Button>
-          <Button variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="badge-factory">
+              <Clock className="h-3 w-3 mr-1" />
+              Published 7 days ago
+            </Badge>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export Data
+            </Button>
+            <Button variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
       </div>
 
