@@ -529,7 +529,7 @@ const ProjectDetail = () => {
                           text: 'Assemble Video', 
                           icon: Video, 
                           disabled: false,
-                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/assembly`)
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/production`)
                         };
                       case 'assembled':
                         return { 

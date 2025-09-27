@@ -93,11 +93,11 @@ const AssetManager = () => {
               Regenerate All
             </Button>
             <Button 
-              onClick={() => navigate(`/projects/${useParams().projectId}/ideas/${useParams().ideaId}/assembly`)}
+              onClick={() => navigate(`/projects/${useParams().projectId}/ideas/${useParams().ideaId}/production`)}
               variant="factory"
             >
               <Video className="h-4 w-4 mr-2" />
-              Next: Assembly
+              Next: Production
             </Button>
           </div>
         </div>
@@ -443,7 +443,7 @@ const AssetManager = () => {
       </Card>
       
       {/* Floating Next Button */}
-      <NextButton nextStage="assembly" nextLabel="Next: Assembly" icon={Video} />
+      <NextButton nextStage="production" nextLabel="Next: Production" icon={Video} />
     </div>
   );
 };

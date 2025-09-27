@@ -32,7 +32,7 @@ import {
 import { PipelineNav } from "@/components/PipelineNav";
 import { NextButton } from "@/components/NextButton";
 
-const Assembly = () => {
+const Production = () => {
   const navigate = useNavigate();
   const { projectId, ideaId } = useParams();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -177,7 +177,7 @@ const Assembly = () => {
               
               <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
                 <Video className="h-6 w-6" />
-                Assembly Studio
+                Production Studio
                 <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
                   Stage 4/6
                 </Badge>
@@ -445,4 +445,4 @@ const Assembly = () => {
   );
 };
 
-export default Assembly;
+export default Production;

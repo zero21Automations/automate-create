@@ -12,7 +12,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import ProjectSetup from "./pages/ProjectSetup";
 import ScriptStudio from "./pages/ScriptStudio";
 import AssetManager from "./pages/AssetManager";
-import Assembly from "./pages/Assembly";
+import Production from "./pages/Production";
 import Publishing from "./pages/Publishing";
 import GlobalAnalytics from "./pages/GlobalAnalytics";
 import IdeaAnalytics from "./pages/IdeaAnalytics";
@@ -35,7 +35,7 @@ const App = () => (
             <Route path="projects/:projectId" element={<ProjectDetail />} />
             <Route path="projects/:projectId/ideas/:ideaId/script" element={<ScriptStudio />} />
             <Route path="projects/:projectId/ideas/:ideaId/assets" element={<AssetManager />} />
-            <Route path="projects/:projectId/ideas/:ideaId/assembly" element={<Assembly />} />
+            <Route path="projects/:projectId/ideas/:ideaId/production" element={<Production />} />
             <Route path="projects/:projectId/ideas/:ideaId/publishing" element={<Publishing />} />
             <Route path="projects/:projectId/ideas/:ideaId/analytics" element={<IdeaAnalytics />} />
             <Route path="setup" element={<ProjectSetup />} />
