@@ -430,10 +430,6 @@ const ScriptStudio = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="badge-factory">
-              <Clock className="h-3 w-3 mr-1" />
-              2:30 read time
-            </Badge>
             <Button variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-2" />
               Regenerate
