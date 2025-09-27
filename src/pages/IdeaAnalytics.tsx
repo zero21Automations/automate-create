@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, NavLink } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -140,19 +140,21 @@ const IdeaAnalytics = () => {
             return (
               <div key={stage.id} className="flex items-center gap-2 min-w-0">
                 <Button
+                  asChild
                   variant={isActive ? "default" : isCompleted ? "secondary" : "ghost"}
                   size="sm"
-                  onClick={() => navigate(stage.path)}
-                  className={`
-                    ${isActive ? "bg-primary text-primary-foreground shadow-lg" : ""}
-                    ${isCompleted ? "bg-secondary text-secondary-foreground" : ""}
-                    ${isLocked ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
-                  `}
+                  className={`min-w-[100px] justify-start ${
+                    isActive ? "bg-primary text-primary-foreground shadow-lg" : ""
+                  } ${isCompleted ? "bg-secondary text-secondary-foreground" : ""} ${
+                    isLocked ? "opacity-50" : "hover:bg-muted"
+                  }`}
                 >
-                  <Icon className="h-4 w-4 mr-2" />
-                  {stage.label}
-                  {isCompleted && <Check className="h-3 w-3 ml-auto" />}
-                  {isLocked && <Lock className="h-3 w-3 ml-auto" />}
+                  <NavLink to={stage.path}>
+                    <Icon className="h-4 w-4 mr-2" />
+                    {stage.label}
+                    {isCompleted && <Check className="h-3 w-3 ml-auto" />}
+                    {isLocked && <Lock className="h-3 w-3 ml-auto" />}
+                  </NavLink>
                 </Button>
                 {index < 5 && (
                   <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} />
