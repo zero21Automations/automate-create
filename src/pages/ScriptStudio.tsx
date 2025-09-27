@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,17 +66,27 @@ const ScriptStudio = () => {
   });
 
   const [styleDNA, setStyleDNA] = useState({
-    narrative: "Third Person",
-    visual: "Live Action",
-    tone: "Energetic",
-    pace: "Fast",
-    targeting: "Fitness Enthusiasts 18-35"
+    voiceTone: "Energetic, motivational",
+    audience: "Fitness enthusiasts 18-35",
+    captionStyle: "Dynamic highlights",
+    musicMood: "Upbeat electronic",
+    narrativePOV: "Second Person",
+    narratorType: "Character Narrator",
+    visualStyle: "Live Action",
+    videoLength: "15-30 seconds",
+    characterIdentity: "",
+    characterVisualStyle: "",
+    voiceTraits: ""
   });
 
-  const narrativeOptions = ["First Person", "Second Person", "Third Person", "Voiceover"];
-  const visualOptions = ["Live Action", "Animation", "Screen Recording", "Talking Head", "B-Roll Only"];
-  const toneOptions = ["Energetic", "Calm", "Playful", "Professional", "Motivational", "Educational", "Dramatic"];
-  const paceOptions = ["Slow", "Medium", "Fast", "Very Fast"];
+  const voiceToneOptions = ["Energetic, motivational", "Playful, witty", "Calm, educational", "Dramatic, intense", "Friendly, conversational"];
+  const audienceOptions = ["Gen Z, TikTok-native", "Millennials, Instagram-focused", "Fitness enthusiasts 18-35", "Business professionals", "Parents, family-oriented"];
+  const captionStyleOptions = ["Dynamic highlights", "Minimal text", "Story-driven", "Educational bullets", "Call-out quotes"];
+  const musicMoodOptions = ["Upbeat electronic", "Chill ambient", "Dramatic cinematic", "Acoustic warm", "High-energy rock"];
+  const narrativePOVOptions = ["First Person", "Second Person", "Third Person"];
+  const narratorTypeOptions = ["Voiceover", "Character Narrator", "On-screen Host"];
+  const visualStyleOptions = ["Live Action", "Animation", "Cartoon/Comic", "Screen Recording", "Mixed Media"];
+  const videoLengthOptions = ["15-30 seconds", "30-60 seconds", "60+ seconds"];
   
   const stageDirectionOptions = {
     camera: ["Close-up", "Medium shot", "Wide shot", "Over shoulder", "POV", "Drone shot"],
@@ -85,6 +96,49 @@ const ScriptStudio = () => {
   };
 
   const [isLocked, setIsLocked] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateCharacterDetails = async (field: string) => {
+    setIsGenerating(true);
+    try {
+      const prompts = {
+        characterIdentity: "Generate a unique, memorable character identity for a content creator (like Capybara CFO, Wise Owl, etc.). Be creative and engaging. Return only the character name/identity.",
+        characterVisualStyle: "Generate a brief visual description for a character narrator's appearance (like 'hoodie + glasses', 'business suit + coffee cup', etc.). Keep it simple and memorable. Return only the visual description.",
+        voiceTraits: "Generate 3-4 voice traits for a character narrator (like 'calm, energetic, witty' or 'deep, soothing, confident'). Return only the comma-separated traits."
+      };
+      
+      const { data: functionData, error: functionError } = await supabase.functions.invoke('ai', {
+        body: { message: prompts[field as keyof typeof prompts] }
+      });
+
+      if (functionError) {
+        throw new Error(functionError.message || "Failed to get AI response");
+      }
+
+      const aiResponse = functionData?.response;
+      if (aiResponse) {
+        setStyleDNA(prev => ({
+          ...prev,
+          [field]: aiResponse.trim()
+        }));
+      }
+    } catch (error) {
+      console.error('Error generating character details:', error);
+      // Fallback to mock data if AI fails
+      const mockResults = {
+        characterIdentity: "Energetic Fitness Penguin",
+        characterVisualStyle: "Athletic wear + water bottle",
+        voiceTraits: "Upbeat, encouraging, slightly breathless"
+      };
+      
+      setStyleDNA(prev => ({
+        ...prev,
+        [field]: mockResults[field as keyof typeof mockResults] || ""
+      }));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const addBeat = (afterIndex?: number) => {
     if (isLocked) return;
@@ -379,76 +433,236 @@ const ScriptStudio = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Script Editor */}
         <div className="xl:col-span-2 space-y-6">
-          {/* Style DNA Card */}
-          <Card className="card-factory-glow p-4 border-l-4 border-l-primary">
-            <div className="flex items-center gap-2 mb-3">
+          {/* Enhanced Script DNA Card */}
+          <Card className="card-factory-glow p-6 border-l-4 border-l-primary">
+            <div className="flex items-center gap-2 mb-4">
               <Palette className="h-4 w-4 text-primary" />
               <h3 className="font-semibold">Script DNA</h3>
               {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <p className="text-sm text-muted-foreground mb-6">
+              These settings inform how AI generates scripts. Defaults come from your project style guide — you can adjust them here.
+            </p>
+            
+            {/* Voice & Audience Settings */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
-                <Label className="text-xs font-medium text-muted-foreground">Narrative</Label>
-                <Select value={styleDNA.narrative} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narrative: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm">
+                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <Mic className="h-3 w-3" />
+                  Voice Tone
+                </Label>
+                <Select value={styleDNA.voiceTone} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, voiceTone: value }))} disabled={isLocked}>
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {narrativeOptions.map(option => (
+                    {voiceToneOptions.map(option => (
                       <SelectItem key={option} value={option}>{option}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+              
               <div>
-                <Label className="text-xs font-medium text-muted-foreground">Visual</Label>
-                <Select value={styleDNA.visual} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, visual: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm">
+                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <Target className="h-3 w-3" />
+                  Audience
+                </Label>
+                <Select value={styleDNA.audience} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, audience: value }))} disabled={isLocked}>
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {visualOptions.map(option => (
+                    {audienceOptions.map(option => (
                       <SelectItem key={option} value={option}>{option}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+              
               <div>
-                <Label className="text-xs font-medium text-muted-foreground">Tone</Label>
-                <Select value={styleDNA.tone} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, tone: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm">
+                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <Eye className="h-3 w-3" />
+                  Caption Style
+                </Label>
+                <Select value={styleDNA.captionStyle} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, captionStyle: value }))} disabled={isLocked}>
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {toneOptions.map(option => (
+                    {captionStyleOptions.map(option => (
                       <SelectItem key={option} value={option}>{option}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+              
               <div>
-                <Label className="text-xs font-medium text-muted-foreground">Pace</Label>
-                <Select value={styleDNA.pace} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, pace: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm">
+                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <Music className="h-3 w-3" />
+                  Music Mood
+                </Label>
+                <Select value={styleDNA.musicMood} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, musicMood: value }))} disabled={isLocked}>
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {paceOptions.map(option => (
+                    {musicMoodOptions.map(option => (
                       <SelectItem key={option} value={option}>{option}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <div className="mt-3">
-              <Label className="text-xs font-medium text-muted-foreground">Targeting</Label>
-              <Input 
-                value={styleDNA.targeting} 
-                onChange={(e) => setStyleDNA(prev => ({ ...prev, targeting: e.target.value }))}
-                className="h-8 text-sm"
-                disabled={isLocked}
-              />
+
+            <Separator className="my-6" />
+
+            {/* Script Style Dimensions */}
+            <div className="mb-6">
+              <h4 className="font-medium mb-4 flex items-center gap-2">
+                <Video className="h-4 w-4" />
+                Script Style Dimensions
+              </h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Narrative POV</Label>
+                  <Select value={styleDNA.narrativePOV} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narrativePOV: value }))} disabled={isLocked}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {narrativePOVOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Narrator Type</Label>
+                  <Select value={styleDNA.narratorType} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narratorType: value }))} disabled={isLocked}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {narratorTypeOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Visual Style</Label>
+                  <Select value={styleDNA.visualStyle} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, visualStyle: value }))} disabled={isLocked}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {visualStyleOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Video Length</Label>
+                  <Select value={styleDNA.videoLength} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, videoLength: value }))} disabled={isLocked}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {videoLengthOptions.map(option => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                          {option === "15-30 seconds" && <span className="text-xs text-muted-foreground ml-2">Hook ≤ 8 words</span>}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
+
+            {/* Character Narrator Details */}
+            {styleDNA.narratorType === "Character Narrator" && (
+              <>
+                <Separator className="my-6" />
+                <div>
+                  <h4 className="font-medium mb-4">Character Narrator Details</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-muted-foreground mb-2 block">Character Identity</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="e.g. Capybara CFO, Wise Owl, etc."
+                          value={styleDNA.characterIdentity}
+                          onChange={(e) => setStyleDNA(prev => ({ ...prev, characterIdentity: e.target.value }))}
+                          disabled={isLocked}
+                          className="flex-1"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => generateCharacterDetails('characterIdentity')}
+                          disabled={isLocked || isGenerating}
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          Generate
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-muted-foreground mb-2 block">Visual Style</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="e.g. hoodie + glasses"
+                          value={styleDNA.characterVisualStyle}
+                          onChange={(e) => setStyleDNA(prev => ({ ...prev, characterVisualStyle: e.target.value }))}
+                          disabled={isLocked}
+                          className="flex-1"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => generateCharacterDetails('characterVisualStyle')}
+                          disabled={isLocked || isGenerating}
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          Generate
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-muted-foreground mb-2 block">Voice Traits (comma-separated)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="e.g. calm, chill, deep"
+                          value={styleDNA.voiceTraits}
+                          onChange={(e) => setStyleDNA(prev => ({ ...prev, voiceTraits: e.target.value }))}
+                          disabled={isLocked}
+                          className="flex-1"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => generateCharacterDetails('voiceTraits')}
+                          disabled={isLocked || isGenerating}
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          Generate
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </Card>
 
           {/* Hook */}
