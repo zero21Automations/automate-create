@@ -28,6 +28,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { format } from "date-fns";
+import { PipelineNav } from "@/components/PipelineNav";
 import { NextButton } from "@/components/NextButton";
 
 const Publishing = () => {
@@ -169,6 +170,9 @@ const Publishing = () => {
           </div>
         </div>
       </div>
+
+      {/* Pipeline Navigation */}
+      <PipelineNav currentStage="publishing" ideaTitle="5-Minute Morning Workout" />
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* Main Content */}

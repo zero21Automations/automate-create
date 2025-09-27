@@ -21,6 +21,7 @@ import {
   Download,
   RefreshCw
 } from "lucide-react";
+import { PipelineNav } from "@/components/PipelineNav";
 
 const IdeaAnalytics = () => {
   const navigate = useNavigate();
@@ -104,6 +105,9 @@ const IdeaAnalytics = () => {
           </Button>
         </div>
       </div>
+
+      {/* Pipeline Navigation */}
+      <PipelineNav currentStage="analytics" ideaTitle="5-Minute Morning Workout" />
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

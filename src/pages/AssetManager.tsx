@@ -108,6 +108,9 @@ const AssetManager = () => {
         </div>
       </div>
 
+      {/* Pipeline Navigation */}
+      <PipelineNav currentStage="assets" ideaTitle="5-Minute Morning Workout" />
+
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* Main Content */}
         <div className="xl:col-span-3 space-y-6">

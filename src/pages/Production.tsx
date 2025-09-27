@@ -216,6 +216,9 @@ const Production = () => {
         </div>
       </div>
 
+      {/* Pipeline Navigation */}
+      <PipelineNav currentStage="production" ideaTitle="5-Minute Morning Workout" />
+
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* Main Content Area */}
         <div className="xl:col-span-3 space-y-6">
