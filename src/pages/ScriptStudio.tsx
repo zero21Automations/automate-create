@@ -22,9 +22,13 @@ const ScriptStudio = () => {
   
   // Fetch project and idea data
   const { projects } = useProjects();
-  const { ideas } = useIdeas(projectId || "");
   
-  const currentProject = projects.find(p => p.id === projectId);
+  // Find project by name or ID
+  const currentProject = projects.find(p => 
+    p.id === projectId || p.name.toLowerCase().replace(/\s+/g, '') === projectId
+  );
+  
+  const { ideas } = useIdeas(currentProject?.id || "");
   const currentIdea = ideas.find(i => i.id === ideaId);
   
   const [script, setScript] = useState({
