@@ -271,9 +271,9 @@ const Production = () => {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Content Area */}
-        <div className="xl:col-span-3 space-y-6">
+        <div className="lg:col-span-3 space-y-6 min-w-0">
           {/* Preview Window */}
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-4">
@@ -291,7 +291,7 @@ const Production = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Video Player */}
               <div>
                 <div className="aspect-[9/16] bg-black rounded-lg mb-4 flex items-center justify-center relative">
@@ -525,10 +525,11 @@ const Production = () => {
               </TabsContent>
             </Tabs>
           </Card>
+          </div>
         </div>
 
         {/* Sticky Quality & Progress Sidebar */}
-        <div className="xl:col-span-1 space-y-4">
+        <div className="lg:col-span-1 space-y-4 min-w-0">
           <div className="sticky top-6 space-y-4">
             {/* Progress Overview */}
             <Card className="card-factory-glow p-4">
@@ -638,7 +639,6 @@ const Production = () => {
       
       {/* Floating Next Button */}
       <NextButton nextStage="publishing" nextLabel="Next: Publishing" icon={Share2} />
-    </div>
     </div>
   );
 };
