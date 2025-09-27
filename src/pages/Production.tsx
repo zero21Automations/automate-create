@@ -27,8 +27,15 @@ import {
   Unlock,
   ArrowLeft,
   Share2,
-  Video
+  Video,
+  Target,
+  BarChart3,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  X
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { PipelineNav } from "@/components/PipelineNav";
 import { NextButton } from "@/components/NextButton";
 

@@ -109,7 +109,8 @@ export const PipelineNav = ({ ideaTitle = "Content Idea", currentStage }: Pipeli
   };
 
   const canNavigateToStage = (stage: PipelineStage) => {
-    return stage.status === 'completed' || stage.status === 'current' || stage.status === 'pending';
+    // Allow navigation to all stages regardless of status
+    return true;
   };
 
   return (
@@ -130,14 +131,13 @@ export const PipelineNav = ({ ideaTitle = "Content Idea", currentStage }: Pipeli
         {stages.map((stage, index) => (
           <div key={stage.id} className="flex items-center gap-3 flex-shrink-0">
             <div
-              onClick={() => canNavigateToStage(stage) ? navigate(stage.path) : null}
+              onClick={() => navigate(stage.path)}
               className={`
-                group relative flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-300 cursor-pointer
+                group relative flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-md
                 ${stage.status === 'completed' ? 'border-green-500/50 bg-green-500/10 hover:bg-green-500/20 hover:border-green-500' : ''}
                 ${stage.status === 'current' ? 'border-primary bg-primary/10 ring-2 ring-primary/30 shadow-lg' : ''}
                 ${stage.status === 'pending' ? 'border-yellow-500/50 bg-yellow-500/10 hover:bg-yellow-500/20 hover:border-yellow-500' : ''}
-                ${stage.status === 'locked' ? 'border-muted bg-muted/30 cursor-not-allowed opacity-60' : ''}
-                ${canNavigateToStage(stage) ? 'hover:scale-105 hover:shadow-md' : ''}
+                ${stage.status === 'locked' ? 'border-muted bg-muted/30 hover:bg-muted/40 hover:border-muted-foreground/50' : ''}
               `}
             >
               <div className={`
@@ -171,12 +171,7 @@ export const PipelineNav = ({ ideaTitle = "Content Idea", currentStage }: Pipeli
                 </div>
               </div>
               
-              {/* Tooltip */}
-              {!canNavigateToStage(stage) && (
-                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                  Complete previous stages first
-                </div>
-              )}
+              {/* All stages are now navigable */}
             </div>
             
             {index < stages.length - 1 && (

@@ -19,8 +19,7 @@ import {
   Clock,
   ArrowLeft,
   Download,
-  RefreshCw,
-  Progress
+  RefreshCw
 } from "lucide-react";
 
 const IdeaAnalytics = () => {
