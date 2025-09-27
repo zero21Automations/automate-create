@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { PipelineNav } from "@/components/PipelineNav";
 import { NextButton } from "@/components/NextButton";
 
@@ -18,14 +20,17 @@ const ScriptStudio = () => {
   const [script, setScript] = useState({
     hook: "",
     hookStageDirections: "",
+    hookDuration: 3,
     beats: [{ 
       id: 1, 
       text: "", 
       stageDirections: "",
+      duration: 5,
       metrics: { scrollStop: 85, retention: 78, engagement: 72 }
     }],
     cta: "",
     ctaStageDirections: "",
+    ctaDuration: 3,
     state: "draft", // draft, frozen, locked
     version: 1
   });
@@ -44,6 +49,18 @@ const ScriptStudio = () => {
     targeting: "Fitness Enthusiasts 18-35"
   });
 
+  const narrativeOptions = ["First Person", "Second Person", "Third Person", "Voiceover"];
+  const visualOptions = ["Live Action", "Animation", "Screen Recording", "Talking Head", "B-Roll Only"];
+  const toneOptions = ["Energetic", "Calm", "Playful", "Professional", "Motivational", "Educational", "Dramatic"];
+  const paceOptions = ["Slow", "Medium", "Fast", "Very Fast"];
+  
+  const stageDirectionOptions = {
+    camera: ["Close-up", "Medium shot", "Wide shot", "Over shoulder", "POV", "Drone shot"],
+    movement: ["Static", "Pan left", "Pan right", "Zoom in", "Zoom out", "Handheld"],
+    lighting: ["Natural", "Studio", "Golden hour", "Blue hour", "Dramatic", "Soft"],
+    setting: ["Indoor", "Outdoor", "Studio", "Kitchen", "Gym", "Office", "Bedroom"]
+  };
+
   const [isLocked, setIsLocked] = useState(false);
 
   const addBeat = () => {
@@ -52,6 +69,7 @@ const ScriptStudio = () => {
       id: script.beats.length + 1,
       text: "",
       stageDirections: "",
+      duration: 5,
       metrics: { scrollStop: 0, retention: 0, engagement: 0 }
     };
     setScript(prev => ({ ...prev, beats: [...prev.beats, newBeat] }));
@@ -143,44 +161,60 @@ const ScriptStudio = () => {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-muted-foreground">Narrative</label>
-                <Input 
-                  value={styleDNA.narrative} 
-                  onChange={(e) => setStyleDNA(prev => ({ ...prev, narrative: e.target.value }))}
-                  className="h-8 text-sm"
-                  disabled={isLocked}
-                />
+                <Label className="text-xs font-medium text-muted-foreground">Narrative</Label>
+                <Select value={styleDNA.narrative} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narrative: value }))} disabled={isLocked}>
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {narrativeOptions.map(option => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground">Visual</label>
-                <Input 
-                  value={styleDNA.visual} 
-                  onChange={(e) => setStyleDNA(prev => ({ ...prev, visual: e.target.value }))}
-                  className="h-8 text-sm"
-                  disabled={isLocked}
-                />
+                <Label className="text-xs font-medium text-muted-foreground">Visual</Label>
+                <Select value={styleDNA.visual} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, visual: value }))} disabled={isLocked}>
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {visualOptions.map(option => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground">Tone</label>
-                <Input 
-                  value={styleDNA.tone} 
-                  onChange={(e) => setStyleDNA(prev => ({ ...prev, tone: e.target.value }))}
-                  className="h-8 text-sm"
-                  disabled={isLocked}
-                />
+                <Label className="text-xs font-medium text-muted-foreground">Tone</Label>
+                <Select value={styleDNA.tone} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, tone: value }))} disabled={isLocked}>
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {toneOptions.map(option => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground">Pace</label>
-                <Input 
-                  value={styleDNA.pace} 
-                  onChange={(e) => setStyleDNA(prev => ({ ...prev, pace: e.target.value }))}
-                  className="h-8 text-sm"
-                  disabled={isLocked}
-                />
+                <Label className="text-xs font-medium text-muted-foreground">Pace</Label>
+                <Select value={styleDNA.pace} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, pace: value }))} disabled={isLocked}>
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {paceOptions.map(option => (
+                      <SelectItem key={option} value={option}>{option}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="mt-3">
-              <label className="text-xs font-medium text-muted-foreground">Targeting</label>
+              <Label className="text-xs font-medium text-muted-foreground">Targeting</Label>
               <Input 
                 value={styleDNA.targeting} 
                 onChange={(e) => setStyleDNA(prev => ({ ...prev, targeting: e.target.value }))}
@@ -206,28 +240,63 @@ const ScriptStudio = () => {
 
             <div className="space-y-6">
               {/* Hook */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium">Hook (First 3 seconds)</label>
+              <div className="border-l-4 border-l-orange-500 pl-4 bg-orange-50/20 rounded-r-lg p-4">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Flame className="h-3 w-3 text-orange-500" />
-                    <span className="text-xs text-orange-600 font-medium">90% scroll-stop</span>
+                    <label className="text-sm font-medium text-orange-700">Hook</label>
+                    <Badge variant="outline" className="text-xs border-orange-500 text-orange-600">
+                      {script.hookDuration}s
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3 text-orange-500" />
+                      <Select value={script.hookDuration.toString()} onValueChange={(value) => setScript(prev => ({ ...prev, hookDuration: parseInt(value) }))} disabled={isLocked}>
+                        <SelectTrigger className="h-6 w-16 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[3,4,5,6,7,8,9,10].map(sec => (
+                            <SelectItem key={sec} value={sec.toString()}>{sec}s</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Flame className="h-3 w-3 text-orange-500" />
+                      <span className="text-xs text-orange-600 font-medium">90% scroll-stop</span>
+                    </div>
                   </div>
                 </div>
                 <Textarea
                   placeholder="Start with a compelling hook that stops the scroll..."
                   value={script.hook}
                   onChange={(e) => setScript(prev => ({ ...prev, hook: e.target.value }))}
-                  className="min-h-[80px] mb-3"
+                  className="min-h-[80px] mb-3 border-orange-200 focus:border-orange-400"
                   disabled={isLocked}
                 />
-                <Input
-                  placeholder="Hook stage directions (camera, visuals, etc.)"
-                  value={script.hookStageDirections}
-                  onChange={(e) => setScript(prev => ({ ...prev, hookStageDirections: e.target.value }))}
-                  className="text-sm text-muted-foreground"
-                  disabled={isLocked}
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  <Select value={script.hookStageDirections} onValueChange={(value) => setScript(prev => ({ ...prev, hookStageDirections: value }))} disabled={isLocked}>
+                    <SelectTrigger className="text-sm text-muted-foreground">
+                      <SelectValue placeholder="Camera angle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stageDirectionOptions.camera.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select disabled={isLocked}>
+                    <SelectTrigger className="text-sm text-muted-foreground">
+                      <SelectValue placeholder="Movement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stageDirectionOptions.movement.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <Separator />
@@ -241,27 +310,52 @@ const ScriptStudio = () => {
                   const EngagementIcon = getMetricIcon('engagement');
                   
                   return (
-                    <div key={beat.id} className="space-y-3 mb-6 p-4 border rounded-lg bg-card/50">
-                      <div className="flex items-center justify-between">
-                        <Badge variant="outline">Beat {index + 1}</Badge>
-                        <div className="flex items-center gap-3 text-xs">
+                    <div key={beat.id} className="border-l-4 border-l-blue-500 pl-4 bg-blue-50/20 rounded-r-lg p-4 mb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-blue-700 border-blue-500">Beat {index + 1}</Badge>
+                          <Badge variant="outline" className="text-xs border-blue-500 text-blue-600">
+                            {beat.duration}s
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3">
                           <div className="flex items-center gap-1">
-                            <ScrollStopIcon className="h-3 w-3" />
-                            <span className={getMetricColor(beat.metrics.scrollStop)}>
-                              {beat.metrics.scrollStop}%
-                            </span>
+                            <Clock className="h-3 w-3 text-blue-500" />
+                            <Select value={beat.duration.toString()} onValueChange={(value) => {
+                              if (isLocked) return;
+                              const newBeats = [...script.beats];
+                              newBeats[index].duration = parseInt(value);
+                              setScript(prev => ({ ...prev, beats: newBeats }));
+                            }} disabled={isLocked}>
+                              <SelectTrigger className="h-6 w-16 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[3,4,5,6,7,8,9,10].map(sec => (
+                                  <SelectItem key={sec} value={sec.toString()}>{sec}s</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <RetentionIcon className="h-3 w-3" />
-                            <span className={getMetricColor(beat.metrics.retention)}>
-                              {beat.metrics.retention}%
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <EngagementIcon className="h-3 w-3" />
-                            <span className={getMetricColor(beat.metrics.engagement)}>
-                              {beat.metrics.engagement}%
-                            </span>
+                          <div className="flex items-center gap-3 text-xs">
+                            <div className="flex items-center gap-1">
+                              <ScrollStopIcon className="h-3 w-3" />
+                              <span className={getMetricColor(beat.metrics.scrollStop)}>
+                                {beat.metrics.scrollStop}%
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <RetentionIcon className="h-3 w-3" />
+                              <span className={getMetricColor(beat.metrics.retention)}>
+                                {beat.metrics.retention}%
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <EngagementIcon className="h-3 w-3" />
+                              <span className={getMetricColor(beat.metrics.engagement)}>
+                                {beat.metrics.engagement}%
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -275,35 +369,48 @@ const ScriptStudio = () => {
                           newBeats[index].text = e.target.value;
                           setScript(prev => ({ ...prev, beats: newBeats }));
                         }}
-                        className="min-h-[100px]"
+                        className="min-h-[100px] mb-3 border-blue-200 focus:border-blue-400"
                         disabled={isLocked}
                       />
                       
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                        <Input
-                          placeholder="Stage directions (camera, visuals, etc.)"
-                          value={beat.stageDirections}
-                          onChange={(e) => {
-                            if (isLocked) return;
-                            const newBeats = [...script.beats];
-                            newBeats[index].stageDirections = e.target.value;
-                            setScript(prev => ({ ...prev, beats: newBeats }));
-                          }}
-                          className="text-sm text-muted-foreground"
-                          disabled={isLocked}
-                        />
+                      <div className="grid grid-cols-2 gap-2 mb-3">
+                        <Select value={beat.stageDirections} onValueChange={(value) => {
+                          if (isLocked) return;
+                          const newBeats = [...script.beats];
+                          newBeats[index].stageDirections = value;
+                          setScript(prev => ({ ...prev, beats: newBeats }));
+                        }} disabled={isLocked}>
+                          <SelectTrigger className="text-sm text-muted-foreground">
+                            <SelectValue placeholder="Camera angle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {stageDirectionOptions.camera.map(option => (
+                              <SelectItem key={option} value={option}>{option}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Select disabled={isLocked}>
+                          <SelectTrigger className="text-sm text-muted-foreground">
+                            <SelectValue placeholder="Movement" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {stageDirectionOptions.movement.map(option => (
+                              <SelectItem key={option} value={option}>{option}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                         
-                        {/* Asset Preview Slots */}
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="flex-1" disabled={!beat.text}>
-                            <Mic className="h-3 w-3 mr-1" />
-                            Voice
-                          </Button>
-                          <Button variant="outline" size="sm" className="flex-1" disabled={!beat.stageDirections}>
-                            <Video className="h-3 w-3 mr-1" />
-                            B-roll
-                          </Button>
-                        </div>
+                      {/* Asset Preview Slots */}
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1" disabled={!beat.text}>
+                          <Mic className="h-3 w-3 mr-1" />
+                          Voice
+                        </Button>
+                        <Button variant="outline" size="sm" className="flex-1" disabled={!beat.stageDirections}>
+                          <Video className="h-3 w-3 mr-1" />
+                          B-roll
+                        </Button>
                       </div>
                     </div>
                   );
@@ -322,28 +429,63 @@ const ScriptStudio = () => {
               <Separator />
 
               {/* Call to Action */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium">Call to Action</label>
+              <div className="border-l-4 border-l-green-500 pl-4 bg-green-50/20 rounded-r-lg p-4">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Target className="h-3 w-3 text-blue-500" />
-                    <span className="text-xs text-blue-600 font-medium">Conversion-optimized</span>
+                    <label className="text-sm font-medium text-green-700">Call to Action</label>
+                    <Badge variant="outline" className="text-xs border-green-500 text-green-600">
+                      {script.ctaDuration}s
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3 text-green-500" />
+                      <Select value={script.ctaDuration.toString()} onValueChange={(value) => setScript(prev => ({ ...prev, ctaDuration: parseInt(value) }))} disabled={isLocked}>
+                        <SelectTrigger className="h-6 w-16 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[3,4,5,6,7,8,9,10].map(sec => (
+                            <SelectItem key={sec} value={sec.toString()}>{sec}s</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Target className="h-3 w-3 text-green-500" />
+                      <span className="text-xs text-green-600 font-medium">Conversion-optimized</span>
+                    </div>
                   </div>
                 </div>
                 <Textarea
                   placeholder="End with a strong call to action..."
                   value={script.cta}
                   onChange={(e) => setScript(prev => ({ ...prev, cta: e.target.value }))}
-                  className="min-h-[80px] mb-3"
+                  className="min-h-[80px] mb-3 border-green-200 focus:border-green-400"
                   disabled={isLocked}
                 />
-                <Input
-                  placeholder="CTA stage directions (camera, visuals, etc.)"
-                  value={script.ctaStageDirections}
-                  onChange={(e) => setScript(prev => ({ ...prev, ctaStageDirections: e.target.value }))}
-                  className="text-sm text-muted-foreground"
-                  disabled={isLocked}
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  <Select value={script.ctaStageDirections} onValueChange={(value) => setScript(prev => ({ ...prev, ctaStageDirections: value }))} disabled={isLocked}>
+                    <SelectTrigger className="text-sm text-muted-foreground">
+                      <SelectValue placeholder="Camera angle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stageDirectionOptions.camera.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select disabled={isLocked}>
+                    <SelectTrigger className="text-sm text-muted-foreground">
+                      <SelectValue placeholder="Setting" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stageDirectionOptions.setting.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </Card>
