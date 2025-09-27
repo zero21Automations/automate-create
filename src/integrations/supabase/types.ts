@@ -201,6 +201,7 @@ export type Database = {
           brand_kit: Json | null
           created_at: string
           description: string | null
+          emoji: string | null
           id: string
           name: string
           posting_rules: Json | null
@@ -212,6 +213,7 @@ export type Database = {
           brand_kit?: Json | null
           created_at?: string
           description?: string | null
+          emoji?: string | null
           id?: string
           name: string
           posting_rules?: Json | null
@@ -223,6 +225,7 @@ export type Database = {
           brand_kit?: Json | null
           created_at?: string
           description?: string | null
+          emoji?: string | null
           id?: string
           name?: string
           posting_rules?: Json | null
