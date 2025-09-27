@@ -5,7 +5,7 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="ml-16 md:ml-64">
+      <main className="min-h-screen" style={{ marginLeft: 'var(--sidebar-offset, 16rem)' }}>
         <div className="h-full">
           <Outlet />
         </div>

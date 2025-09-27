@@ -50,6 +50,12 @@ export function Sidebar() {
     setCollapsed(isMobile);
   }, [isMobile]);
 
+  // Keep main content offset in sync with sidebar state
+  useEffect(() => {
+    const width = isMobile ? "4rem" : collapsed ? "4rem" : "16rem";
+    document.documentElement.style.setProperty("--sidebar-offset", width);
+  }, [collapsed, isMobile]);
+
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
     return location.pathname.startsWith(href);
