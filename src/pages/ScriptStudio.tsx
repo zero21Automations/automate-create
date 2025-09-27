@@ -17,6 +17,7 @@ const ScriptStudio = () => {
   const { projectId, ideaId } = useParams();
   const [script, setScript] = useState({
     hook: "",
+    hookStageDirections: "",
     beats: [{ 
       id: 1, 
       text: "", 
@@ -24,6 +25,7 @@ const ScriptStudio = () => {
       metrics: { scrollStop: 85, retention: 78, engagement: 72 }
     }],
     cta: "",
+    ctaStageDirections: "",
     state: "draft", // draft, frozen, locked
     version: 1
   });
@@ -34,7 +36,7 @@ const ScriptStudio = () => {
     brandAlignment: 9
   });
 
-  const [styleDNA] = useState({
+  const [styleDNA, setStyleDNA] = useState({
     narrative: "Third Person",
     visual: "Live Action",
     tone: "Energetic",
@@ -136,14 +138,55 @@ const ScriptStudio = () => {
           <Card className="card-factory-glow p-4 border-l-4 border-l-primary">
             <div className="flex items-center gap-2 mb-3">
               <Palette className="h-4 w-4 text-primary" />
-              <h3 className="font-semibold">Active Style DNA</h3>
+              <h3 className="font-semibold">Script DNA</h3>
               {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">{styleDNA.narrative}</Badge>
-              <Badge variant="secondary">{styleDNA.visual}</Badge>
-              <Badge variant="secondary">{styleDNA.tone}</Badge>
-              <Badge variant="secondary">{styleDNA.pace} Pace</Badge>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Narrative</label>
+                <Input 
+                  value={styleDNA.narrative} 
+                  onChange={(e) => setStyleDNA(prev => ({ ...prev, narrative: e.target.value }))}
+                  className="h-8 text-sm"
+                  disabled={isLocked}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Visual</label>
+                <Input 
+                  value={styleDNA.visual} 
+                  onChange={(e) => setStyleDNA(prev => ({ ...prev, visual: e.target.value }))}
+                  className="h-8 text-sm"
+                  disabled={isLocked}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Tone</label>
+                <Input 
+                  value={styleDNA.tone} 
+                  onChange={(e) => setStyleDNA(prev => ({ ...prev, tone: e.target.value }))}
+                  className="h-8 text-sm"
+                  disabled={isLocked}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Pace</label>
+                <Input 
+                  value={styleDNA.pace} 
+                  onChange={(e) => setStyleDNA(prev => ({ ...prev, pace: e.target.value }))}
+                  className="h-8 text-sm"
+                  disabled={isLocked}
+                />
+              </div>
+            </div>
+            <div className="mt-3">
+              <label className="text-xs font-medium text-muted-foreground">Targeting</label>
+              <Input 
+                value={styleDNA.targeting} 
+                onChange={(e) => setStyleDNA(prev => ({ ...prev, targeting: e.target.value }))}
+                className="h-8 text-sm"
+                disabled={isLocked}
+              />
             </div>
           </Card>
 
@@ -175,7 +218,14 @@ const ScriptStudio = () => {
                   placeholder="Start with a compelling hook that stops the scroll..."
                   value={script.hook}
                   onChange={(e) => setScript(prev => ({ ...prev, hook: e.target.value }))}
-                  className="min-h-[80px]"
+                  className="min-h-[80px] mb-3"
+                  disabled={isLocked}
+                />
+                <Input
+                  placeholder="Hook stage directions (camera, visuals, etc.)"
+                  value={script.hookStageDirections}
+                  onChange={(e) => setScript(prev => ({ ...prev, hookStageDirections: e.target.value }))}
+                  className="text-sm text-muted-foreground"
                   disabled={isLocked}
                 />
               </div>
@@ -284,7 +334,14 @@ const ScriptStudio = () => {
                   placeholder="End with a strong call to action..."
                   value={script.cta}
                   onChange={(e) => setScript(prev => ({ ...prev, cta: e.target.value }))}
-                  className="min-h-[80px]"
+                  className="min-h-[80px] mb-3"
+                  disabled={isLocked}
+                />
+                <Input
+                  placeholder="CTA stage directions (camera, visuals, etc.)"
+                  value={script.ctaStageDirections}
+                  onChange={(e) => setScript(prev => ({ ...prev, ctaStageDirections: e.target.value }))}
+                  className="text-sm text-muted-foreground"
                   disabled={isLocked}
                 />
               </div>
@@ -323,11 +380,13 @@ const ScriptStudio = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <Mic className="h-3 w-3 text-primary" />
-                    <span>Bold, attention-grabbing tone</span>
+                    <span>{styleDNA.tone.toLowerCase()}, attention-grabbing tone</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Video className="h-3 w-3 text-primary" />
-                    <span>Close-up, dynamic opening shot</span>
+                    <span>
+                      {script.hookStageDirections || "Close-up, dynamic opening shot"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -362,11 +421,13 @@ const ScriptStudio = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <Music className="h-3 w-3 text-primary" />
-                    <span>Upbeat electronic, crescendo</span>
+                    <span>Upbeat {styleDNA.pace.toLowerCase()}-paced, crescendo</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Target className="h-3 w-3 text-primary" />
-                    <span>Animated text overlays</span>
+                    <span>
+                      {script.ctaStageDirections || "Animated text overlays"}
+                    </span>
                   </div>
                 </div>
               </div>
