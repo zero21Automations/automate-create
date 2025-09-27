@@ -415,7 +415,10 @@ const ScriptStudio = () => {
             </Button>
             <div className="text-left">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <span>{currentProject?.name || "Project"}</span>
+                <span className="flex items-center gap-1">
+                  {currentProject?.emoji && <span className="text-base">{currentProject.emoji}</span>}
+                  <span>{currentProject?.name || "Project"}</span>
+                </span>
                 <span>•</span>
                 <span className="text-primary font-medium">{currentIdea?.title || "Untitled Idea"}</span>
               </div>

@@ -6,6 +6,7 @@ export type Project = {
   id: string;
   user_id: string;
   name: string;
+  emoji?: string;
   description?: string | null;
   brand_kit?: any;
   posting_rules?: any;
