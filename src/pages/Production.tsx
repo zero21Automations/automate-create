@@ -47,74 +47,98 @@ const Production = () => {
   const { projectId, ideaId } = useParams();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration] = useState(150); // 2:30 in seconds
-  const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
+  const [duration] = useState(70); // Total video duration
+  const [selectedScene, setSelectedScene] = useState<string | null>(null);
+  const [audioMix, setAudioMix] = useState({ voice: 80, music: 60, sfx: 40 });
 
-  const [tracks] = useState([
+  // Frozen asset manifest from Assets stage
+  const frozenAssetManifest = {
+    script_id: "script_123",
+    version: "v2",
+    locked_at: "2024-09-27T13:45:00Z",
+    voice: { url: "voice_v2.mp3", style: "Energetic", status: "ready" },
+    music: { url: "music_v1.mp3", bpm: 120, mood: "Upbeat", status: "ready" },
+    captions: { url: "captions_v1.srt", format: "srt", status: "ready" },
+    broll: [
+      { beat_id: "b1", url: "penguin_colony.mp4", status: "ready" },
+      { beat_id: "b2", url: "ocean_waves.mp4", status: "stale" }
+    ],
+    graphics: [{ id: "g1", type: "emoji", url: "sparkle.png", status: "ready" }]
+  };
+
+  // Scene-based timeline data
+  const scenes = [
     {
-      id: "voice",
-      type: "audio",
-      name: "Voice Track",
-      duration: 150,
-      color: "bg-blue-500",
-      visible: true,
-      locked: false,
-      assets: [
-        { start: 0, end: 150, name: "Main Voiceover", file: "voice-main.mp3" }
+      id: 'scene_1',
+      name: 'Opening Hook',
+      startTime: 0,
+      duration: 15,
+      status: 'ready',
+      tracks: [
+        { type: 'voice', content: 'Opening Hook', status: 'ready', locked: true },
+        { type: 'broll', content: 'penguin_colony.mp4', status: 'ready', locked: true },
+        { type: 'captions', content: 'Did you know penguins...', status: 'ready', locked: false },
+        { type: 'music', content: 'Background track', status: 'ready', locked: true }
       ]
     },
     {
-      id: "music", 
-      type: "audio",
-      name: "Background Music",
-      duration: 150,
-      color: "bg-green-500",
-      visible: true,
-      locked: false,
-      assets: [
-        { start: 0, end: 150, name: "Upbeat Electronic", file: "music-bg.mp3" }
+      id: 'scene_2', 
+      name: 'Main Content Beat 1',
+      startTime: 15,
+      duration: 25,
+      status: 'stale',
+      tracks: [
+        { type: 'voice', content: 'Main Content Beat 1', status: 'ready', locked: true },
+        { type: 'broll', content: 'ocean_waves.mp4', status: 'stale', locked: true },
+        { type: 'captions', content: 'These amazing creatures...', status: 'ready', locked: false },
+        { type: 'music', content: 'Background track', status: 'ready', locked: true }
       ]
     },
     {
-      id: "video",
-      type: "video", 
-      name: "Main Video",
-      duration: 150,
-      color: "bg-purple-500",
-      visible: true,
-      locked: false,
-      assets: [
-        { start: 0, end: 45, name: "Gym Workout A", file: "broll-1.mp4" },
-        { start: 45, end: 90, name: "Exercise Demo", file: "broll-2.mp4" },
-        { start: 90, end: 150, name: "Results Before/After", file: "broll-3.mp4" }
+      id: 'scene_3',
+      name: 'Main Content Beat 2', 
+      startTime: 40,
+      duration: 20,
+      status: 'ready',
+      tracks: [
+        { type: 'voice', content: 'Main Content Beat 2', status: 'ready', locked: true },
+        { type: 'broll', content: 'ice_landscape.mp4', status: 'ready', locked: true },
+        { type: 'captions', content: 'In the harsh Antarctic...', status: 'ready', locked: false },
+        { type: 'music', content: 'Background track', status: 'ready', locked: true }
       ]
     },
     {
-      id: "captions",
-      type: "text",
-      name: "Captions", 
-      duration: 150,
-      color: "bg-yellow-500",
-      visible: true,
-      locked: false,
-      assets: [
-        { start: 0, end: 150, name: "Dynamic Captions", file: "captions.srt" }
-      ]
-    },
-    {
-      id: "graphics",
-      type: "graphics",
-      name: "Graphics Overlay",
-      duration: 150, 
-      color: "bg-red-500",
-      visible: true,
-      locked: false,
-      assets: [
-        { start: 5, end: 15, name: "Logo Intro", file: "logo.png" },
-        { start: 135, end: 150, name: "CTA Graphics", file: "cta-overlay.png" }
+      id: 'scene_4',
+      name: 'Call to Action',
+      startTime: 60, 
+      duration: 10,
+      status: 'ready',
+      tracks: [
+        { type: 'voice', content: 'Call to Action', status: 'ready', locked: true },
+        { type: 'broll', content: 'subscribe_overlay.mp4', status: 'ready', locked: true },
+        { type: 'captions', content: 'Subscribe for more!', status: 'ready', locked: false },
+        { type: 'music', content: 'Background track', status: 'ready', locked: true }
       ]
     }
-  ]);
+  ];
+
+  // QA Report from render analysis
+  const qaReport = {
+    overall_score: 8.7,
+    issues: [
+      { scene: 'scene_2', type: 'caption_sync', severity: 'medium', suggestion: 'Shift captions -0.5s', auto_fixable: true },
+      { scene: 'scene_2', type: 'audio_mix', severity: 'low', suggestion: 'Reduce music by 10%', auto_fixable: true }
+    ]
+  };
+
+  // Render status
+  const renderStatus = {
+    status: 'draft_rendered',
+    version: 'v3',
+    progress: 85,
+    preview_url: 'preview_v3.mp4',
+    last_rendered: '2 minutes ago'
+  };
 
   const [renderQueue] = useState([
     {
@@ -198,7 +222,7 @@ const Production = () => {
           </div>
           <div className="flex items-center gap-3">
             <Badge variant="secondary" className="badge-factory">
-              2:30 Duration
+              {formatTime(duration)} Duration
             </Badge>
             <Button variant="outline">
               <Download className="h-4 w-4 mr-2" />
@@ -369,84 +393,140 @@ const Production = () => {
             </div>
           </Card>
 
-          {/* Timeline Panel */}
-          <div className="space-y-4">
+          {/* Frozen Asset Status */}
+          <Card className="card-factory-glow p-4 border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
+                <div>
+                  <p className="text-sm font-medium">Asset Manifest v{frozenAssetManifest.version} Locked</p>
+                  <p className="text-xs text-muted-foreground">Frozen at {frozenAssetManifest.locked_at}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs">
+                  {renderStatus.status.replace('_', ' ')} v{renderStatus.version}
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  {renderStatus.last_rendered}
+                </Badge>
+              </div>
+            </div>
+          </Card>
+
+          {/* Scene-Based Timeline Editor */}
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Timeline Editor</h2>
+              <h2 className="text-xl font-semibold">Scene Timeline</h2>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm">
-                  <Scissors className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <Move className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" title="Regenerate Full Preview">
                   <RotateCcw className="h-4 w-4" />
+                  <span className="ml-1 text-xs">Full Render</span>
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Layers className="h-4 w-4" />
+                  <span className="ml-1 text-xs">Audio Mix</span>
                 </Button>
               </div>
             </div>
 
-            {/* Timeline */}
-            <div className="space-y-3">
-              {/* Time ruler */}
-              <div className="flex items-center text-xs text-muted-foreground border-b pb-2">
-                <div className="w-32"></div>
-                <div className="flex-1 flex justify-between">
-                  <span>0:00</span>
-                  <span>0:30</span>
-                  <span>1:00</span>
-                  <span>1:30</span>
-                  <span>2:00</span>
-                  <span>2:30</span>
+            {/* Audio Mix Controls */}
+            <div className="mb-6 p-4 bg-muted/20 rounded-lg">
+              <h3 className="text-sm font-medium mb-3">Audio Levels</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs text-muted-foreground">Voice</label>
+                  <Slider
+                    value={[audioMix.voice]}
+                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, voice: value }))}
+                    max={100}
+                    step={1}
+                    className="mt-1"
+                  />
+                  <span className="text-xs text-muted-foreground">{audioMix.voice}%</span>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Music</label>
+                  <Slider
+                    value={[audioMix.music]}
+                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, music: value }))}
+                    max={100}
+                    step={1}
+                    className="mt-1"
+                  />
+                  <span className="text-xs text-muted-foreground">{audioMix.music}%</span>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">SFX</label>
+                  <Slider
+                    value={[audioMix.sfx]}
+                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, sfx: value }))}
+                    max={100}
+                    step={1}
+                    className="mt-1"
+                  />
+                  <span className="text-xs text-muted-foreground">{audioMix.sfx}%</span>
                 </div>
               </div>
+            </div>
 
-              {/* Tracks */}
-              {tracks.map((track) => (
+            {/* Scene Cards */}
+            <div className="space-y-4">
+              {scenes.map((scene) => (
                 <div 
-                  key={track.id} 
-                  className={`flex items-center gap-3 p-2 rounded-lg border ${
-                    selectedTrack === track.id ? 'border-primary bg-primary/5' : 'border-border'
+                  key={scene.id}
+                  className={`border rounded-lg p-4 transition-all ${
+                    selectedScene === scene.id ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground'
                   }`}
-                  onClick={() => setSelectedTrack(track.id)}
+                  onClick={() => setSelectedScene(scene.id)}
                 >
-                  {/* Track Controls */}
-                  <div className="w-32 flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => {
-                        const newTracks = tracks.map(t => 
-                          t.id === track.id ? { ...t, visible: !t.visible } : t
-                        );
-                      }}
-                    >
-                      {track.visible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                    >
-                      {track.locked ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
-                    </Button>
-                    <span className="text-xs font-medium truncate">{track.name}</span>
+                  {/* Scene Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        scene.status === 'ready' ? 'bg-green-500' : 
+                        scene.status === 'stale' ? 'bg-yellow-500' : 'bg-gray-500'
+                      }`} />
+                      <h4 className="font-medium">{scene.name}</h4>
+                      <Badge variant="outline" className="text-xs">
+                        {formatTime(scene.startTime)} - {formatTime(scene.startTime + scene.duration)}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {scene.status === 'stale' && (
+                        <Button variant="outline" size="sm" className="text-xs">
+                          <RotateCcw className="h-3 w-3 mr-1" />
+                          Regenerate Scene
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="sm">
+                        <Scissors className="h-3 w-3" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Move className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
 
-                  {/* Track Timeline */}
-                  <div className="flex-1 h-8 bg-muted/20 rounded relative">
-                    {track.assets.map((asset, index) => (
-                      <div
-                        key={index}
-                        className={`absolute top-0 h-full rounded ${track.color} opacity-80 border border-white/20`}
-                        style={{
-                          left: `${(asset.start / duration) * 100}%`,
-                          width: `${((asset.end - asset.start) / duration) * 100}%`
-                        }}
-                        title={asset.name}
-                      >
-                        <div className="p-1 text-xs text-white truncate">
-                          {asset.name}
+                  {/* Scene Tracks */}
+                  <div className="grid grid-cols-1 gap-2">
+                    {scene.tracks.map((track, trackIndex) => (
+                      <div key={trackIndex} className="flex items-center gap-3 p-2 bg-muted/10 rounded">
+                        <div className="w-16 text-xs font-medium capitalize">{track.type}</div>
+                        <div className="flex-1 flex items-center gap-2">
+                          <div className={`h-6 flex-1 rounded px-2 flex items-center text-xs ${
+                            track.type === 'voice' ? 'bg-blue-500/20 text-blue-700' :
+                            track.type === 'broll' ? 'bg-purple-500/20 text-purple-700' :
+                            track.type === 'captions' ? 'bg-yellow-500/20 text-yellow-700' :
+                            'bg-green-500/20 text-green-700'
+                          }`}>
+                            {track.content}
+                          </div>
+                          <div className={`w-2 h-2 rounded-full ${
+                            track.status === 'ready' ? 'bg-green-500' : 
+                            track.status === 'stale' ? 'bg-yellow-500' : 'bg-gray-500'
+                          }`} />
+                          {track.locked && <Lock className="h-3 w-3 text-muted-foreground" />}
                         </div>
                       </div>
                     ))}
@@ -466,174 +546,222 @@ const Production = () => {
                     <div className={`w-3 h-3 rounded-full ${getStatusColor(render.status)}`} />
                     <div>
                       <p className="font-medium">{render.platform}</p>
-                      <p className="text-sm text-muted-foreground">{render.resolution} • {render.aspect}</p>
+                      <p className="text-sm text-muted-foreground">{render.aspect} • {render.resolution}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary">{render.status}</Badge>
-                    {render.status === "rendering" && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 h-2 bg-muted rounded-full">
-                          <div 
-                            className="h-2 bg-primary rounded-full transition-all"
-                            style={{ width: `${render.progress}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-muted-foreground">{render.progress}%</span>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Progress value={render.progress} className="w-24" />
+                      <span className="text-sm">{render.progress}%</span>
+                    </div>
                     {render.status === "ready" && (
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-3 w-3" />
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-1" />
+                        Download
                       </Button>
                     )}
                   </div>
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4">
-              <Upload className="h-4 w-4 mr-2" />
-              Add Custom Export
-            </Button>
           </Card>
 
           {/* Asset Library */}
           <Card className="card-factory-glow p-6">
             <h2 className="text-xl font-semibold mb-4">Asset Library</h2>
-            <Tabs defaultValue="all" className="w-full">
-              <TabsList>
-                <TabsTrigger value="all">All Assets</TabsTrigger>
+            <Tabs defaultValue="voice" className="w-full">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="voice">Voice</TabsTrigger>
                 <TabsTrigger value="music">Music</TabsTrigger>
-                <TabsTrigger value="video">Video</TabsTrigger>
+                <TabsTrigger value="captions">Captions</TabsTrigger>
+                <TabsTrigger value="broll">B-roll</TabsTrigger>
                 <TabsTrigger value="graphics">Graphics</TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="all" className="mt-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  {/* Asset thumbnails would go here */}
-                  <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
-                    <Layers className="h-6 w-6 text-muted-foreground" />
+              <TabsContent value="voice" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 border border-border rounded-lg">
+                    <h4 className="font-medium mb-2">Main Voiceover</h4>
+                    <p className="text-sm text-muted-foreground mb-2">voice-main.mp3</p>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm">
+                        <Play className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
-                    <Volume2 className="h-6 w-6 text-muted-foreground" />
+                </div>
+              </TabsContent>
+              <TabsContent value="music" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 border border-border rounded-lg">
+                    <h4 className="font-medium mb-2">Background Track</h4>
+                    <p className="text-sm text-muted-foreground mb-2">music-bg.mp3</p>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm">
+                        <Play className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
-                    <Play className="h-6 w-6 text-muted-foreground" />
+                </div>
+              </TabsContent>
+              <TabsContent value="captions" className="space-y-4">
+                <div className="p-4 border border-border rounded-lg">
+                  <h4 className="font-medium mb-2">Dynamic Captions</h4>
+                  <p className="text-sm text-muted-foreground mb-2">captions.srt</p>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <Download className="h-4 w-4" />
+                    </Button>
                   </div>
+                </div>
+              </TabsContent>
+              <TabsContent value="broll" className="space-y-4">
+                <div className="grid grid-cols-3 gap-4">
+                  {["Gym Workout A", "Exercise Demo", "Results Before/After"].map((clip, index) => (
+                    <div key={index} className="p-4 border border-border rounded-lg">
+                      <div className="aspect-video bg-muted rounded mb-2"></div>
+                      <h4 className="font-medium text-sm">{clip}</h4>
+                      <p className="text-xs text-muted-foreground">broll-{index + 1}.mp4</p>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+              <TabsContent value="graphics" className="space-y-4">
+                <div className="grid grid-cols-4 gap-4">
+                  {["Logo Intro", "CTA Graphics"].map((graphic, index) => (
+                    <div key={index} className="p-4 border border-border rounded-lg">
+                      <div className="aspect-square bg-muted rounded mb-2 flex items-center justify-center">
+                        <Layers className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <h4 className="font-medium text-sm">{graphic}</h4>
+                      <p className="text-xs text-muted-foreground">{graphic.toLowerCase().replace(' ', '-')}.png</p>
+                    </div>
+                  ))}
                 </div>
               </TabsContent>
             </Tabs>
           </Card>
-          </div>
         </div>
 
-        {/* Sticky Quality & Progress Sidebar */}
-        <div className="lg:col-span-1 space-y-4 min-w-0">
-          <div className="sticky top-6 space-y-4">
-            {/* Progress Overview */}
-            <Card className="card-factory-glow p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Target className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Production Progress</h3>
+        {/* Right Sidebar */}
+        <div className="lg:col-span-1 space-y-6 min-w-0">
+          {/* Production Progress */}
+          <Card className="card-factory-glow p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold">Production Progress</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-1">{renderStatus.progress}%</div>
+                <Progress value={renderStatus.progress} className="w-full mb-2" />
+                <p className="text-sm text-muted-foreground">Overall Completion</p>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Overall Completion</span>
-                  <span className="font-medium">85%</span>
+              
+              <div className="space-y-2 pt-2 border-t">
+                <div className="flex justify-between text-sm">
+                  <span>Timeline</span>
+                  <span className="text-green-600">100%</span>
                 </div>
-                <Progress value={85} className="h-2" />
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      Timeline Complete
-                    </span>
-                    <Badge variant="secondary" className="text-xs">✓</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                      Rendering Queue
-                    </span>
-                    <Badge variant="secondary" className="text-xs">75%</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      TikTok Export
-                    </span>
-                    <Badge variant="secondary" className="text-xs">✓</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-                      YouTube Export
-                    </span>
-                    <Badge variant="secondary" className="text-xs">0%</Badge>
-                  </div>
+                <div className="flex justify-between text-sm">
+                  <span>Rendering</span>
+                  <span className="text-blue-600">{renderStatus.progress}%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>QA Review</span>
+                  <span className="text-yellow-600">Pending</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Export</span>
+                  <span className="text-gray-500">Queued</span>
                 </div>
               </div>
-            </Card>
+            </div>
+          </Card>
 
-            {/* Quality Score */}
-            <Card className="card-factory-glow p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart3 className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Quality Score</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">8.7/10</div>
-                  <div className="text-xs text-muted-foreground">Production Quality</div>
+          {/* Quality Score */}
+          <Card className="card-factory-glow p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Target className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold">Quality Score</h3>
+            </div>
+            <div className="text-center mb-4">
+              <div className="text-3xl font-bold">{qaReport.overall_score}</div>
+              <div className="text-sm text-muted-foreground">/ 10</div>
+            </div>
+            <div className="space-y-2">
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span>Video Quality</span>
+                  <span className="font-medium text-green-600">9.2</span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span>Audio Sync</span>
+                  <span className="font-medium text-yellow-600">8.1</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Transitions</span>
+                  <span className="font-medium text-yellow-600">7.8</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* QA Report & Tasks */}
+          <Card className="card-factory-glow p-4">
+            <h3 className="font-semibold mb-3">Quality Report</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-bold">{qaReport.overall_score}/10</span>
+                <Badge variant="secondary">Draft Quality</Badge>
+              </div>
+              
+              {qaReport.issues.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Video Quality</span>
-                    <span className="font-medium text-green-600">9.2</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Audio Sync</span>
-                    <span className="font-medium text-green-600">8.9</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Transitions</span>
-                    <span className="font-medium text-yellow-600">7.8</span>
-                  </div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Issues to Fix:</h4>
+                  {qaReport.issues.map((issue, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-muted/20 rounded">
+                      <div className="text-xs">
+                        <p className="font-medium">{issue.scene}: {issue.type.replace('_', ' ')}</p>
+                        <p className="text-muted-foreground">{issue.suggestion}</p>
+                      </div>
+                      {issue.auto_fixable && (
+                        <Button variant="outline" size="sm" className="text-xs">
+                          Auto-fix
+                        </Button>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </Card>
+              )}
 
-            {/* Current Tasks */}
-            <Card className="card-factory-glow p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Tasks</h3>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-3 w-3 text-green-500" />
-                  <span className="line-through text-muted-foreground">Import all assets</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-3 w-3 text-green-500" />
-                  <span className="line-through text-muted-foreground">Arrange timeline</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-3 w-3 text-blue-500" />
-                  <span>Complete rendering queue</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <AlertCircle className="h-3 w-3 text-yellow-500" />
-                  <span>Review final output</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <AlertCircle className="h-3 w-3 text-yellow-500" />
-                  <span>Export for all platforms</span>
+              <div className="pt-2 border-t">
+                <h4 className="text-sm font-medium mb-2">Tasks</h4>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs">
+                    <CheckCircle className="h-3 w-3 text-green-500" />
+                    <span className="line-through text-muted-foreground">Timeline arranged</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <Clock className="h-3 w-3 text-blue-500" />
+                    <span>Preview rendering ({renderStatus.progress}%)</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <AlertCircle className="h-3 w-3 text-yellow-500" />
+                    <span>Fix scene 2 issues</span>
+                  </div>
                 </div>
               </div>
-            </Card>
-          </div>
+            </div>
+          </Card>
         </div>
       </div>
       
