@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2 } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2, Dna, Users, Volume2, Type, Repeat, User, Timer } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -262,9 +262,13 @@ const ScriptStudio = () => {
       <Card className={`card-factory-glow p-6 border-l-4 ${colorClass}`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <h3 className="text-lg font-semibold">{title} ({duration} seconds)</h3>
-            <Button variant="outline" size="sm" className="bg-primary/10 hover:bg-primary/20">
-              <Sparkles className="h-3 w-3 mr-1" />
+            <Icon className="h-4 w-4 text-primary" />
+            <h3 className="text-lg font-semibold">{title}</h3>
+            <Badge variant="outline" className="text-xs">
+              {duration}s
+            </Badge>
+            <Button variant="outline" size="sm" className="bg-primary/10 hover:bg-primary/20 transition-all hover-scale">
+              <Wand2 className="h-3 w-3 mr-1" />
               Generate {title}
             </Button>
             <Badge variant="secondary" className="text-xs">
@@ -354,7 +358,7 @@ const ScriptStudio = () => {
             <div className="flex justify-between pt-4">
               <div className="flex gap-2">
                 <Button variant="outline" size="sm">
-                  <Sparkles className="h-3 w-3 mr-1" />
+                  <Wand2 className="h-3 w-3 mr-1" />
                   Generate Directions
                 </Button>
                 <Button variant="outline" size="sm">
@@ -436,8 +440,8 @@ const ScriptStudio = () => {
           {/* Enhanced Script DNA Card */}
           <Card className="card-factory-glow p-6 border-l-4 border-l-primary">
             <div className="flex items-center gap-2 mb-4">
-              <Palette className="h-4 w-4 text-primary" />
-              <h3 className="font-semibold">Script DNA</h3>
+              <Dna className="h-5 w-5 text-primary" />
+              <h3 className="text-xl font-semibold">Script DNA</h3>
               {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
             </div>
             <p className="text-sm text-muted-foreground mb-6">
@@ -448,7 +452,7 @@ const ScriptStudio = () => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Mic className="h-3 w-3" />
+                  <Volume2 className="h-4 w-4" />
                   Voice Tone
                 </Label>
                 <Select value={styleDNA.voiceTone} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, voiceTone: value }))} disabled={isLocked}>
@@ -465,7 +469,7 @@ const ScriptStudio = () => {
               
               <div>
                 <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Target className="h-3 w-3" />
+                  <Users className="h-4 w-4" />
                   Audience
                 </Label>
                 <Select value={styleDNA.audience} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, audience: value }))} disabled={isLocked}>
@@ -482,7 +486,7 @@ const ScriptStudio = () => {
               
               <div>
                 <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Eye className="h-3 w-3" />
+                  <Type className="h-4 w-4" />
                   Caption Style
                 </Label>
                 <Select value={styleDNA.captionStyle} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, captionStyle: value }))} disabled={isLocked}>
@@ -499,7 +503,7 @@ const ScriptStudio = () => {
               
               <div>
                 <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Music className="h-3 w-3" />
+                  <Music className="h-4 w-4" />
                   Music Mood
                 </Label>
                 <Select value={styleDNA.musicMood} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, musicMood: value }))} disabled={isLocked}>
@@ -526,7 +530,10 @@ const ScriptStudio = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">Narrative POV</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
+                    Narrative POV
+                  </Label>
                   <Select value={styleDNA.narrativePOV} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narrativePOV: value }))} disabled={isLocked}>
                     <SelectTrigger>
                       <SelectValue />
@@ -540,7 +547,10 @@ const ScriptStudio = () => {
                 </div>
                 
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">Narrator Type</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
+                    <User className="h-3 w-3" />
+                    Narrator Type
+                  </Label>
                   <Select value={styleDNA.narratorType} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narratorType: value }))} disabled={isLocked}>
                     <SelectTrigger>
                       <SelectValue />
@@ -554,7 +564,10 @@ const ScriptStudio = () => {
                 </div>
                 
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">Visual Style</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
+                    <Video className="h-3 w-3" />
+                    Visual Style
+                  </Label>
                   <Select value={styleDNA.visualStyle} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, visualStyle: value }))} disabled={isLocked}>
                     <SelectTrigger>
                       <SelectValue />
@@ -568,7 +581,10 @@ const ScriptStudio = () => {
                 </div>
                 
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">Video Length</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
+                    <Timer className="h-3 w-3" />
+                    Video Length
+                  </Label>
                   <Select value={styleDNA.videoLength} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, videoLength: value }))} disabled={isLocked}>
                     <SelectTrigger>
                       <SelectValue />
@@ -591,7 +607,10 @@ const ScriptStudio = () => {
               <>
                 <Separator className="my-6" />
                 <div>
-                  <h4 className="font-medium mb-4">Character Narrator Details</h4>
+                  <h4 className="font-medium mb-4 flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Character Narrator Details
+                  </h4>
                   
                   <div className="space-y-4">
                     <div>
@@ -609,8 +628,9 @@ const ScriptStudio = () => {
                           size="sm"
                           onClick={() => generateCharacterDetails('characterIdentity')}
                           disabled={isLocked || isGenerating}
+                          className="min-w-[100px]"
                         >
-                          <Sparkles className="h-3 w-3 mr-1" />
+                          <Wand2 className="h-3 w-3 mr-1" />
                           Generate
                         </Button>
                       </div>
@@ -631,8 +651,9 @@ const ScriptStudio = () => {
                           size="sm"
                           onClick={() => generateCharacterDetails('characterVisualStyle')}
                           disabled={isLocked || isGenerating}
+                          className="min-w-[100px]"
                         >
-                          <Sparkles className="h-3 w-3 mr-1" />
+                          <Wand2 className="h-3 w-3 mr-1" />
                           Generate
                         </Button>
                       </div>
@@ -653,8 +674,9 @@ const ScriptStudio = () => {
                           size="sm"
                           onClick={() => generateCharacterDetails('voiceTraits')}
                           disabled={isLocked || isGenerating}
+                          className="min-w-[100px]"
                         >
-                          <Sparkles className="h-3 w-3 mr-1" />
+                          <Wand2 className="h-3 w-3 mr-1" />
                           Generate
                         </Button>
                       </div>
@@ -680,7 +702,7 @@ const ScriptStudio = () => {
             stageDirectionsOpen.hook,
             () => toggleStageDirections('hook'),
             "border-l-orange-500",
-            Flame,
+            Zap,
             "90% scroll-stop"
           )}
 
@@ -760,7 +782,10 @@ const ScriptStudio = () => {
           {/* Quality Metrics & Progress Status */}
           <Card className="card-factory-glow p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Quality & Progress</h3>
+              <h3 className="font-semibold flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                Quality & Progress
+              </h3>
               {status.hasMissing && (
                 <Button variant="outline" size="sm" className="bg-primary/10 hover:bg-primary/20">
                   <Wand2 className="h-3 w-3 mr-1" />
