@@ -140,51 +140,12 @@ const Production = () => {
     last_rendered: '2 minutes ago'
   };
 
-  const [renderQueue] = useState([
-    {
-      platform: "TikTok",
-      aspect: "9:16",
-      resolution: "1080x1920",
-      status: "ready",
-      progress: 100
-    },
-    {
-      platform: "YouTube Shorts", 
-      aspect: "9:16",
-      resolution: "1080x1920",
-      status: "rendering",
-      progress: 75
-    },
-    {
-      platform: "Instagram Reels",
-      aspect: "9:16", 
-      resolution: "1080x1920",
-      status: "queued",
-      progress: 0
-    },
-    {
-      platform: "YouTube",
-      aspect: "16:9",
-      resolution: "1920x1080", 
-      status: "queued",
-      progress: 0
-    }
-  ]);
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "ready": return "bg-green-500";
-      case "rendering": return "bg-blue-500";
-      case "queued": return "bg-gray-500";
-      default: return "bg-gray-500";
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -537,120 +498,6 @@ const Production = () => {
                 </div>
               ))}
             </div>
-          </Card>
-
-          {/* Render Queue */}
-          <Card className="card-factory-glow p-6">
-            <h2 className="text-xl font-semibold mb-4">Render Queue</h2>
-            <div className="space-y-3">
-              {renderQueue.map((render, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${getStatusColor(render.status)}`} />
-                    <div>
-                      <p className="font-medium">{render.platform}</p>
-                      <p className="text-sm text-muted-foreground">{render.aspect} • {render.resolution}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Progress value={render.progress} className="w-24" />
-                      <span className="text-sm">{render.progress}%</span>
-                    </div>
-                    {render.status === "ready" && (
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Asset Library */}
-          <Card className="card-factory-glow p-6">
-            <h2 className="text-xl font-semibold mb-4">Asset Library</h2>
-            <Tabs defaultValue="voice" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="voice">Voice</TabsTrigger>
-                <TabsTrigger value="music">Music</TabsTrigger>
-                <TabsTrigger value="captions">Captions</TabsTrigger>
-                <TabsTrigger value="broll">B-roll</TabsTrigger>
-                <TabsTrigger value="graphics">Graphics</TabsTrigger>
-              </TabsList>
-              <TabsContent value="voice" className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 border border-border rounded-lg">
-                    <h4 className="font-medium mb-2">Main Voiceover</h4>
-                    <p className="text-sm text-muted-foreground mb-2">voice-main.mp3</p>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm">
-                        <Play className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="music" className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 border border-border rounded-lg">
-                    <h4 className="font-medium mb-2">Background Track</h4>
-                    <p className="text-sm text-muted-foreground mb-2">music-bg.mp3</p>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm">
-                        <Play className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="captions" className="space-y-4">
-                <div className="p-4 border border-border rounded-lg">
-                  <h4 className="font-medium mb-2">Dynamic Captions</h4>
-                  <p className="text-sm text-muted-foreground mb-2">captions.srt</p>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="broll" className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                  {["Gym Workout A", "Exercise Demo", "Results Before/After"].map((clip, index) => (
-                    <div key={index} className="p-4 border border-border rounded-lg">
-                      <div className="aspect-video bg-muted rounded mb-2"></div>
-                      <h4 className="font-medium text-sm">{clip}</h4>
-                      <p className="text-xs text-muted-foreground">broll-{index + 1}.mp4</p>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-              <TabsContent value="graphics" className="space-y-4">
-                <div className="grid grid-cols-4 gap-4">
-                  {["Logo Intro", "CTA Graphics"].map((graphic, index) => (
-                    <div key={index} className="p-4 border border-border rounded-lg">
-                      <div className="aspect-square bg-muted rounded mb-2 flex items-center justify-center">
-                        <Layers className="h-8 w-8 text-muted-foreground" />
-                      </div>
-                      <h4 className="font-medium text-sm">{graphic}</h4>
-                      <p className="text-xs text-muted-foreground">{graphic.toLowerCase().replace(' ', '-')}.png</p>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
           </Card>
         </div>
 
