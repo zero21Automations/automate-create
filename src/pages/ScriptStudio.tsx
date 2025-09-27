@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -53,9 +53,9 @@ const ScriptStudio = () => {
   });
 
   const [stageDirectionsOpen, setStageDirectionsOpen] = useState({
-    hook: false,
+    hook: true,
     beats: {} as Record<number, boolean>,
-    cta: false
+    cta: true
   });
 
   const [validationScores, setValidationScores] = useState({
@@ -86,10 +86,10 @@ const ScriptStudio = () => {
 
   const [isLocked, setIsLocked] = useState(false);
 
-  const addBeat = () => {
+  const addBeat = (afterIndex?: number) => {
     if (isLocked) return;
     const newBeat = {
-      id: script.beats.length + 1,
+      id: Date.now(), // Use timestamp for unique ID
       text: "",
       stageDirections: {
         bRoll: "",
@@ -100,7 +100,22 @@ const ScriptStudio = () => {
       duration: 5,
       metrics: { scrollStop: 0, retention: 0, engagement: 0 }
     };
-    setScript(prev => ({ ...prev, beats: [...prev.beats, newBeat] }));
+    
+    if (afterIndex !== undefined) {
+      const newBeats = [...script.beats];
+      newBeats.splice(afterIndex + 1, 0, newBeat);
+      setScript(prev => ({ ...prev, beats: newBeats }));
+    } else {
+      setScript(prev => ({ ...prev, beats: [...prev.beats, newBeat] }));
+    }
+  };
+
+  const deleteBeat = (beatId: number) => {
+    if (isLocked || script.beats.length <= 1) return;
+    setScript(prev => ({ 
+      ...prev, 
+      beats: prev.beats.filter(beat => beat.id !== beatId) 
+    }));
   };
 
   const freezeScript = () => {
@@ -129,7 +144,7 @@ const ScriptStudio = () => {
         ...prev,
         beats: {
           ...prev.beats,
-          [beatId]: !prev.beats[beatId]
+          [beatId]: prev.beats[beatId] !== undefined ? !prev.beats[beatId] : true
         }
       }));
     } else {
@@ -138,6 +153,30 @@ const ScriptStudio = () => {
         [section]: !prev[section as keyof typeof prev]
       }));
     }
+  };
+
+  const getTaskStatus = () => {
+    const hasHook = script.hook.length > 0;
+    const hasBeats = script.beats.every(beat => beat.text.length > 0);
+    const hasCTA = script.cta.length > 0;
+    const hasStageDirections = script.hookStageDirections.bRoll && 
+      script.beats.every(beat => beat.stageDirections.bRoll) && 
+      script.ctaStageDirections.bRoll;
+    
+    return {
+      completed: [
+        hasHook && "Hook written",
+        hasBeats && "All beats completed",
+        hasCTA && "CTA written",
+        hasStageDirections && "Stage directions complete"
+      ].filter(Boolean),
+      pending: [
+        !hasHook && "Write hook",
+        !hasBeats && "Complete all beats",
+        !hasCTA && "Write call to action",
+        !hasStageDirections && "Add stage directions"
+      ].filter(Boolean)
+    };
   };
 
   const renderStageDirectionsCard = (
@@ -152,16 +191,18 @@ const ScriptStudio = () => {
     onToggle: () => void,
     colorClass: string,
     icon: any,
-    metricLabel: string
+    metricLabel: string,
+    canDelete?: boolean,
+    onDelete?: () => void
   ) => {
     const Icon = icon;
     
     return (
-      <Card className={`p-6 border-l-4 ${colorClass} bg-gradient-to-r from-violet-950/20 to-transparent`}>
+      <Card className={`card-factory-glow p-6 border-l-4 ${colorClass}`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <h3 className="text-lg font-semibold text-violet-100">{title} ({duration} seconds)</h3>
-            <Button variant="outline" size="sm" className="bg-violet-600 hover:bg-violet-700 text-white border-violet-500">
+            <h3 className="text-lg font-semibold">{title} ({duration} seconds)</h3>
+            <Button variant="outline" size="sm" className="bg-primary/10 hover:bg-primary/20">
               <Sparkles className="h-3 w-3 mr-1" />
               Generate {title}
             </Button>
@@ -180,6 +221,11 @@ const ScriptStudio = () => {
                 ))}
               </SelectContent>
             </Select>
+            {canDelete && (
+              <Button variant="outline" size="sm" onClick={onDelete} disabled={isLocked}>
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -187,13 +233,13 @@ const ScriptStudio = () => {
           placeholder={`Enter your ${title.toLowerCase()} content...`}
           value={text}
           onChange={(e) => onTextChange(e.target.value)}
-          className="min-h-[100px] mb-4 bg-violet-950/20 border-violet-600 text-violet-100 placeholder:text-violet-400"
+          className="min-h-[100px] mb-4"
           disabled={isLocked}
         />
 
         <Collapsible open={isOpen} onOpenChange={onToggle}>
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full justify-between text-violet-300 hover:text-violet-100">
+            <Button variant="ghost" className="w-full justify-between">
               <div className="flex items-center gap-2">
                 <Video className="h-4 w-4" />
                 Stage Directions
@@ -204,58 +250,58 @@ const ScriptStudio = () => {
           <CollapsibleContent className="mt-4 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-violet-300 mb-2 block">B-Roll Shot</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">B-Roll Shot</Label>
                 <Textarea
                   placeholder="e.g. Wide shot of penguin colony"
                   value={stageDirections.bRoll}
                   onChange={(e) => onStageDirectionsChange('bRoll', e.target.value)}
-                  className="bg-violet-950/20 border-violet-600 text-violet-100 placeholder:text-violet-400"
+                  className="min-h-[80px]"
                   disabled={isLocked}
                 />
               </div>
               <div>
-                <Label className="text-sm text-violet-300 mb-2 block">Overlay/Graphics</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">Overlay/Graphics</Label>
                 <Textarea
                   placeholder="e.g. 🐧🔥 emoji animation"
                   value={stageDirections.overlay}
                   onChange={(e) => onStageDirectionsChange('overlay', e.target.value)}
-                  className="bg-violet-950/20 border-violet-600 text-violet-100 placeholder:text-violet-400"
+                  className="min-h-[80px]"
                   disabled={isLocked}
                 />
               </div>
               <div>
-                <Label className="text-sm text-violet-300 mb-2 block">Voice Style</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">Voice Style</Label>
                 <Textarea
                   placeholder="e.g. Excited, surprised"
                   value={stageDirections.voiceStyle}
                   onChange={(e) => onStageDirectionsChange('voiceStyle', e.target.value)}
-                  className="bg-violet-950/20 border-violet-600 text-violet-100 placeholder:text-violet-400"
+                  className="min-h-[80px]"
                   disabled={isLocked}
                 />
               </div>
               <div>
-                <Label className="text-sm text-violet-300 mb-2 block">SFX</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">SFX</Label>
                 <Textarea
                   placeholder="e.g. Pebble drop sound..."
                   value={stageDirections.sfx}
                   onChange={(e) => onStageDirectionsChange('sfx', e.target.value)}
-                  className="bg-violet-950/20 border-violet-600 text-violet-100 placeholder:text-violet-400"
+                  className="min-h-[80px]"
                   disabled={isLocked}
                 />
               </div>
             </div>
             <div className="flex justify-between pt-4">
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="bg-violet-600 hover:bg-violet-700 text-white border-violet-500">
+                <Button variant="outline" size="sm">
                   <Sparkles className="h-3 w-3 mr-1" />
                   Generate Directions
                 </Button>
-                <Button variant="outline" size="sm" className="border-violet-600 text-violet-300 hover:bg-violet-800">
+                <Button variant="outline" size="sm">
                   <RotateCcw className="h-3 w-3 mr-1" />
                   Reset
                 </Button>
               </div>
-              <Button variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+              <Button variant="default" size="sm">
                 <Check className="h-3 w-3 mr-1" />
                 Approve
               </Button>
@@ -266,8 +312,10 @@ const ScriptStudio = () => {
     );
   };
 
+  const status = getTaskStatus();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-violet-950 p-6 space-y-6">
+    <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Pipeline Navigation */}
       <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="script" />
       
@@ -278,34 +326,33 @@ const ScriptStudio = () => {
             variant="ghost" 
             size="icon"
             onClick={() => navigate(-1)}
-            className="text-violet-300 hover:text-violet-100"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">Script Studio</h1>
-            <p className="text-violet-300">Stage 2: Transform ideas into platform-optimized scripts</p>
+            <h1 className="text-3xl font-bold text-factory-gradient">Script Studio</h1>
+            <p className="text-muted-foreground">Stage 2: Transform ideas into platform-optimized scripts</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="bg-violet-800 text-violet-200">
+          <Badge variant="secondary" className="badge-factory">
             <Clock className="h-3 w-3 mr-1" />
             2:30 read time
           </Badge>
           {ideaId && (
-            <Badge variant="secondary" className="bg-violet-800 text-violet-200">Idea: {ideaId}</Badge>
+            <Badge variant="secondary" className="badge-factory">Idea: {ideaId}</Badge>
           )}
-          <Button variant="outline" size="sm" className="border-violet-600 text-violet-300 hover:bg-violet-800">
+          <Button variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Regenerate
           </Button>
-          <Button variant="default" size="sm" className="bg-violet-600 hover:bg-violet-700">
+          <Button variant="factory">
             <Save className="h-4 w-4 mr-2" />
             Save Script
           </Button>
           <Button 
             onClick={script.state === "draft" ? freezeScript : () => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
-            className={script.state === "draft" ? "bg-amber-600 hover:bg-amber-700 text-white" : "bg-gradient-to-r from-violet-600 to-purple-600 text-white"}
+            className={script.state === "draft" ? "bg-amber-600 hover:bg-amber-700 text-white" : "bg-gradient-factory text-white"}
           >
             {script.state === "draft" ? (
               <>
@@ -326,17 +373,17 @@ const ScriptStudio = () => {
         {/* Script Editor */}
         <div className="xl:col-span-2 space-y-6">
           {/* Style DNA Card */}
-          <Card className="p-4 border border-violet-600 bg-gradient-to-r from-violet-950/40 to-transparent">
+          <Card className="card-factory-glow p-4 border-l-4 border-l-primary">
             <div className="flex items-center gap-2 mb-3">
-              <Palette className="h-4 w-4 text-violet-400" />
-              <h3 className="font-semibold text-violet-100">Script DNA</h3>
-              {isLocked && <Lock className="h-3 w-3 text-violet-400" />}
+              <Palette className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold">Script DNA</h3>
+              {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs font-medium text-violet-300">Narrative</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Narrative</Label>
                 <Select value={styleDNA.narrative} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narrative: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm bg-violet-950/20 border-violet-600 text-violet-100">
+                  <SelectTrigger className="h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -347,9 +394,9 @@ const ScriptStudio = () => {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs font-medium text-violet-300">Visual</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Visual</Label>
                 <Select value={styleDNA.visual} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, visual: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm bg-violet-950/20 border-violet-600 text-violet-100">
+                  <SelectTrigger className="h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -360,9 +407,9 @@ const ScriptStudio = () => {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs font-medium text-violet-300">Tone</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Tone</Label>
                 <Select value={styleDNA.tone} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, tone: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm bg-violet-950/20 border-violet-600 text-violet-100">
+                  <SelectTrigger className="h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -373,9 +420,9 @@ const ScriptStudio = () => {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs font-medium text-violet-300">Pace</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Pace</Label>
                 <Select value={styleDNA.pace} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, pace: value }))} disabled={isLocked}>
-                  <SelectTrigger className="h-8 text-sm bg-violet-950/20 border-violet-600 text-violet-100">
+                  <SelectTrigger className="h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -387,11 +434,11 @@ const ScriptStudio = () => {
               </div>
             </div>
             <div className="mt-3">
-              <Label className="text-xs font-medium text-violet-300">Targeting</Label>
+              <Label className="text-xs font-medium text-muted-foreground">Targeting</Label>
               <Input 
                 value={styleDNA.targeting} 
                 onChange={(e) => setStyleDNA(prev => ({ ...prev, targeting: e.target.value }))}
-                className="h-8 text-sm bg-violet-950/20 border-violet-600 text-violet-100"
+                className="h-8 text-sm"
                 disabled={isLocked}
               />
             </div>
@@ -418,21 +465,8 @@ const ScriptStudio = () => {
 
           {/* Beats */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-violet-100">Script Beats</h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={addBeat}
-                disabled={isLocked}
-                className="border-violet-600 text-violet-300 hover:bg-violet-800"
-              >
-                Add Beat
-              </Button>
-            </div>
-            
             {script.beats.map((beat, index) => (
-              <div key={beat.id}>
+              <div key={beat.id} className="space-y-4">
                 {renderStageDirectionsCard(
                   `Beat ${index + 1}`,
                   beat.duration,
@@ -453,11 +487,28 @@ const ScriptStudio = () => {
                     newBeats[index].stageDirections = { ...newBeats[index].stageDirections, [field]: value };
                     setScript(prev => ({ ...prev, beats: newBeats }));
                   },
-                  stageDirectionsOpen.beats[beat.id] || false,
+                  stageDirectionsOpen.beats[beat.id] !== undefined ? stageDirectionsOpen.beats[beat.id] : true,
                   () => toggleStageDirections('beats', beat.id),
                   "border-l-blue-500",
                   Target,
-                  `${beat.metrics.engagement}% engagement`
+                  `${beat.metrics.engagement}% engagement`,
+                  script.beats.length > 1,
+                  () => deleteBeat(beat.id)
+                )}
+                
+                {/* Add Beat Button */}
+                {!isLocked && (
+                  <div className="flex justify-center">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => addBeat(index)}
+                      className="text-muted-foreground border-dashed"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add Beat After
+                    </Button>
+                  </div>
                 )}
               </div>
             ))}
@@ -486,45 +537,85 @@ const ScriptStudio = () => {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Quality Scores */}
-          <Card className="p-4 border border-violet-600 bg-gradient-to-r from-violet-950/40 to-transparent">
-            <h3 className="font-semibold mb-4 text-violet-100">Quality Metrics</h3>
+          <Card className="card-factory-glow p-4">
+            <h3 className="font-semibold mb-4">Quality Metrics</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-violet-300">Hook Strength</span>
-                <Badge variant="secondary" className="bg-violet-800 text-violet-200">{validationScores.hookStrength}/10</Badge>
+                <span className="text-sm">Hook Strength</span>
+                <Badge variant="secondary">{validationScores.hookStrength}/10</Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-violet-300">Engagement Potential</span>
-                <Badge variant="secondary" className="bg-violet-800 text-violet-200">{validationScores.engagementPotential}/10</Badge>
+                <span className="text-sm">Engagement Potential</span>
+                <Badge variant="secondary">{validationScores.engagementPotential}/10</Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-violet-300">Brand Alignment</span>
-                <Badge variant="secondary" className="bg-violet-800 text-violet-200">{validationScores.brandAlignment}/10</Badge>
+                <span className="text-sm">Brand Alignment</span>
+                <Badge variant="secondary">{validationScores.brandAlignment}/10</Badge>
+              </div>
+            </div>
+          </Card>
+
+          {/* Status Tracker */}
+          <Card className="card-factory-glow p-4">
+            <h3 className="font-semibold mb-4">Progress Status</h3>
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-green-600 mb-2">Completed</h4>
+                <div className="space-y-1">
+                  {status.completed.length > 0 ? (
+                    status.completed.map((task, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm text-green-600">
+                        <Check className="h-3 w-3" />
+                        {task}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground">No tasks completed yet</div>
+                  )}
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <h4 className="text-sm font-medium text-orange-600 mb-2">Pending</h4>
+                <div className="space-y-1">
+                  {status.pending.length > 0 ? (
+                    status.pending.map((task, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm text-orange-600">
+                        <Clock className="h-3 w-3" />
+                        {task}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-green-600">All tasks completed!</div>
+                  )}
+                </div>
               </div>
             </div>
           </Card>
 
           {/* Platform Versions */}
-          <Card className="p-4 border border-violet-600 bg-gradient-to-r from-violet-950/40 to-transparent">
-            <h3 className="font-semibold mb-4 text-violet-100">Platform Versions</h3>
+          <Card className="card-factory-glow p-4">
+            <h3 className="font-semibold mb-4">Platform Versions</h3>
             <Tabs defaultValue="tiktok" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-violet-800">
-                <TabsTrigger value="tiktok" className="text-violet-200">TikTok</TabsTrigger>
-                <TabsTrigger value="youtube" className="text-violet-200">YouTube</TabsTrigger>
-                <TabsTrigger value="instagram" className="text-violet-200">Instagram</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="tiktok">TikTok</TabsTrigger>
+                <TabsTrigger value="youtube">YouTube</TabsTrigger>
+                <TabsTrigger value="instagram">Instagram</TabsTrigger>
               </TabsList>
               <TabsContent value="tiktok" className="mt-4">
-                <div className="text-sm text-violet-300">
+                <div className="text-sm text-muted-foreground">
                   Optimized for 15-60 seconds, vertical format
                 </div>
               </TabsContent>
               <TabsContent value="youtube" className="mt-4">
-                <div className="text-sm text-violet-300">
+                <div className="text-sm text-muted-foreground">
                   Extended for 60+ seconds, horizontal format
                 </div>
               </TabsContent>
               <TabsContent value="instagram" className="mt-4">
-                <div className="text-sm text-violet-300">
+                <div className="text-sm text-muted-foreground">
                   Square/vertical format, 30-60 seconds
                 </div>
               </TabsContent>
