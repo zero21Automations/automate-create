@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { 
   Play, 
@@ -21,9 +20,6 @@ import {
   Monitor,
   Smartphone,
   Square,
-  Eye,
-  EyeOff,
-  Unlock,
   ArrowLeft,
   Share2,
   Video,
@@ -146,7 +142,6 @@ const Production = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Unified Header with Integrated Pipeline */}
@@ -259,7 +254,129 @@ const Production = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Content Area */}
         <div className="lg:col-span-3 space-y-6 min-w-0">
-          {/* Preview Window */}
+          {/* Timeline Assembly & Editing - Using Approved Assets */}
+          <Card className="card-factory-glow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Timeline Assembly & Mixing</h2>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs text-muted-foreground">
+                  Assemble • Edit • Polish • Render
+                </Badge>
+                <Button variant="ghost" size="sm" title="Regenerate Full Preview">
+                  <RotateCcw className="h-4 w-4" />
+                  <span className="ml-1 text-xs">Full Render</span>
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Layers className="h-4 w-4" />
+                  <span className="ml-1 text-xs">Audio Mix</span>
+                </Button>
+              </div>
+            </div>
+
+            {/* Audio Mix Controls */}
+            <div className="mb-6 p-4 bg-muted/20 rounded-lg">
+              <h3 className="text-sm font-medium mb-3">Audio Levels</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs text-muted-foreground">Voice</label>
+                  <Slider
+                    value={[audioMix.voice]}
+                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, voice: value }))}
+                    max={100}
+                    step={1}
+                    className="mt-1"
+                  />
+                  <span className="text-xs text-muted-foreground">{audioMix.voice}%</span>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Music</label>
+                  <Slider
+                    value={[audioMix.music]}
+                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, music: value }))}
+                    max={100}
+                    step={1}
+                    className="mt-1"
+                  />
+                  <span className="text-xs text-muted-foreground">{audioMix.music}%</span>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">SFX</label>
+                  <Slider
+                    value={[audioMix.sfx]}
+                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, sfx: value }))}
+                    max={100}
+                    step={1}
+                    className="mt-1"
+                  />
+                  <span className="text-xs text-muted-foreground">{audioMix.sfx}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Scene-by-Scene Timeline */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Scene Breakdown</h3>
+              {scenes.map((scene, index) => (
+                <div key={scene.id} className="border border-border rounded-lg p-4">
+                  {/* Scene Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        scene.status === 'ready' ? 'bg-green-500' : 
+                        scene.status === 'stale' ? 'bg-yellow-500' : 'bg-gray-500'
+                      }`} />
+                      <h4 className="font-medium">{scene.name}</h4>
+                      <Badge variant="outline" className="text-xs">
+                        {formatTime(scene.startTime)} - {formatTime(scene.startTime + scene.duration)}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {scene.status === 'stale' && (
+                        <Button variant="outline" size="sm" className="text-xs">
+                          <RotateCcw className="h-3 w-3 mr-1" />
+                          Regenerate Scene
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="sm" className="text-xs">
+                        <Scissors className="h-3 w-3 mr-1" />
+                        Trim
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-xs">
+                        <Move className="h-3 w-3 mr-1" />
+                        Move
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Scene Tracks */}
+                  <div className="grid grid-cols-1 gap-2">
+                    {scene.tracks.map((track, trackIndex) => (
+                      <div key={trackIndex} className="flex items-center gap-3 p-2 bg-muted/10 rounded">
+                        <div className="w-16 text-xs font-medium capitalize">{track.type}</div>
+                        <div className="flex-1 flex items-center gap-2">
+                          <div className={`h-6 flex-1 rounded px-2 flex items-center text-xs ${
+                            track.type === 'voice' ? 'bg-blue-500/20 text-blue-700' :
+                            track.type === 'broll' ? 'bg-purple-500/20 text-purple-700' :
+                            track.type === 'captions' ? 'bg-yellow-500/20 text-yellow-700' :
+                            'bg-green-500/20 text-green-700'
+                          }`}>
+                            {track.content}
+                          </div>
+                          <div className={`w-2 h-2 rounded-full ${
+                            track.status === 'ready' ? 'bg-green-500' : 
+                            track.status === 'stale' ? 'bg-yellow-500' : 'bg-gray-500'
+                          }`} />
+                          {track.locked && <Lock className="h-3 w-3 text-muted-foreground" />}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Video Preview */}
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Video Preview</h2>
@@ -277,9 +394,9 @@ const Production = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Video Player */}
-              <div>
-                <div className="aspect-[9/16] bg-black rounded-lg mb-4 flex items-center justify-center relative">
+              {/* Video Player - Centered */}
+              <div className="flex flex-col items-center">
+                <div className="aspect-[9/16] bg-black rounded-lg mb-4 flex items-center justify-center relative max-w-sm w-full">
                   <div className="text-white text-center">
                     <Play className="h-16 w-16 mx-auto mb-2 opacity-50" />
                     <p className="text-sm opacity-75">Preview Window</p>
@@ -351,152 +468,6 @@ const Production = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </Card>
-
-          {/* Frozen Asset Status */}
-          <Card className="card-factory-glow p-4 border-primary/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
-                <div>
-                  <p className="text-sm font-medium">Asset Manifest v{frozenAssetManifest.version} Locked</p>
-                  <p className="text-xs text-muted-foreground">Frozen at {frozenAssetManifest.locked_at}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
-                  {renderStatus.status.replace('_', ' ')} v{renderStatus.version}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {renderStatus.last_rendered}
-                </Badge>
-              </div>
-            </div>
-          </Card>
-
-          {/* Timeline Assembly & Editing - Using Approved Assets */}
-          <Card className="card-factory-glow p-6">
-             <div className="flex items-center justify-between mb-4">
-               <h2 className="text-xl font-semibold">Timeline Assembly & Mixing</h2>
-               <div className="flex items-center gap-2">
-                 <Badge variant="outline" className="text-xs text-muted-foreground">
-                   Assemble • Edit • Polish • Render
-                 </Badge>
-                 <Button variant="ghost" size="sm" title="Regenerate Full Preview">
-                   <RotateCcw className="h-4 w-4" />
-                   <span className="ml-1 text-xs">Full Render</span>
-                 </Button>
-                 <Button variant="outline" size="sm">
-                   <Layers className="h-4 w-4" />
-                   <span className="ml-1 text-xs">Audio Mix</span>
-                 </Button>
-               </div>
-             </div>
-
-            {/* Audio Mix Controls */}
-            <div className="mb-6 p-4 bg-muted/20 rounded-lg">
-              <h3 className="text-sm font-medium mb-3">Audio Levels</h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="text-xs text-muted-foreground">Voice</label>
-                  <Slider
-                    value={[audioMix.voice]}
-                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, voice: value }))}
-                    max={100}
-                    step={1}
-                    className="mt-1"
-                  />
-                  <span className="text-xs text-muted-foreground">{audioMix.voice}%</span>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Music</label>
-                  <Slider
-                    value={[audioMix.music]}
-                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, music: value }))}
-                    max={100}
-                    step={1}
-                    className="mt-1"
-                  />
-                  <span className="text-xs text-muted-foreground">{audioMix.music}%</span>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">SFX</label>
-                  <Slider
-                    value={[audioMix.sfx]}
-                    onValueChange={([value]) => setAudioMix(prev => ({ ...prev, sfx: value }))}
-                    max={100}
-                    step={1}
-                    className="mt-1"
-                  />
-                  <span className="text-xs text-muted-foreground">{audioMix.sfx}%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Scene Cards */}
-            <div className="space-y-4">
-              {scenes.map((scene) => (
-                <div 
-                  key={scene.id}
-                  className={`border rounded-lg p-4 transition-all ${
-                    selectedScene === scene.id ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground'
-                  }`}
-                  onClick={() => setSelectedScene(scene.id)}
-                >
-                  {/* Scene Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        scene.status === 'ready' ? 'bg-green-500' : 
-                        scene.status === 'stale' ? 'bg-yellow-500' : 'bg-gray-500'
-                      }`} />
-                      <h4 className="font-medium">{scene.name}</h4>
-                      <Badge variant="outline" className="text-xs">
-                        {formatTime(scene.startTime)} - {formatTime(scene.startTime + scene.duration)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {scene.status === 'stale' && (
-                        <Button variant="outline" size="sm" className="text-xs">
-                          <RotateCcw className="h-3 w-3 mr-1" />
-                          Regenerate Scene
-                        </Button>
-                      )}
-                      <Button variant="ghost" size="sm">
-                        <Scissors className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Move className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Scene Tracks */}
-                  <div className="grid grid-cols-1 gap-2">
-                    {scene.tracks.map((track, trackIndex) => (
-                      <div key={trackIndex} className="flex items-center gap-3 p-2 bg-muted/10 rounded">
-                        <div className="w-16 text-xs font-medium capitalize">{track.type}</div>
-                        <div className="flex-1 flex items-center gap-2">
-                          <div className={`h-6 flex-1 rounded px-2 flex items-center text-xs ${
-                            track.type === 'voice' ? 'bg-blue-500/20 text-blue-700' :
-                            track.type === 'broll' ? 'bg-purple-500/20 text-purple-700' :
-                            track.type === 'captions' ? 'bg-yellow-500/20 text-yellow-700' :
-                            'bg-green-500/20 text-green-700'
-                          }`}>
-                            {track.content}
-                          </div>
-                          <div className={`w-2 h-2 rounded-full ${
-                            track.status === 'ready' ? 'bg-green-500' : 
-                            track.status === 'stale' ? 'bg-yellow-500' : 'bg-gray-500'
-                          }`} />
-                          {track.locked && <Lock className="h-3 w-3 text-muted-foreground" />}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
             </div>
           </Card>
 
