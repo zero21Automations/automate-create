@@ -275,7 +275,6 @@ const Production = () => {
         {/* Main Content Area */}
         <div className="xl:col-span-3 space-y-6">
           {/* Preview Window */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Video Preview</h2>
@@ -292,57 +291,83 @@ const Production = () => {
               </div>
             </div>
 
-            {/* Video Player */}
-            <div className="aspect-[9/16] bg-black rounded-lg mb-4 flex items-center justify-center relative">
-              <div className="text-white text-center">
-                <Play className="h-16 w-16 mx-auto mb-2 opacity-50" />
-                <p className="text-sm opacity-75">Preview Window</p>
-                <p className="text-xs opacity-50">1080x1920 • 9:16</p>
-              </div>
-              
-              {/* Timeline scrubber overlay */}
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="bg-black/50 rounded-lg p-2">
-                  <div className="flex items-center gap-2 text-white text-xs">
-                    <span>{formatTime(currentTime)}</span>
-                    <div className="flex-1 h-1 bg-white/20 rounded-full">
-                      <div 
-                        className="h-1 bg-white rounded-full transition-all duration-100"
-                        style={{ width: `${(currentTime / duration) * 100}%` }}
-                      />
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {/* Video Player */}
+              <div>
+                <div className="aspect-[9/16] bg-black rounded-lg mb-4 flex items-center justify-center relative">
+                  <div className="text-white text-center">
+                    <Play className="h-16 w-16 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm opacity-75">Preview Window</p>
+                    <p className="text-xs opacity-50">1080x1920 • 9:16</p>
+                  </div>
+                  
+                  {/* Timeline scrubber overlay */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-black/50 rounded-lg p-2">
+                      <div className="flex items-center gap-2 text-white text-xs">
+                        <span>{formatTime(currentTime)}</span>
+                        <div className="flex-1 h-1 bg-white/20 rounded-full">
+                          <div 
+                            className="h-1 bg-white rounded-full transition-all duration-100"
+                            style={{ width: `${(currentTime / duration) * 100}%` }}
+                          />
+                        </div>
+                        <span>{formatTime(duration)}</span>
+                      </div>
                     </div>
-                    <span>{formatTime(duration)}</span>
+                  </div>
+                </div>
+
+                {/* Playback Controls */}
+                <div className="flex items-center justify-center gap-4">
+                  <Button variant="ghost" size="sm">
+                    <SkipBack className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <SkipForward className="h-4 w-4" />
+                  </Button>
+                  <Separator orientation="vertical" className="h-6" />
+                  <Volume2 className="h-4 w-4" />
+                  <Slider 
+                    value={[75]} 
+                    max={100} 
+                    step={1}
+                    className="w-20"
+                  />
+                </div>
+              </div>
+
+              {/* Preview Settings */}
+              <div className="space-y-4">
+                <h3 className="font-semibold">Preview Settings</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Platform Format</label>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">TikTok</Button>
+                      <Button variant="outline" size="sm">Instagram</Button>
+                      <Button variant="outline" size="sm">YouTube</Button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Quality</label>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">1080p</Button>
+                      <Button variant="outline" size="sm">720p</Button>
+                      <Button variant="outline" size="sm">480p</Button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Playback Controls */}
-            <div className="flex items-center justify-center gap-4">
-              <Button variant="ghost" size="sm">
-                <SkipBack className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setIsPlaying(!isPlaying)}
-              >
-                {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-              </Button>
-              <Button variant="ghost" size="sm">
-                <SkipForward className="h-4 w-4" />
-              </Button>
-              <Separator orientation="vertical" className="h-6" />
-              <Volume2 className="h-4 w-4" />
-              <Slider 
-                value={[75]} 
-                max={100} 
-                step={1}
-                className="w-20"
-              />
-            </div>
           </Card>
-        </div>
 
           {/* Timeline Panel */}
           <div className="space-y-4">
