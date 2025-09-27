@@ -413,19 +413,21 @@ const ScriptStudio = () => {
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div>
+            <div className="text-left">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <span>{currentProject?.name || "Project"}</span>
                 <span>•</span>
                 <span className="text-primary font-medium">{currentIdea?.title || "Untitled Idea"}</span>
               </div>
-              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3">
+              
+              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
                 <FileText className="h-6 w-6" />
                 Script Studio
                 <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
                   Stage {currentStageIndex + 1}/{pipelineStages.length}
                 </Badge>
               </h1>
+              
               <p className="text-muted-foreground">Transform ideas into platform-optimized scripts</p>
             </div>
           </div>
