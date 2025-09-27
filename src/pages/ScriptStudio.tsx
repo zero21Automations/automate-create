@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette } from "lucide-react";
 import { PipelineNav } from "@/components/PipelineNav";
 import { NextButton } from "@/components/NextButton";
 
@@ -16,8 +17,15 @@ const ScriptStudio = () => {
   const { projectId, ideaId } = useParams();
   const [script, setScript] = useState({
     hook: "",
-    beats: [{ id: 1, text: "", stageDirections: "" }],
-    cta: ""
+    beats: [{ 
+      id: 1, 
+      text: "", 
+      stageDirections: "",
+      metrics: { scrollStop: 85, retention: 78, engagement: 72 }
+    }],
+    cta: "",
+    state: "draft", // draft, frozen, locked
+    version: 1
   });
 
   const [validationScores, setValidationScores] = useState({
@@ -25,6 +33,47 @@ const ScriptStudio = () => {
     engagementPotential: 8,
     brandAlignment: 9
   });
+
+  const [styleDNA] = useState({
+    narrative: "Third Person",
+    visual: "Live Action",
+    tone: "Energetic",
+    pace: "Fast",
+    targeting: "Fitness Enthusiasts 18-35"
+  });
+
+  const [isLocked, setIsLocked] = useState(false);
+
+  const addBeat = () => {
+    if (isLocked) return;
+    const newBeat = {
+      id: script.beats.length + 1,
+      text: "",
+      stageDirections: "",
+      metrics: { scrollStop: 0, retention: 0, engagement: 0 }
+    };
+    setScript(prev => ({ ...prev, beats: [...prev.beats, newBeat] }));
+  };
+
+  const freezeScript = () => {
+    setScript(prev => ({ ...prev, state: "frozen" }));
+    setIsLocked(true);
+  };
+
+  const getMetricColor = (score) => {
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
+    return "text-red-600";
+  };
+
+  const getMetricIcon = (type) => {
+    switch (type) {
+      case 'scrollStop': return Flame;
+      case 'retention': return Eye;
+      case 'engagement': return ThumbsUp;
+      default: return Target;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -62,11 +111,20 @@ const ScriptStudio = () => {
             Save Script
           </Button>
           <Button 
-            onClick={() => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
-            className="bg-gradient-factory text-white"
+            onClick={script.state === "draft" ? freezeScript : () => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
+            className={script.state === "draft" ? "bg-amber-600 hover:bg-amber-700 text-white" : "bg-gradient-factory text-white"}
           >
-            <Image className="h-4 w-4 mr-2" />
-            Next: Assets
+            {script.state === "draft" ? (
+              <>
+                <Lock className="h-4 w-4 mr-2" />
+                Freeze & Continue
+              </>
+            ) : (
+              <>
+                <Image className="h-4 w-4 mr-2" />
+                Next: Assets
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -74,9 +132,29 @@ const ScriptStudio = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Script Editor */}
         <div className="xl:col-span-2 space-y-6">
+          {/* Style DNA Card */}
+          <Card className="card-factory-glow p-4 border-l-4 border-l-primary">
+            <div className="flex items-center gap-2 mb-3">
+              <Palette className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold">Active Style DNA</h3>
+              {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary">{styleDNA.narrative}</Badge>
+              <Badge variant="secondary">{styleDNA.visual}</Badge>
+              <Badge variant="secondary">{styleDNA.tone}</Badge>
+              <Badge variant="secondary">{styleDNA.pace} Pace</Badge>
+            </div>
+          </Card>
+
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Script Structure</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-semibold">Script Structure</h2>
+                <Badge variant={script.state === "frozen" ? "secondary" : "outline"}>
+                  v{script.version} • {script.state}
+                </Badge>
+              </div>
               <Button variant="ghost" size="sm">
                 <Play className="h-4 w-4 mr-2" />
                 Preview
@@ -86,12 +164,19 @@ const ScriptStudio = () => {
             <div className="space-y-6">
               {/* Hook */}
               <div>
-                <label className="text-sm font-medium mb-2 block">Hook (First 3 seconds)</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium">Hook (First 3 seconds)</label>
+                  <div className="flex items-center gap-2">
+                    <Flame className="h-3 w-3 text-orange-500" />
+                    <span className="text-xs text-orange-600 font-medium">90% scroll-stop</span>
+                  </div>
+                </div>
                 <Textarea
                   placeholder="Start with a compelling hook that stops the scroll..."
                   value={script.hook}
                   onChange={(e) => setScript(prev => ({ ...prev, hook: e.target.value }))}
                   className="min-h-[80px]"
+                  disabled={isLocked}
                 />
               </div>
 
@@ -99,35 +184,87 @@ const ScriptStudio = () => {
 
               {/* Script Beats */}
               <div>
-                <label className="text-sm font-medium mb-2 block">Script Beats</label>
-                {script.beats.map((beat, index) => (
-                  <div key={beat.id} className="space-y-3 mb-4">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">Beat {index + 1}</Badge>
+                <label className="text-sm font-medium mb-4 block">Script Beats</label>
+                {script.beats.map((beat, index) => {
+                  const ScrollStopIcon = getMetricIcon('scrollStop');
+                  const RetentionIcon = getMetricIcon('retention');
+                  const EngagementIcon = getMetricIcon('engagement');
+                  
+                  return (
+                    <div key={beat.id} className="space-y-3 mb-6 p-4 border rounded-lg bg-card/50">
+                      <div className="flex items-center justify-between">
+                        <Badge variant="outline">Beat {index + 1}</Badge>
+                        <div className="flex items-center gap-3 text-xs">
+                          <div className="flex items-center gap-1">
+                            <ScrollStopIcon className="h-3 w-3" />
+                            <span className={getMetricColor(beat.metrics.scrollStop)}>
+                              {beat.metrics.scrollStop}%
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <RetentionIcon className="h-3 w-3" />
+                            <span className={getMetricColor(beat.metrics.retention)}>
+                              {beat.metrics.retention}%
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <EngagementIcon className="h-3 w-3" />
+                            <span className={getMetricColor(beat.metrics.engagement)}>
+                              {beat.metrics.engagement}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Textarea
+                        placeholder="Enter script content for this beat..."
+                        value={beat.text}
+                        onChange={(e) => {
+                          if (isLocked) return;
+                          const newBeats = [...script.beats];
+                          newBeats[index].text = e.target.value;
+                          setScript(prev => ({ ...prev, beats: newBeats }));
+                        }}
+                        className="min-h-[100px]"
+                        disabled={isLocked}
+                      />
+                      
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                        <Input
+                          placeholder="Stage directions (camera, visuals, etc.)"
+                          value={beat.stageDirections}
+                          onChange={(e) => {
+                            if (isLocked) return;
+                            const newBeats = [...script.beats];
+                            newBeats[index].stageDirections = e.target.value;
+                            setScript(prev => ({ ...prev, beats: newBeats }));
+                          }}
+                          className="text-sm text-muted-foreground"
+                          disabled={isLocked}
+                        />
+                        
+                        {/* Asset Preview Slots */}
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" className="flex-1" disabled={!beat.text}>
+                            <Mic className="h-3 w-3 mr-1" />
+                            Voice
+                          </Button>
+                          <Button variant="outline" size="sm" className="flex-1" disabled={!beat.stageDirections}>
+                            <Video className="h-3 w-3 mr-1" />
+                            B-roll
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <Textarea
-                      placeholder="Enter script content for this beat..."
-                      value={beat.text}
-                      onChange={(e) => {
-                        const newBeats = [...script.beats];
-                        newBeats[index].text = e.target.value;
-                        setScript(prev => ({ ...prev, beats: newBeats }));
-                      }}
-                      className="min-h-[100px]"
-                    />
-                    <Input
-                      placeholder="Stage directions (camera angles, visuals, etc.)"
-                      value={beat.stageDirections}
-                      onChange={(e) => {
-                        const newBeats = [...script.beats];
-                        newBeats[index].stageDirections = e.target.value;
-                        setScript(prev => ({ ...prev, beats: newBeats }));
-                      }}
-                      className="text-sm text-muted-foreground"
-                    />
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" className="w-full">
+                  );
+                })}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={addBeat}
+                  disabled={isLocked}
+                >
                   Add Beat
                 </Button>
               </div>
@@ -136,12 +273,19 @@ const ScriptStudio = () => {
 
               {/* Call to Action */}
               <div>
-                <label className="text-sm font-medium mb-2 block">Call to Action</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium">Call to Action</label>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-blue-500" />
+                    <span className="text-xs text-blue-600 font-medium">Conversion-optimized</span>
+                  </div>
+                </div>
                 <Textarea
                   placeholder="End with a strong call to action..."
                   value={script.cta}
                   onChange={(e) => setScript(prev => ({ ...prev, cta: e.target.value }))}
                   className="min-h-[80px]"
+                  disabled={isLocked}
                 />
               </div>
             </div>
@@ -169,25 +313,62 @@ const ScriptStudio = () => {
             </div>
           </Card>
 
-          {/* Asset Requirements */}
+          {/* Beat-Specific Asset Requirements */}
           <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Asset Requirements</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Mic className="h-4 w-4 text-primary" />
-                <span className="text-sm">Voice: Energetic, fast-paced</span>
+            <h3 className="font-semibold mb-4">Asset Requirements by Beat</h3>
+            <div className="space-y-4 max-h-64 overflow-y-auto">
+              {/* Hook Requirements */}
+              <div className="border-l-2 border-orange-500 pl-3">
+                <div className="text-xs font-medium text-orange-600 mb-1">Hook</div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Mic className="h-3 w-3 text-primary" />
+                    <span>Bold, attention-grabbing tone</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Video className="h-3 w-3 text-primary" />
+                    <span>Close-up, dynamic opening shot</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Video className="h-4 w-4 text-primary" />
-                <span className="text-sm">B-roll: Workout footage</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Music className="h-4 w-4 text-primary" />
-                <span className="text-sm">Music: Upbeat electronic</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
-                <span className="text-sm">Captions: Dynamic highlights</span>
+
+              {/* Beat Requirements */}
+              {script.beats.map((beat, index) => (
+                <div key={beat.id} className="border-l-2 border-blue-500 pl-3">
+                  <div className="text-xs font-medium text-blue-600 mb-1">Beat {index + 1}</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Mic className="h-3 w-3 text-primary" />
+                      <span>
+                        {beat.stageDirections ? 
+                          `${styleDNA.tone.toLowerCase()}, narrative voice` : 
+                          "Add stage directions for voice requirements"
+                        }
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Video className="h-3 w-3 text-primary" />
+                      <span>
+                        {beat.stageDirections || "Stage directions needed for B-roll"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* CTA Requirements */}
+              <div className="border-l-2 border-green-500 pl-3">
+                <div className="text-xs font-medium text-green-600 mb-1">Call to Action</div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Music className="h-3 w-3 text-primary" />
+                    <span>Upbeat electronic, crescendo</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Animated text overlays</span>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>
