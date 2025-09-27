@@ -5,7 +5,7 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="ml-16 lg:ml-64">
+      <main className="ml-16 md:ml-64">
         <div className="h-full">
           <Outlet />
         </div>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,11 @@ const documentation = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setCollapsed(isMobile);
+  }, [isMobile]);
 
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
@@ -54,7 +60,7 @@ export function Sidebar() {
       {/* Desktop Sidebar */}
       <div className={cn(
         "fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border nav-factory transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        collapsed ? "w-16" : "w-16 md:w-64"
       )}>
         <div className="flex h-full flex-col">
           {/* Header */}
