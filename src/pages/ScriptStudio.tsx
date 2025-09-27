@@ -449,12 +449,15 @@ const ScriptStudio = () => {
             </Button>
             <Button 
               onClick={script.state === "draft" ? freezeScript : () => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
-              className={script.state === "draft" ? "bg-amber-600 hover:bg-amber-700 text-white" : "bg-gradient-factory text-white"}
+              disabled={script.state === "draft" && status.hasMissing}
+              className={script.state === "draft" ? 
+                (status.hasMissing ? "bg-muted hover:bg-muted text-muted-foreground" : "bg-amber-600 hover:bg-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105") 
+                : "bg-gradient-factory text-white"}
             >
               {script.state === "draft" ? (
                 <>
                   <Lock className="h-4 w-4 mr-2" />
-                  Freeze & Continue
+                  Lock and Continue
                 </>
               ) : (
                 <>
