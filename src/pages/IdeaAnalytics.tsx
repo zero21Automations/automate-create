@@ -157,7 +157,7 @@ const IdeaAnalytics = () => {
                   </NavLink>
                 </Button>
                 {index < 5 && (
-                  <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} />
+                  <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} style={{ pointerEvents: 'none' }} />
                 )}
               </div>
             );

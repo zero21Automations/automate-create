@@ -185,7 +185,7 @@ const Publishing = () => {
           </div>
         </div>
         
-        <div className="flex items-center justify-between gap-4 overflow-x-auto pb-2">
+          <div className="flex items-center justify-between gap-4 overflow-x-auto pb-2 relative z-10">
           {[
             { id: 'idea', label: 'Idea', icon: Target, path: `/projects/${projectId}/ideas/${ideaId}`, status: 'completed' },
             { id: 'script', label: 'Script', icon: FileText, path: `/projects/${projectId}/ideas/${ideaId}/script`, status: 'completed' },
@@ -205,13 +205,13 @@ const Publishing = () => {
                   asChild
                   variant={isActive ? "default" : isCompleted ? "secondary" : "ghost"}
                   size="sm"
-                  className={`min-w-[100px] justify-start ${
+                  className={`min-w-[100px] justify-start relative z-10 ${
                     isActive ? "bg-primary text-primary-foreground shadow-lg" : ""
                   } ${isCompleted ? "bg-secondary text-secondary-foreground" : ""} ${
                     isLocked ? "opacity-50" : "hover:bg-muted"
                   }`}
                 >
-                  <NavLink to={stage.path}>
+                  <NavLink to={stage.path} className="flex items-center w-full">
                     <Icon className="h-4 w-4 mr-2" />
                     {stage.label}
                     {isCompleted && <Check className="h-3 w-3 ml-auto" />}
@@ -219,7 +219,7 @@ const Publishing = () => {
                   </NavLink>
                 </Button>
                 {index < 5 && (
-                  <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} />
+                  <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} style={{ pointerEvents: 'none' }} />
                 )}
               </div>
             );
