@@ -9,16 +9,23 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2, Dna, Users, Volume2, Type, Repeat, User, Timer } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2, Dna, Users, Volume2, Type, Repeat, User, Timer, FileText, BarChart3, Package, Upload, Clapperboard } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { PipelineNav } from "@/components/PipelineNav";
-import { NextButton } from "@/components/NextButton";
+import { useProjects, Project } from "@/hooks/useProjects";
+import { useIdeas, Idea } from "@/hooks/useIdeas";
 
 const ScriptStudio = () => {
   const navigate = useNavigate();
   const { projectId, ideaId } = useParams();
+  
+  // Fetch project and idea data
+  const { projects } = useProjects();
+  const { ideas } = useIdeas(projectId || "");
+  
+  const currentProject = projects.find(p => p.id === projectId);
+  const currentIdea = ideas.find(i => i.id === ideaId);
   
   const [script, setScript] = useState({
     hook: "",
@@ -379,59 +386,125 @@ const ScriptStudio = () => {
 
   const status = getTaskStatus();
 
+  // Pipeline stages for integrated navigation
+  const pipelineStages = [
+    { id: 'idea', label: 'Idea', icon: Target, path: `/projects/${projectId}/ideas/${ideaId}`, status: 'completed' as const },
+    { id: 'script', label: 'Script', icon: FileText, path: `/projects/${projectId}/ideas/${ideaId}/script`, status: 'current' as const },
+    { id: 'assets', label: 'Assets', icon: Package, path: `/projects/${projectId}/ideas/${ideaId}/assets`, status: 'pending' as const },
+    { id: 'assembly', label: 'Assembly', icon: Clapperboard, path: `/projects/${projectId}/ideas/${ideaId}/assembly`, status: 'pending' as const },
+    { id: 'publishing', label: 'Publishing', icon: Upload, path: `/projects/${projectId}/ideas/${ideaId}/publishing`, status: 'pending' as const },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, path: `/projects/${projectId}/ideas/${ideaId}/analytics`, status: 'locked' as const }
+  ];
+
+  const currentStageIndex = pipelineStages.findIndex(s => s.status === 'current');
+  const progressPercentage = ((currentStageIndex + 1) / pipelineStages.length) * 100;
+
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
-      {/* Pipeline Navigation */}
-      <PipelineNav ideaTitle="5-Minute Morning Workout" currentStage="script" />
-      
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-factory-gradient">Script Studio</h1>
-            <p className="text-muted-foreground">Stage 2: Transform ideas into platform-optimized scripts</p>
+      {/* Unified Header with Integrated Pipeline */}
+      <div className="space-y-6">
+        {/* Project & Idea Context */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                <span>{currentProject?.name || "Project"}</span>
+                <span>•</span>
+                <span className="text-primary font-medium">{currentIdea?.title || "Untitled Idea"}</span>
+              </div>
+              <h1 className="text-3xl font-bold text-factory-gradient flex items-center gap-3">
+                <FileText className="h-8 w-8" />
+                Script Studio
+                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
+                  Stage {currentStageIndex + 1}/{pipelineStages.length}
+                </Badge>
+              </h1>
+              <p className="text-muted-foreground">Transform ideas into platform-optimized scripts</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="badge-factory">
+              <Clock className="h-3 w-3 mr-1" />
+              2:30 read time
+            </Badge>
+            <Button variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Regenerate
+            </Button>
+            <Button variant="factory">
+              <Save className="h-4 w-4 mr-2" />
+              Save Script
+            </Button>
+            <Button 
+              onClick={script.state === "draft" ? freezeScript : () => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
+              className={script.state === "draft" ? "bg-amber-600 hover:bg-amber-700 text-white" : "bg-gradient-factory text-white"}
+            >
+              {script.state === "draft" ? (
+                <>
+                  <Lock className="h-4 w-4 mr-2" />
+                  Freeze & Continue
+                </>
+              ) : (
+                <>
+                  <Image className="h-4 w-4 mr-2" />
+                  Next: Assets
+                </>
+              )}
+            </Button>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="badge-factory">
-            <Clock className="h-3 w-3 mr-1" />
-            2:30 read time
-          </Badge>
-          {ideaId && (
-            <Badge variant="secondary" className="badge-factory">Idea: {ideaId}</Badge>
-          )}
-          <Button variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Regenerate
-          </Button>
-          <Button variant="factory">
-            <Save className="h-4 w-4 mr-2" />
-            Save Script
-          </Button>
-          <Button 
-            onClick={script.state === "draft" ? freezeScript : () => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
-            className={script.state === "draft" ? "bg-amber-600 hover:bg-amber-700 text-white" : "bg-gradient-factory text-white"}
-          >
-            {script.state === "draft" ? (
-              <>
-                <Lock className="h-4 w-4 mr-2" />
-                Freeze & Continue
-              </>
-            ) : (
-              <>
-                <Image className="h-4 w-4 mr-2" />
-                Next: Assets
-              </>
-            )}
-          </Button>
-        </div>
+
+        {/* Integrated Pipeline Navigation */}
+        <Card className="card-factory-glow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-factory-gradient">Production Pipeline</h3>
+            <div className="flex items-center gap-2">
+              <Progress value={progressPercentage} className="w-32" />
+              <span className="text-sm text-muted-foreground">{Math.round(progressPercentage)}%</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between gap-4 overflow-x-auto pb-2">
+            {pipelineStages.map((stage, index) => {
+              const Icon = stage.icon;
+              const isActive = stage.status === 'current';
+              const isCompleted = stage.status === 'completed';
+              const isLocked = stage.status === 'locked';
+              
+              return (
+                <div key={stage.id} className="flex items-center gap-2 min-w-0">
+                  <Button
+                    variant={isActive ? "default" : isCompleted ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => !isLocked && navigate(stage.path)}
+                    disabled={isLocked}
+                    className={`min-w-[100px] justify-start ${
+                      isActive ? "bg-primary text-primary-foreground shadow-lg" :
+                      isCompleted ? "bg-secondary text-secondary-foreground" :
+                      isLocked ? "opacity-50 cursor-not-allowed" :
+                      "hover:bg-muted"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 mr-2" />
+                    {stage.label}
+                    {isCompleted && <Check className="h-3 w-3 ml-auto" />}
+                    {isLocked && <Lock className="h-3 w-3 ml-auto" />}
+                  </Button>
+                  {index < pipelineStages.length - 1 && (
+                    <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -850,9 +923,6 @@ const ScriptStudio = () => {
           </Card>
         </div>
       </div>
-      
-      {/* Floating Next Button */}
-      <NextButton nextStage="assets" nextLabel="Next: Assets" icon={Image} />
     </div>
   );
 };
