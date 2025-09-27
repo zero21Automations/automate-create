@@ -375,8 +375,8 @@ const Production = () => {
             </div>
           </Card>
 
-           {/* Timeline Assembly & Editing - Using Approved Assets */}
-           <Card className="card-factory-glow p-6">
+          {/* Timeline Assembly & Editing - Using Approved Assets */}
+          <Card className="card-factory-glow p-6">
              <div className="flex items-center justify-between mb-4">
                <h2 className="text-xl font-semibold">Timeline Assembly & Mixing</h2>
                <div className="flex items-center gap-2">
@@ -497,6 +497,27 @@ const Production = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </Card>
+
+          {/* Frozen Asset Status */}
+          <Card className="card-factory-glow p-4 border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
+                <div>
+                  <p className="text-sm font-medium">Asset Manifest v{frozenAssetManifest.version} Locked</p>
+                  <p className="text-xs text-muted-foreground">Frozen at {frozenAssetManifest.locked_at}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs">
+                  {renderStatus.status.replace('_', ' ')} v{renderStatus.version}
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  {renderStatus.last_rendered}
+                </Badge>
+              </div>
             </div>
           </Card>
         </div>
