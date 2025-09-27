@@ -387,8 +387,14 @@ const AssetManager = () => {
             </Card>
           </div>
 
-          {/* Detailed Asset Management */}
+          {/* Raw Asset Generation & Approval - No Timeline Editing */}
           <Card className="card-factory-glow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Asset Generation & Approval</h2>
+              <Badge variant="outline" className="text-xs text-muted-foreground">
+                Generate • Curate • Approve per Scene
+              </Badge>
+            </div>
             <Tabs value={selectedAssetType} onValueChange={setSelectedAssetType} className="w-full">
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="voice" className="flex items-center gap-2">

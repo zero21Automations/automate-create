@@ -414,21 +414,24 @@ const Production = () => {
             </div>
           </Card>
 
-          {/* Scene-Based Timeline Editor */}
-          <Card className="card-factory-glow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Scene Timeline</h2>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" title="Regenerate Full Preview">
-                  <RotateCcw className="h-4 w-4" />
-                  <span className="ml-1 text-xs">Full Render</span>
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Layers className="h-4 w-4" />
-                  <span className="ml-1 text-xs">Audio Mix</span>
-                </Button>
-              </div>
-            </div>
+           {/* Timeline Assembly & Editing - Using Approved Assets */}
+           <Card className="card-factory-glow p-6">
+             <div className="flex items-center justify-between mb-4">
+               <h2 className="text-xl font-semibold">Timeline Assembly & Mixing</h2>
+               <div className="flex items-center gap-2">
+                 <Badge variant="outline" className="text-xs text-muted-foreground">
+                   Assemble • Edit • Polish • Render
+                 </Badge>
+                 <Button variant="ghost" size="sm" title="Regenerate Full Preview">
+                   <RotateCcw className="h-4 w-4" />
+                   <span className="ml-1 text-xs">Full Render</span>
+                 </Button>
+                 <Button variant="outline" size="sm">
+                   <Layers className="h-4 w-4" />
+                   <span className="ml-1 text-xs">Audio Mix</span>
+                 </Button>
+               </div>
+             </div>
 
             {/* Audio Mix Controls */}
             <div className="mb-6 p-4 bg-muted/20 rounded-lg">
