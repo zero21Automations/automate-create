@@ -511,7 +511,7 @@ const Production = () => {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span>Video Assembly</span>
+                  <span>Overall Completion</span>
                   <span className="font-medium">85%</span>
                 </div>
                 <Progress value={85} className="h-2" />

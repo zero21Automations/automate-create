@@ -336,9 +336,10 @@ const Publishing = () => {
           </Card>
         </div>
 
-        {/* Sticky Sidebar */}
+        {/* Sticky Quality & Progress Sidebar */}
         <div className="xl:col-span-1 space-y-4">
           <div className="sticky top-6 space-y-4">
+            {/* Progress Overview */}
             <Card className="card-factory-glow p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Target className="h-4 w-4 text-primary" />
@@ -346,10 +347,10 @@ const Publishing = () => {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span>Ready to Publish</span>
-                  <span className="font-medium">75%</span>
+                  <span>Overall Completion</span>
+                  <span className="font-medium">90%</span>
                 </div>
-                <Progress value={75} className="h-2" />
+                <Progress value={90} className="h-2" />
                 <div className="space-y-2 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
@@ -372,14 +373,22 @@ const Publishing = () => {
                     </span>
                     <Badge variant="secondary" className="text-xs">Auto</Badge>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      Platforms Connected
+                    </span>
+                    <Badge variant="secondary" className="text-xs">4/4</Badge>
+                  </div>
                 </div>
               </div>
             </Card>
 
+            {/* Quality Score */}
             <Card className="card-factory-glow p-4">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Content Score</h3>
+                <h3 className="font-semibold">Quality Score</h3>
               </div>
               <div className="space-y-3">
                 <div className="text-center">
@@ -403,21 +412,29 @@ const Publishing = () => {
               </div>
             </Card>
 
+            {/* Current Tasks */}
             <Card className="card-factory-glow p-4">
-              <h3 className="font-semibold mb-4">Quick Actions</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <CheckCircle className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Tasks</h3>
+              </div>
               <div className="space-y-2">
-                <Button variant="outline" className="w-full justify-start">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Publish Now
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Schedule for Later
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Save as Draft
-                </Button>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <span className="line-through text-muted-foreground">Connect platforms</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <span className="line-through text-muted-foreground">Set captions</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <span className="line-through text-muted-foreground">Configure hashtags</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-3 w-3 text-blue-500" />
+                  <span>Review and publish</span>
+                </div>
               </div>
             </Card>
           </div>

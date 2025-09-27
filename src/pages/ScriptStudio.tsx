@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2, Dna, Users, Volume2, Type, Repeat, User, Timer, FileText, BarChart3, Package, Upload, Clapperboard } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2, Dna, Users, Volume2, Type, Repeat, User, Timer, FileText, BarChart3, Package, Upload, Clapperboard, CheckCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -858,77 +858,100 @@ const ScriptStudio = () => {
           )}
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Quality Metrics & Progress Status */}
-          <Card className="card-factory-glow p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                Quality & Progress
-              </h3>
-              {status.hasMissing && (
-                <Button variant="outline" size="sm" className="bg-primary/10 hover:bg-primary/20">
-                  <Wand2 className="h-3 w-3 mr-1" />
-                  Generate Missing
-                </Button>
-              )}
-            </div>
-            
-            {/* Quality Metrics */}
-            <div className="space-y-3 mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Hook Strength</span>
-                <Badge variant="secondary">{validationScores.hookStrength}/10</Badge>
+        {/* Sticky Quality & Progress Sidebar */}
+        <div className="xl:col-span-1 space-y-4">
+          <div className="sticky top-6 space-y-4">
+            {/* Progress Overview */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Script Progress</h3>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Engagement Potential</span>
-                <Badge variant="secondary">{validationScores.engagementPotential}/10</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Brand Alignment</span>
-                <Badge variant="secondary">{validationScores.brandAlignment}/10</Badge>
-              </div>
-            </div>
-
-            <Separator className="my-4" />
-
-            {/* Progress Status */}
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium text-green-600 mb-2">Completed</h4>
-                <div className="space-y-1">
-                  {status.completed.length > 0 ? (
-                    status.completed.map((task, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm text-green-600">
-                        <Check className="h-3 w-3" />
-                        {task}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-muted-foreground">No tasks completed yet</div>
-                  )}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Overall Completion</span>
+                  <span className="font-medium">{status.pending.length === 0 ? '100' : Math.round((status.completed.length / (status.completed.length + status.pending.length)) * 100)}%</span>
+                </div>
+                <Progress value={status.pending.length === 0 ? 100 : Math.round((status.completed.length / (status.completed.length + status.pending.length)) * 100)} className="h-2" />
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${script.hook ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      Hook Written
+                    </span>
+                    <Badge variant="secondary" className="text-xs">{script.hook ? '✓' : '○'}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${script.beats.every(b => b.text) ? 'bg-green-500' : 'bg-blue-500'}`}></div>
+                      Script Beats
+                    </span>
+                    <Badge variant="secondary" className="text-xs">{script.beats.filter(b => b.text).length}/{script.beats.length}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${script.cta ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      Call to Action
+                    </span>
+                    <Badge variant="secondary" className="text-xs">{script.cta ? '✓' : '○'}</Badge>
+                  </div>
                 </div>
               </div>
-              
-              {status.pending.length > 0 && (
-                <>
-                  <Separator />
-                  <div>
-                    <h4 className="text-sm font-medium text-orange-600 mb-2">Pending</h4>
-                    <div className="space-y-1">
-                      {status.pending.map((task, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm text-orange-600">
-                          <Clock className="h-3 w-3" />
-                          {task}
-                        </div>
-                      ))}
-                    </div>
+            </Card>
+
+            {/* Quality Score */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Quality Score</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{((validationScores.hookStrength + validationScores.engagementPotential + validationScores.brandAlignment) / 3).toFixed(1)}/10</div>
+                  <div className="text-xs text-muted-foreground">Script Quality</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Hook Strength</span>
+                    <span className={`font-medium ${validationScores.hookStrength >= 8 ? 'text-green-600' : validationScores.hookStrength >= 6 ? 'text-yellow-600' : 'text-red-600'}`}>{validationScores.hookStrength}</span>
                   </div>
-                </>
-              )}
-            </div>
-          </Card>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Engagement Potential</span>
+                    <span className={`font-medium ${validationScores.engagementPotential >= 8 ? 'text-green-600' : validationScores.engagementPotential >= 6 ? 'text-yellow-600' : 'text-red-600'}`}>{validationScores.engagementPotential}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Brand Alignment</span>
+                    <span className={`font-medium ${validationScores.brandAlignment >= 8 ? 'text-green-600' : validationScores.brandAlignment >= 6 ? 'text-yellow-600' : 'text-red-600'}`}>{validationScores.brandAlignment}</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Current Tasks */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <CheckCircle className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Tasks</h3>
+              </div>
+              <div className="space-y-2">
+                {status.completed.map((task, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-3 w-3 text-green-500" />
+                    <span className="line-through text-muted-foreground">{task}</span>
+                  </div>
+                ))}
+                {status.pending.map((task, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <Clock className="h-3 w-3 text-yellow-500" />
+                    <span>{task}</span>
+                  </div>
+                ))}
+                {status.completed.length === 0 && status.pending.length === 0 && (
+                  <div className="text-sm text-muted-foreground">All tasks completed</div>
+                )}
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
