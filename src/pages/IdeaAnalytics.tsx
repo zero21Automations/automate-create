@@ -19,9 +19,16 @@ import {
   Clock,
   ArrowLeft,
   Download,
-  RefreshCw
+  RefreshCw,
+  FileText,
+  Package,
+  Clapperboard,
+  Check,
+  Lock,
+  Upload
 } from "lucide-react";
-import { PipelineNav } from "@/components/PipelineNav";
+import { Progress } from "@/components/ui/progress";
+
 
 const IdeaAnalytics = () => {
   const navigate = useNavigate();
@@ -106,8 +113,55 @@ const IdeaAnalytics = () => {
         </div>
       </div>
 
-      {/* Pipeline Navigation */}
-      <PipelineNav currentStage="analytics" ideaTitle="5-Minute Morning Workout" />
+      {/* Production Pipeline */}
+      <Card className="card-factory-glow p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-factory-gradient">Production Pipeline</h3>
+          <div className="flex items-center gap-2">
+            <Progress value={100} className="w-32" />
+            <span className="text-sm text-muted-foreground">100%</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between gap-4 overflow-x-auto pb-2">
+          {[
+            { id: 'idea', label: 'Idea', icon: Target, path: `/projects/${projectId}/ideas/${ideaId}`, status: 'completed' },
+            { id: 'script', label: 'Script', icon: FileText, path: `/projects/${projectId}/ideas/${ideaId}/script`, status: 'completed' },
+            { id: 'assets', label: 'Assets', icon: Package, path: `/projects/${projectId}/ideas/${ideaId}/assets`, status: 'completed' },
+            { id: 'production', label: 'Production', icon: Clapperboard, path: `/projects/${projectId}/ideas/${ideaId}/production`, status: 'completed' },
+            { id: 'publishing', label: 'Publishing', icon: Upload, path: `/projects/${projectId}/ideas/${ideaId}/publishing`, status: 'completed' },
+            { id: 'analytics', label: 'Analytics', icon: BarChart3, path: `/projects/${projectId}/ideas/${ideaId}/analytics`, status: 'current' }
+          ].map((stage, index) => {
+            const Icon = stage.icon;
+            const isActive = stage.status === 'current';
+            const isCompleted = stage.status === 'completed';
+            const isLocked = stage.status === 'locked';
+            
+            return (
+              <div key={stage.id} className="flex items-center gap-2 min-w-0">
+                <Button
+                  variant={isActive ? "default" : isCompleted ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => navigate(stage.path)}
+                  className={`
+                    ${isActive ? "bg-primary text-primary-foreground shadow-lg" : ""}
+                    ${isCompleted ? "bg-secondary text-secondary-foreground" : ""}
+                    ${isLocked ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
+                  `}
+                >
+                  <Icon className="h-4 w-4 mr-2" />
+                  {stage.label}
+                  {isCompleted && <Check className="h-3 w-3 ml-auto" />}
+                  {isLocked && <Lock className="h-3 w-3 ml-auto" />}
+                </Button>
+                {index < 5 && (
+                  <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </Card>
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
