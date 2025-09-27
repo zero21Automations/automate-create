@@ -178,9 +178,11 @@ const Publishing = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Publishing Setup */}
-        <div className="xl:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        {/* Main Content */}
+        <div className="xl:col-span-3 space-y-6">
+          {/* Publishing Setup */}
+          <div className="space-y-6">
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold">Content Publishing</h2>
@@ -379,47 +381,152 @@ Subscribe for more quick fitness tips! 👆"
           </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Quick Actions */}
-          <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Quick Actions</h3>
-            <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
-                <Upload className="h-4 w-4 mr-2" />
-                Publish Now
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Clock className="h-4 w-4 mr-2" />
-                Schedule for Later
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Share2 className="h-4 w-4 mr-2" />
-                Save as Draft
-              </Button>
+          {/* Scheduled Posts Overview */}
+          <Card className="card-factory-glow p-6">
+            <h2 className="text-xl font-semibold mb-6">Scheduled Posts</h2>
+            <div className="space-y-4">
+              {scheduledPosts.map((post) => (
+                <div key={post.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
+                  <div>
+                    <p className="font-medium">{post.title}</p>
+                    <p className="text-sm text-muted-foreground">{post.scheduledTime}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {post.platforms.map((platform) => (
+                        <Badge key={platform} variant="secondary" className="text-xs">
+                          {platforms.find(p => p.id === platform)?.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-2 h-2 rounded-full ${getStatusColor(post.status)}`} />
+                      {getStatusIcon(post.status)}
+                      <Badge variant="secondary">{post.status}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{post.estimatedReach}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
+        </div>
 
-          {/* Publishing Rules */}
-          <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Publishing Rules</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Auto-hashtag optimization</span>
-                <Switch defaultChecked />
+        {/* Sticky Quality & Progress Sidebar */}
+        <div className="xl:col-span-1 space-y-4">
+          <div className="sticky top-6 space-y-4">
+            {/* Progress Overview */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Publishing Progress</h3>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Cross-platform staggering</span>
-                <Switch defaultChecked />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Ready to Publish</span>
+                  <span className="font-medium">75%</span>
+                </div>
+                <Progress value={75} className="h-2" />
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      Content Ready
+                    </span>
+                    <Badge variant="secondary" className="text-xs">✓</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      Captions Set
+                    </span>
+                    <Badge variant="secondary" className="text-xs">✓</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                      Schedule Set
+                    </span>
+                    <Badge variant="secondary" className="text-xs">Auto</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                      Platforms Connected
+                    </span>
+                    <Badge variant="secondary" className="text-xs">3/4</Badge>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Auto-retry on failure</span>
-                <Switch defaultChecked />
+            </Card>
+
+            {/* Quality Score */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Content Score</h3>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Performance tracking</span>
-                <Switch defaultChecked />
+              <div className="space-y-3">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">9.1/10</div>
+                  <div className="text-xs text-muted-foreground">Publishing Readiness</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Caption Quality</span>
+                    <span className="font-medium text-green-600">9.4</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Hashtag Relevance</span>
+                    <span className="font-medium text-green-600">8.9</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Timing Optimization</span>
+                    <span className="font-medium text-green-600">9.0</span>
+                  </div>
+                </div>
               </div>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card className="card-factory-glow p-4">
+              <h3 className="font-semibold mb-4">Quick Actions</h3>
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full justify-start">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Publish Now
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Schedule for Later
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Save as Draft
+                </Button>
+              </div>
+            </Card>
+
+            {/* Publishing Rules */}
+            <Card className="card-factory-glow p-4">
+              <h3 className="font-semibold mb-4">Publishing Rules</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Auto-hashtag optimization</span>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Cross-platform staggering</span>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Auto-retry on failure</span>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Performance tracking</span>
+                  <Switch defaultChecked />
+                </div>
             </div>
           </Card>
 
@@ -473,6 +580,10 @@ Subscribe for more quick fitness tips! 👆"
           ))}
         </div>
       </Card>
+      
+          </div>
+        </div>
+      </div>
       
       {/* Floating Next Button */}
       <NextButton nextStage="analytics" nextLabel="View Analytics" icon={BarChart3} />

@@ -19,10 +19,9 @@ import {
   Clock,
   ArrowLeft,
   Download,
-  RefreshCw
+  RefreshCw,
+  Progress
 } from "lucide-react";
-import { PipelineNav } from "@/components/PipelineNav";
-import { NextButton } from "@/components/NextButton";
 
 const IdeaAnalytics = () => {
   const navigate = useNavigate();
@@ -71,52 +70,39 @@ const IdeaAnalytics = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
-      {/* Unified Header with Integrated Pipeline */}
-      <div className="space-y-6">
-        {/* Project & Idea Context */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => navigate(`/projects/${projectId}`)}
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div className="text-left">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <span className="flex items-center gap-1">
-                  💪 <span>Fitlife Project</span>
-                </span>
-                <span>•</span>
-                <span className="text-primary font-medium">5-Minute Morning Workout</span>
-              </div>
-              
-              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
-                <BarChart3 className="h-6 w-6" />
-                Idea Analytics
-                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
-                  Stage 6/6
-                </Badge>
-              </h1>
-              
-              <p className="text-muted-foreground">Performance tracking and insights</p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(`/projects/${projectId}`)}>
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div className="text-left">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <span className="flex items-center gap-1">
+                💪 <span>Fitlife Project</span>
+              </span>
+              <span>•</span>
+              <span className="text-primary font-medium">5-Minute Morning Workout</span>
             </div>
+            <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
+              <BarChart3 className="h-6 w-6" />
+              Idea Analytics
+              <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
+                Stage 6/6
+              </Badge>
+            </h1>
+            <p className="text-muted-foreground">Performance tracking and insights</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="secondary" className="badge-factory">
-              <Clock className="h-3 w-3 mr-1" />
-              Published 7 days ago
-            </Badge>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export Data
-            </Button>
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge variant="secondary" className="badge-factory">
+            <Clock className="h-3 w-3 mr-1" />
+            Published 7 days ago
+          </Badge>
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Export Data
+          </Button>
         </div>
       </div>
 
@@ -179,9 +165,9 @@ const IdeaAnalytics = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Platform Breakdown */}
-        <div className="xl:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        {/* Main Content */}
+        <div className="xl:col-span-3 space-y-6">
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold">Platform Performance</h2>
@@ -191,7 +177,6 @@ const IdeaAnalytics = () => {
                 <Button variant="ghost" size="sm" className={timeRange === "30d" ? "bg-primary/10" : ""} onClick={() => setTimeRange("30d")}>30d</Button>
               </div>
             </div>
-
             <div className="space-y-4">
               {platformData.map((platform, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border border-border rounded-lg">
@@ -216,93 +201,36 @@ const IdeaAnalytics = () => {
               ))}
             </div>
           </Card>
-
-          <Card className="card-factory-glow p-6">
-            <h2 className="text-xl font-semibold mb-6">Engagement Breakdown</h2>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 border border-border rounded-lg">
-                <Heart className="h-6 w-6 mx-auto mb-2 text-red-500" />
-                <p className="text-2xl font-bold">{performanceData.likes.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Likes</p>
-              </div>
-              <div className="text-center p-4 border border-border rounded-lg">
-                <MessageCircle className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-                <p className="text-2xl font-bold">{performanceData.comments}</p>
-                <p className="text-sm text-muted-foreground">Comments</p>
-              </div>
-              <div className="text-center p-4 border border-border rounded-lg">
-                <Share className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                <p className="text-2xl font-bold">{performanceData.shares}</p>
-                <p className="text-sm text-muted-foreground">Shares</p>
-              </div>
-            </div>
-          </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Quick Stats */}
-          <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Quick Stats</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Click-through Rate</span>
-                <Badge variant="secondary">{performanceData.ctr}%</Badge>
+        {/* Sticky Sidebar */}
+        <div className="xl:col-span-1 space-y-4">
+          <div className="sticky top-6 space-y-4">
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Performance Summary</h3>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Total Engagement</span>
-                <Badge variant="secondary">{performanceData.totalEngagement.toLocaleString()}</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Revenue per View</span>
-                <Badge variant="secondary">${(performanceData.revenue / performanceData.totalViews * 1000).toFixed(3)}</Badge>
-              </div>
-            </div>
-          </Card>
-
-          {/* Top Comments */}
-          <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Top Comments</h3>
-            <div className="space-y-3">
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-sm">"This actually works! Lost 5lbs already 🔥"</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Heart className="h-3 w-3 text-red-500" />
-                  <span className="text-xs text-muted-foreground">127 likes</span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Overall Performance</span>
+                  <span className="font-medium">87%</span>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      Views Target Met
+                    </span>
+                    <Badge variant="secondary" className="text-xs">✓</Badge>
+                  </div>
                 </div>
               </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-sm">"Perfect for busy mornings!"</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Heart className="h-3 w-3 text-red-500" />
-                  <span className="text-xs text-muted-foreground">89 likes</span>
-                </div>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg">
-                <p className="text-sm">"Can you do one for evening workouts?"</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Heart className="h-3 w-3 text-red-500" />
-                  <span className="text-xs text-muted-foreground">56 likes</span>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Performance Insights */}
-          <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">AI Insights</h3>
-            <div className="space-y-3">
-              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-700">💡 Morning workout content performs 23% better than evening content</p>
-              </div>
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-700">📈 Consider creating a follow-up "Evening Routine" video based on comments</p>
-              </div>
-              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-700">⏰ Peak engagement happens 2-3 hours after posting</p>
+            </Card>
+          </div>
+        </div>
       </div>
       
-      {/* Floating Next Button - Return to Project */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => navigate(`/projects/${projectId}`)}
@@ -312,10 +240,6 @@ const IdeaAnalytics = () => {
           <ArrowLeft className="h-5 w-5 mr-2" />
           Back to Project
         </Button>
-      </div>
-    </div>
-          </Card>
-        </div>
       </div>
     </div>
   );

@@ -210,8 +210,10 @@ const Production = () => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        {/* Preview Window */}
-        <div className="xl:col-span-2 space-y-4">
+        {/* Main Content Area */}
+        <div className="xl:col-span-3 space-y-6">
+          {/* Preview Window */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Video Preview</h2>
@@ -280,8 +282,8 @@ const Production = () => {
           </Card>
         </div>
 
-        {/* Timeline Panel */}
-        <div className="xl:col-span-2 space-y-4">
+          {/* Timeline Panel */}
+          <div className="space-y-4">
           <Card className="card-factory-glow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Timeline Editor</h2>
@@ -407,40 +409,149 @@ const Production = () => {
               Add Custom Export
             </Button>
           </Card>
+
+          {/* Asset Library */}
+          <Card className="card-factory-glow p-6">
+            <h2 className="text-xl font-semibold mb-4">Asset Library</h2>
+            <Tabs defaultValue="all" className="w-full">
+              <TabsList>
+                <TabsTrigger value="all">All Assets</TabsTrigger>
+                <TabsTrigger value="voice">Voice</TabsTrigger>
+                <TabsTrigger value="music">Music</TabsTrigger>
+                <TabsTrigger value="video">Video</TabsTrigger>
+                <TabsTrigger value="graphics">Graphics</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="all" className="mt-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {/* Asset thumbnails would go here */}
+                  <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
+                    <Layers className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
+                    <Volume2 className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
+                    <Play className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </Card>
+        </div>
+
+        {/* Sticky Quality & Progress Sidebar */}
+        <div className="xl:col-span-1 space-y-4">
+          <div className="sticky top-6 space-y-4">
+            {/* Progress Overview */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Production Progress</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Video Assembly</span>
+                  <span className="font-medium">85%</span>
+                </div>
+                <Progress value={85} className="h-2" />
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      Timeline Complete
+                    </span>
+                    <Badge variant="secondary" className="text-xs">✓</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                      Rendering Queue
+                    </span>
+                    <Badge variant="secondary" className="text-xs">75%</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      TikTok Export
+                    </span>
+                    <Badge variant="secondary" className="text-xs">✓</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                      YouTube Export
+                    </span>
+                    <Badge variant="secondary" className="text-xs">0%</Badge>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Quality Score */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Quality Score</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">8.7/10</div>
+                  <div className="text-xs text-muted-foreground">Production Quality</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Video Quality</span>
+                    <span className="font-medium text-green-600">9.2</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Audio Sync</span>
+                    <span className="font-medium text-green-600">8.9</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Transitions</span>
+                    <span className="font-medium text-yellow-600">7.8</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Current Tasks */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <CheckCircle className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Tasks</h3>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <span className="line-through text-muted-foreground">Import all assets</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <span className="line-through text-muted-foreground">Arrange timeline</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-3 w-3 text-blue-500" />
+                  <span>Complete rendering queue</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <AlertCircle className="h-3 w-3 text-yellow-500" />
+                  <span>Review final output</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <AlertCircle className="h-3 w-3 text-yellow-500" />
+                  <span>Export for all platforms</span>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
-
-      {/* Asset Library */}
-      <Card className="card-factory-glow p-6">
-        <h2 className="text-xl font-semibold mb-4">Asset Library</h2>
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList>
-            <TabsTrigger value="all">All Assets</TabsTrigger>
-            <TabsTrigger value="voice">Voice</TabsTrigger>
-            <TabsTrigger value="music">Music</TabsTrigger>
-            <TabsTrigger value="video">Video</TabsTrigger>
-            <TabsTrigger value="graphics">Graphics</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="all" className="mt-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {/* Asset thumbnails would go here */}
-              <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
-                <Layers className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
-                <Volume2 className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="aspect-square bg-muted/30 rounded-lg flex items-center justify-center">
-                <Play className="h-6 w-6 text-muted-foreground" />
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </Card>
       
       {/* Floating Next Button */}
       <NextButton nextStage="publishing" nextLabel="Next: Publishing" icon={Share2} />
+    </div>
     </div>
   );
 };
