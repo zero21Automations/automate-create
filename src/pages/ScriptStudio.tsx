@@ -419,8 +419,8 @@ const ScriptStudio = () => {
                 <span>•</span>
                 <span className="text-primary font-medium">{currentIdea?.title || "Untitled Idea"}</span>
               </div>
-              <h1 className="text-3xl font-bold text-factory-gradient flex items-center gap-3">
-                <FileText className="h-8 w-8" />
+              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3">
+                <FileText className="h-6 w-6" />
                 Script Studio
                 <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
                   Stage {currentStageIndex + 1}/{pipelineStages.length}
