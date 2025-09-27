@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2 } from "lucide-react";
+import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -163,19 +163,26 @@ const ScriptStudio = () => {
       script.beats.every(beat => beat.stageDirections.bRoll) && 
       script.ctaStageDirections.bRoll;
     
+    const completedTasks = [
+      hasHook && "Hook written",
+      hasBeats && "All beats completed",
+      hasCTA && "CTA written",
+      hasStageDirections && "Stage directions complete"
+    ].filter(Boolean);
+
+    const pendingTasks = [
+      !hasHook && "Write hook",
+      !hasBeats && "Complete all beats",
+      !hasCTA && "Write call to action",
+      !hasStageDirections && "Add stage directions"
+    ].filter(Boolean);
+
+    const hasMissingContent = pendingTasks.length > 0;
+    
     return {
-      completed: [
-        hasHook && "Hook written",
-        hasBeats && "All beats completed",
-        hasCTA && "CTA written",
-        hasStageDirections && "Stage directions complete"
-      ].filter(Boolean),
-      pending: [
-        !hasHook && "Write hook",
-        !hasBeats && "Complete all beats",
-        !hasCTA && "Write call to action",
-        !hasStageDirections && "Add stage directions"
-      ].filter(Boolean)
+      completed: completedTasks,
+      pending: pendingTasks,
+      hasMissing: hasMissingContent
     };
   };
 
@@ -536,10 +543,20 @@ const ScriptStudio = () => {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Quality Scores */}
+          {/* Quality Metrics & Progress Status */}
           <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Quality Metrics</h3>
-            <div className="space-y-3">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Quality & Progress</h3>
+              {status.hasMissing && (
+                <Button variant="outline" size="sm" className="bg-primary/10 hover:bg-primary/20">
+                  <Wand2 className="h-3 w-3 mr-1" />
+                  Generate Missing
+                </Button>
+              )}
+            </div>
+            
+            {/* Quality Metrics */}
+            <div className="space-y-3 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Hook Strength</span>
                 <Badge variant="secondary">{validationScores.hookStrength}/10</Badge>
@@ -553,11 +570,10 @@ const ScriptStudio = () => {
                 <Badge variant="secondary">{validationScores.brandAlignment}/10</Badge>
               </div>
             </div>
-          </Card>
 
-          {/* Status Tracker */}
-          <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Progress Status</h3>
+            <Separator className="my-4" />
+
+            {/* Progress Status */}
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium text-green-600 mb-2">Completed</h4>
@@ -575,51 +591,23 @@ const ScriptStudio = () => {
                 </div>
               </div>
               
-              <Separator />
-              
-              <div>
-                <h4 className="text-sm font-medium text-orange-600 mb-2">Pending</h4>
-                <div className="space-y-1">
-                  {status.pending.length > 0 ? (
-                    status.pending.map((task, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm text-orange-600">
-                        <Clock className="h-3 w-3" />
-                        {task}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-green-600">All tasks completed!</div>
-                  )}
-                </div>
-              </div>
+              {status.pending.length > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <h4 className="text-sm font-medium text-orange-600 mb-2">Pending</h4>
+                    <div className="space-y-1">
+                      {status.pending.map((task, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm text-orange-600">
+                          <Clock className="h-3 w-3" />
+                          {task}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-          </Card>
-
-          {/* Platform Versions */}
-          <Card className="card-factory-glow p-4">
-            <h3 className="font-semibold mb-4">Platform Versions</h3>
-            <Tabs defaultValue="tiktok" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="tiktok">TikTok</TabsTrigger>
-                <TabsTrigger value="youtube">YouTube</TabsTrigger>
-                <TabsTrigger value="instagram">Instagram</TabsTrigger>
-              </TabsList>
-              <TabsContent value="tiktok" className="mt-4">
-                <div className="text-sm text-muted-foreground">
-                  Optimized for 15-60 seconds, vertical format
-                </div>
-              </TabsContent>
-              <TabsContent value="youtube" className="mt-4">
-                <div className="text-sm text-muted-foreground">
-                  Extended for 60+ seconds, horizontal format
-                </div>
-              </TabsContent>
-              <TabsContent value="instagram" className="mt-4">
-                <div className="text-sm text-muted-foreground">
-                  Square/vertical format, 30-60 seconds
-                </div>
-              </TabsContent>
-            </Tabs>
           </Card>
         </div>
       </div>
