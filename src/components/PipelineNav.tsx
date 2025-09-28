@@ -35,6 +35,13 @@ export const PipelineNav = ({ ideaTitle = "Content Idea", currentStage }: Pipeli
 
   const stages: PipelineStage[] = [
     {
+      id: 'idea',
+      label: 'Idea',
+      icon: FileText,
+      path: `/projects/${projectId}/ideas/${ideaId}`,
+      status: getStageStatus('idea', currentStage)
+    },
+    {
       id: 'script',
       label: 'Script',
       icon: FileText,
@@ -72,7 +79,7 @@ export const PipelineNav = ({ ideaTitle = "Content Idea", currentStage }: Pipeli
   ];
 
   function getStageStatus(stageId: string, current: string): 'completed' | 'current' | 'pending' | 'locked' {
-    const stageOrder = ['script', 'assets', 'production', 'publishing', 'analytics'];
+    const stageOrder = ['idea', 'script', 'assets', 'production', 'publishing', 'analytics'];
     const currentIndex = stageOrder.indexOf(current);
     const stageIndex = stageOrder.indexOf(stageId);
     

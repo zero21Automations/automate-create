@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { PipelineNav } from "@/components/PipelineNav";
-import { NextButton } from "@/components/NextButton";
+
 import { useProjects } from "@/hooks/useProjects";
 import { useIdeas } from "@/hooks/useIdeas";
-import { Lightbulb, Target, Users, Music, Palette, Wand2, FileText } from "lucide-react";
+import { Lightbulb, Target, Users, Music, Palette, Wand2, FileText, Type, Volume2, Video } from "lucide-react";
 import { toast } from "sonner";
 
 const IdeaOverview = () => {
@@ -25,7 +25,12 @@ const IdeaOverview = () => {
     targetAudience: "",
     musicMood: "",
     colorScheme: "",
-    contentStyle: ""
+    contentStyle: "",
+    captionStyle: "",
+    narrativePOV: "",
+    narratorType: "",
+    visualStyle: "",
+    videoLength: ""
   });
 
   const voiceToneOptions = [
@@ -49,23 +54,53 @@ const IdeaOverview = () => {
     "Tutorial", "Storytelling", "Quick Tips", "Behind-the-Scenes", "Product Demo", "Interview", "Animation", "Live Action"
   ];
 
+  const captionStyleOptions = [
+    "Dynamic highlights", "Minimal text", "Story-driven", "Educational bullets", "Call-out quotes"
+  ];
+
+  const narrativePOVOptions = [
+    "First Person", "Second Person", "Third Person"
+  ];
+
+  const narratorTypeOptions = [
+    "Voiceover", "Character Narrator", "On-screen Host"
+  ];
+
+  const visualStyleOptions = [
+    "Live Action", "Animation", "Cartoon/Comic", "Screen Recording", "Mixed Media"
+  ];
+
+  const videoLengthOptions = [
+    "15-30 seconds", "30-60 seconds", "60+ seconds"
+  ];
+
   const generateIdeaDNA = async () => {
-    // Simulate AI generation
+    // Simulate AI generation with realistic values
     setIdeaDNA({
       voiceTone: "Energetic",
       targetAudience: "Gen Z (18-24)",
       musicMood: "Upbeat",
       colorScheme: "Vibrant",
-      contentStyle: "Quick Tips"
+      contentStyle: "Quick Tips",
+      captionStyle: "Dynamic highlights",
+      narrativePOV: "Second Person",
+      narratorType: "Character Narrator",
+      visualStyle: "Live Action",
+      videoLength: "15-30 seconds"
     });
     toast.success("Idea DNA generated successfully!");
   };
 
   const proceedToScript = () => {
     if (projectId && ideaId) {
-      navigate(`/projects/${projectId}/ideas/${ideaId}/script`);
+      // Pass the idea DNA to the script studio
+      navigate(`/projects/${projectId}/ideas/${ideaId}/script`, {
+        state: { ideaDNA }
+      });
     }
   };
+
+  const isFormComplete = Object.values(ideaDNA).every(value => value.length > 0);
 
   if (!project || !idea) {
     return <div>Loading...</div>;
@@ -73,31 +108,6 @@ const IdeaOverview = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-            <span>{project.name}</span>
-            <span>•</span>
-            <span>Idea Overview</span>
-          </div>
-          <h1 className="text-3xl font-bold">{idea.title}</h1>
-          <p className="text-muted-foreground mt-1">{idea.description}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={generateIdeaDNA}>
-            <Wand2 className="h-4 w-4 mr-2" />
-            Generate DNA
-          </Button>
-          <NextButton 
-            nextStage="script" 
-            nextLabel="Start Script"
-            icon={FileText}
-            disabled={!ideaDNA.voiceTone || !ideaDNA.targetAudience}
-          />
-        </div>
-      </div>
-
       {/* Pipeline Navigation */}
       <PipelineNav ideaTitle={idea.title} currentStage="idea" />
 
@@ -185,7 +195,7 @@ const IdeaOverview = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2">
                   <label className="text-sm font-medium flex items-center gap-2">
                     <Lightbulb className="h-4 w-4" />
                     Content Style
@@ -201,6 +211,106 @@ const IdeaOverview = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Type className="h-4 w-4" />
+                    Caption Style
+                  </label>
+                  <Select value={ideaDNA.captionStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, captionStyle: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select caption style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {captionStyleOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Narrative POV
+                  </label>
+                  <Select value={ideaDNA.narrativePOV} onValueChange={(value) => setIdeaDNA({...ideaDNA, narrativePOV: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select narrative POV" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {narrativePOVOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Volume2 className="h-4 w-4" />
+                    Narrator Type
+                  </label>
+                  <Select value={ideaDNA.narratorType} onValueChange={(value) => setIdeaDNA({...ideaDNA, narratorType: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select narrator type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {narratorTypeOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Video className="h-4 w-4" />
+                    Visual Style
+                  </label>
+                  <Select value={ideaDNA.visualStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, visualStyle: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select visual style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {visualStyleOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Video Length
+                  </label>
+                  <Select value={ideaDNA.videoLength} onValueChange={(value) => setIdeaDNA({...ideaDNA, videoLength: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select video length" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {videoLengthOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button variant="outline" onClick={generateIdeaDNA}>
+                  <Wand2 className="h-4 w-4 mr-2" />
+                  Generate DNA
+                </Button>
+                <Button 
+                  onClick={proceedToScript}
+                  disabled={!isFormComplete}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Start Script
+                </Button>
               </div>
             </CardContent>
           </Card>
