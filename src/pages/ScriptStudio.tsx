@@ -207,6 +207,7 @@ const ScriptStudio = () => {
         STRUCTURE:
         - Hook (3-5 seconds): Strong opening that stops scrolling
         - ${numBeats - 1} main beats (${Math.round((parseInt(ideaDNA.videoLength?.split("-")[1] || "30") - 5) / (numBeats - 1))} seconds each): Core content delivery
+        - CTA: Strong call to action that drives engagement
         
         Return a JSON object with:
         {
@@ -215,10 +216,10 @@ const ScriptStudio = () => {
             {"text": "beat 1 content", "duration": 8},
             {"text": "beat 2 content", "duration": 8}
           ],
-          "cta": "clear call to action"
+          "cta": "strong call to action that encourages engagement, following, or action"
         }
         
-        Make it ${ideaDNA.voiceTone?.toLowerCase()} and optimized for ${ideaDNA.targetPlatforms?.join(" and ") || "social media"}.
+        Make it ${ideaDNA.voiceTone?.toLowerCase()} and optimized for ${ideaDNA.targetPlatforms?.join(" and ") || "social media"}. The CTA should be compelling and specific to the content.
       `;
 
       const { data: functionData, error: functionError } = await supabase.functions.invoke('ai', {
@@ -240,67 +241,92 @@ const ScriptStudio = () => {
             id: Date.now() + index,
             text: beat.text || "",
             stageDirections: {
-              bRoll: `${ideaDNA.visualStyle || "Live action"} footage supporting: ${beat.text?.substring(0, 50)}...`,
-              voiceStyle: `${ideaDNA.voiceTone || "Energetic"} delivery${ideaDNA.narratorType === "Character Narrator" ? ` in character persona` : ""}`,
-              overlay: ideaDNA.captionStyle === "Dynamic highlights" ? "Key words highlighted dynamically" : "Minimal text overlay",
-              sfx: "Subtle background audio"
+              bRoll: `${ideaDNA.visualStyle || "Live action"} - ${beat.text?.split(' ').slice(0, 6).join(' ')}... visual demonstration`,
+              voiceStyle: `${ideaDNA.voiceTone || "Energetic"} tone${ideaDNA.narratorType === "Character Narrator" ? `, in character` : ""}, clear delivery`,
+              overlay: ideaDNA.captionStyle === "Dynamic highlights" ? `Highlight key words: "${beat.text?.split(' ').slice(0, 3).join(' ')}..."` : "Supportive text overlay",
+              sfx: index === 0 ? "Attention-grabbing sound" : "Subtle transition effect"
             },
             duration: beat.duration || 8,
             metrics: { scrollStop: 75 + Math.random() * 20, retention: 70 + Math.random() * 25, engagement: 65 + Math.random() * 30 }
           })) || [];
 
+          // Generate comprehensive stage directions
+          const hookStageDirections = {
+            bRoll: `${ideaDNA.visualStyle || "Dynamic"} opening shot - ${scriptData.hook?.split(' ').slice(0, 5).join(' ')}... demonstration`,
+            voiceStyle: `${ideaDNA.voiceTone || "Energetic"} hook delivery${ideaDNA.narratorType === "Character Narrator" ? `, character introduction` : ""}, attention-grabbing pace`,
+            overlay: ideaDNA.captionStyle === "Dynamic highlights" ? `Bold opening text: "${scriptData.hook?.split(' ').slice(0, 3).join(' ')}..."` : "Compelling opening text",
+            sfx: "Strong hook sound effect, music intro"
+          };
+
+          const ctaStageDirections = {
+            bRoll: `${ideaDNA.visualStyle || "Live action"} - engaging closing visual, ${scriptData.cta?.includes('follow') ? 'profile/subscribe button visual' : 'action demonstration'}`,
+            voiceStyle: `${ideaDNA.voiceTone || "Energetic"} CTA delivery${ideaDNA.narratorType === "Character Narrator" ? `, character sign-off` : ""}, clear call to action`,
+            overlay: ideaDNA.captionStyle === "Dynamic highlights" ? `CTA text highlighted: "${scriptData.cta?.split(' ').slice(0, 3).join(' ')}..."` : "Clear CTA text overlay",
+            sfx: "Closing music, call-to-action sound"
+          };
+
           setScript({
-            hook: scriptData.hook || "",
-            hookStageDirections: {
-              bRoll: `${ideaDNA.visualStyle || "Dynamic"} opening shot`,
-              voiceStyle: `${ideaDNA.voiceTone || "Energetic"} hook delivery`,
-              overlay: "Attention-grabbing text",
-              sfx: "Hook sound effect"
-            },
+            hook: scriptData.hook || `Stop scrolling! Here's ${ideaDNA.description || "something amazing"}...`,
+            hookStageDirections,
             hookDuration: 4,
             beats: generatedBeats,
-            cta: scriptData.cta || "Follow for more tips!",
-            ctaStageDirections: {
-              bRoll: "Engaging closing shot",
-              voiceStyle: "Clear call to action",
-              overlay: "CTA text overlay",
-              sfx: "Closing sound"
-            },
+            cta: scriptData.cta || `Follow for more ${ideaDNA.contentStyle?.toLowerCase() || "tips"} like this! What's your biggest challenge with ${ideaDNA.description?.toLowerCase() || "this topic"}?`,
+            ctaStageDirections,
             ctaDuration: 3,
             state: "draft",
             version: 1
           });
           
         } catch (parseError) {
-          // Fallback if JSON parsing fails
-          throw new Error("AI response was not in expected format");
+          console.error('JSON parse error:', parseError);
+          // Enhanced fallback with proper CTA and stage directions
+          generateFallbackScript();
         }
+      } else {
+        generateFallbackScript();
       }
     } catch (error) {
       console.error('Error generating script:', error);
-      // Fallback generation with DNA data
-      const numBeats = getBeatsFromLength(ideaDNA.videoLength || "30-60 seconds");
-      const fallbackBeats = Array.from({ length: numBeats - 1 }, (_, index) => ({
-        id: Date.now() + index,
-        text: `${ideaDNA.contentStyle || "Educational"} content beat ${index + 1} about ${ideaDNA.description || "the topic"}.`,
-        stageDirections: {
-          bRoll: `${ideaDNA.visualStyle || "Live action"} footage`,
-          voiceStyle: `${ideaDNA.voiceTone || "Energetic"} delivery`,
-          overlay: "Supporting text",
-          sfx: "Background audio"
-        },
-        duration: 8,
-        metrics: { scrollStop: 75, retention: 70, engagement: 65 }
-      }));
-
-      setScript(prev => ({
-        ...prev,
-        hook: `${ideaDNA.voiceTone || "Engaging"} hook about ${ideaDNA.description || "the topic"}`,
-        beats: fallbackBeats
-      }));
+      generateFallbackScript();
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  // Enhanced fallback script generation
+  const generateFallbackScript = () => {
+    const numBeats = getBeatsFromLength(ideaDNA.videoLength || "30-60 seconds");
+    const fallbackBeats = Array.from({ length: numBeats - 1 }, (_, index) => ({
+      id: Date.now() + index,
+      text: `${ideaDNA.contentStyle || "Educational"} point ${index + 1}: This is valuable information about ${ideaDNA.description || "the topic"} that your audience needs to know.`,
+      stageDirections: {
+        bRoll: `${ideaDNA.visualStyle || "Live action"} - demonstration of point ${index + 1}, clear visual example`,
+        voiceStyle: `${ideaDNA.voiceTone || "Energetic"} delivery${ideaDNA.narratorType === "Character Narrator" ? `, character persona` : ""}, informative tone`,
+        overlay: ideaDNA.captionStyle === "Dynamic highlights" ? `Highlight: "Point ${index + 1}"` : `Supporting text for point ${index + 1}`,
+        sfx: index === 0 ? "Transition sound" : "Subtle background audio"
+      },
+      duration: 8,
+      metrics: { scrollStop: 75, retention: 70, engagement: 65 }
+    }));
+
+    setScript(prev => ({
+      ...prev,
+      hook: `${ideaDNA.voiceTone || "Hey"} ${ideaDNA.targetAudience || "everyone"}! Want to know the secret about ${ideaDNA.description || "this topic"}?`,
+      hookStageDirections: {
+        bRoll: `${ideaDNA.visualStyle || "Dynamic"} opening shot - attention-grabbing visual about ${ideaDNA.description || "the topic"}`,
+        voiceStyle: `${ideaDNA.voiceTone || "Energetic"} hook delivery${ideaDNA.narratorType === "Character Narrator" ? `, character introduction` : ""}, engaging pace`,
+        overlay: ideaDNA.captionStyle === "Dynamic highlights" ? "Bold opening text with highlights" : "Engaging opening text",
+        sfx: "Hook sound effect, intro music"
+      },
+      beats: fallbackBeats,
+      cta: `Follow me for more ${ideaDNA.contentStyle?.toLowerCase() || "content"} about ${ideaDNA.description || "this topic"}! Drop a 🔥 if this helped you!`,
+      ctaStageDirections: {
+        bRoll: `${ideaDNA.visualStyle || "Live action"} - compelling closing shot, follow button demonstration`,
+        voiceStyle: `${ideaDNA.voiceTone || "Energetic"} CTA delivery${ideaDNA.narratorType === "Character Narrator" ? `, character outro` : ""}, enthusiastic call to action`,
+        overlay: ideaDNA.captionStyle === "Dynamic highlights" ? "CTA text with follow button highlight" : "Clear follow/engage text",
+        sfx: "Upbeat closing music, engagement sound effect"
+      }
+    }));
   };
 
   const addBeat = (afterIndex?: number) => {
