@@ -8,7 +8,9 @@ import { PipelineNav } from "@/components/PipelineNav";
 
 import { useProjects } from "@/hooks/useProjects";
 import { useIdeas } from "@/hooks/useIdeas";
-import { Lightbulb, Target, Users, Music, Palette, Wand2, FileText, Type, Volume2, Video } from "lucide-react";
+import { Lightbulb, Target, Users, Music, Palette, Wand2, FileText, Type, Volume2, Video, ArrowLeft, Package, Clapperboard, Upload, BarChart3, Check, Lock } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { NavLink } from "react-router-dom";
 import { toast } from "sonner";
 
 const IdeaOverview = () => {
@@ -106,10 +108,107 @@ const IdeaOverview = () => {
     return <div>Loading...</div>;
   }
 
+  // Pipeline stages for integrated navigation
+  const pipelineStages = [
+    { id: 'idea', label: 'Idea', icon: Lightbulb, path: `/projects/${projectId}/ideas/${ideaId}`, status: 'current' },
+    { id: 'script', label: 'Script', icon: FileText, path: `/projects/${projectId}/ideas/${ideaId}/script`, status: 'pending' },
+    { id: 'assets', label: 'Assets', icon: Package, path: `/projects/${projectId}/ideas/${ideaId}/assets`, status: 'pending' },
+    { id: 'production', label: 'Production', icon: Clapperboard, path: `/projects/${projectId}/ideas/${ideaId}/production`, status: 'pending' },
+    { id: 'publishing', label: 'Publishing', icon: Upload, path: `/projects/${projectId}/ideas/${ideaId}/publishing`, status: 'pending' },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, path: `/projects/${projectId}/ideas/${ideaId}/analytics`, status: 'locked' }
+  ];
+
+  const currentStageIndex = pipelineStages.findIndex(s => s.status === 'current');
+  const progressPercentage = ((currentStageIndex + 1) / pipelineStages.length) * 100;
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Pipeline Navigation */}
-      <PipelineNav ideaTitle={idea.title} currentStage="idea" />
+    <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Unified Header with Integrated Pipeline */}
+      <div className="space-y-6">
+        {/* Project & Idea Context */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            
+            <div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                <span>{project?.name}</span>
+                <span>›</span>
+                <span className="text-primary font-medium">{idea?.title || "Untitled Idea"}</span>
+              </div>
+              
+              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
+                <Lightbulb className="h-6 w-6" />
+                Idea Overview
+                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
+                  Stage {currentStageIndex + 1}/{pipelineStages.length}
+                </Badge>
+              </h1>
+              
+              <p className="text-muted-foreground">Define creative direction and style for your content</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button 
+              onClick={proceedToScript}
+              disabled={!isFormComplete}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Next: Script
+            </Button>
+          </div>
+        </div>
+
+        {/* Integrated Pipeline Navigation */}
+        <Card className="card-factory-glow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-factory-gradient">Production Pipeline</h3>
+            <div className="flex items-center gap-2">
+              <Progress value={progressPercentage} className="w-32" />
+              <span className="text-sm text-muted-foreground">{Math.round(progressPercentage)}%</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between gap-4 overflow-x-auto pb-2">
+            {pipelineStages.map((stage, index) => {
+              const Icon = stage.icon;
+              const isActive = stage.status === 'current';
+              const isCompleted = false; // For idea stage, no stages are completed yet
+              const isLocked = stage.status === 'locked';
+              
+              return (
+                <div key={stage.id} className="flex items-center gap-2 min-w-0">
+                  <Button
+                    variant={isActive ? "default" : isCompleted ? "secondary" : "outline"}
+                    size="sm"
+                    className={`flex items-center gap-2 text-xs whitespace-nowrap ${
+                      isLocked ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                    disabled={isLocked}
+                  >
+                    <NavLink to={stage.path} className="flex items-center w-full">
+                      <Icon className="h-4 w-4 mr-2" />
+                      {stage.label}
+                      {isCompleted && <Check className="h-3 w-3 ml-auto" />}
+                      {isLocked && <Lock className="h-3 w-3 ml-auto" />}
+                    </NavLink>
+                  </Button>
+                  {index < pipelineStages.length - 1 && (
+                    <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} style={{ pointerEvents: 'none' }} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Main Content */}
@@ -302,14 +401,6 @@ const IdeaOverview = () => {
                 <Button variant="outline" onClick={generateIdeaDNA}>
                   <Wand2 className="h-4 w-4 mr-2" />
                   Generate DNA
-                </Button>
-                <Button 
-                  onClick={proceedToScript}
-                  disabled={!isFormComplete}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Start Script
                 </Button>
               </div>
             </CardContent>
