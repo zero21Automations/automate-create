@@ -155,6 +155,154 @@ const ScriptStudio = () => {
     }
   };
 
+  // Function to determine number of beats based on video length
+  const getBeatsFromLength = (videoLength: string) => {
+    switch (videoLength) {
+      case "15-30 seconds":
+        return 2; // Hook + 1 main beat
+      case "30-60 seconds":
+        return 3; // Hook + 2 main beats  
+      case "60+ seconds":
+        return 4; // Hook + 3 main beats
+      default:
+        return 3;
+    }
+  };
+
+  // Generate complete script based on DNA
+  const generateScriptFromDNA = async () => {
+    setIsGenerating(true);
+    try {
+      const numBeats = getBeatsFromLength(ideaDNA.videoLength || "30-60 seconds");
+      
+      // Build comprehensive prompt from DNA
+      const dnaPrompt = `
+        Generate a ${ideaDNA.videoLength || "30-60 seconds"} video script with the following DNA:
+        
+        CONTENT DETAILS:
+        - Description: ${ideaDNA.description || "Educational content"}
+        - Target Platforms: ${ideaDNA.targetPlatforms?.join(", ") || "TikTok"}
+        - Content Style: ${ideaDNA.contentStyle || "Quick Tips"}
+        
+        CREATIVE DNA:
+        - Voice & Tone: ${ideaDNA.voiceTone || "Energetic"}
+        - Target Audience: ${ideaDNA.targetAudience || "Gen Z"}
+        - Narrative POV: ${ideaDNA.narrativePOV || "Second Person"}
+        - Narrator Type: ${ideaDNA.narratorType || "Voiceover"}
+        - Visual Style: ${ideaDNA.visualStyle || "Live Action"}
+        - Caption Style: ${ideaDNA.captionStyle || "Dynamic highlights"}
+        
+        ${ideaDNA.narratorType === "Character Narrator" && ideaDNA.characterAppearance ? `
+        CHARACTER DETAILS:
+        - Appearance: ${ideaDNA.characterAppearance}
+        - Personality: ${ideaDNA.characterPersonality}
+        - Background: ${ideaDNA.characterBackground}
+        - Clothing: ${ideaDNA.characterClothing}
+        ` : ""}
+        
+        ${ideaDNA.bannedWords?.length > 0 ? `
+        AVOID THESE WORDS/PHRASES: ${ideaDNA.bannedWords.join(", ")}
+        ` : ""}
+        
+        STRUCTURE:
+        - Hook (3-5 seconds): Strong opening that stops scrolling
+        - ${numBeats - 1} main beats (${Math.round((parseInt(ideaDNA.videoLength?.split("-")[1] || "30") - 5) / (numBeats - 1))} seconds each): Core content delivery
+        
+        Return a JSON object with:
+        {
+          "hook": "compelling hook text",
+          "beats": [
+            {"text": "beat 1 content", "duration": 8},
+            {"text": "beat 2 content", "duration": 8}
+          ],
+          "cta": "clear call to action"
+        }
+        
+        Make it ${ideaDNA.voiceTone?.toLowerCase()} and optimized for ${ideaDNA.targetPlatforms?.join(" and ") || "social media"}.
+      `;
+
+      const { data: functionData, error: functionError } = await supabase.functions.invoke('ai', {
+        body: { message: dnaPrompt }
+      });
+
+      if (functionError) {
+        throw new Error(functionError.message || "Failed to generate script");
+      }
+
+      const aiResponse = functionData?.response;
+      if (aiResponse) {
+        try {
+          // Try to parse JSON response
+          const scriptData = JSON.parse(aiResponse);
+          
+          // Generate beats with proper structure
+          const generatedBeats = scriptData.beats?.map((beat: any, index: number) => ({
+            id: Date.now() + index,
+            text: beat.text || "",
+            stageDirections: {
+              bRoll: `${ideaDNA.visualStyle || "Live action"} footage supporting: ${beat.text?.substring(0, 50)}...`,
+              voiceStyle: `${ideaDNA.voiceTone || "Energetic"} delivery${ideaDNA.narratorType === "Character Narrator" ? ` in character persona` : ""}`,
+              overlay: ideaDNA.captionStyle === "Dynamic highlights" ? "Key words highlighted dynamically" : "Minimal text overlay",
+              sfx: "Subtle background audio"
+            },
+            duration: beat.duration || 8,
+            metrics: { scrollStop: 75 + Math.random() * 20, retention: 70 + Math.random() * 25, engagement: 65 + Math.random() * 30 }
+          })) || [];
+
+          setScript({
+            hook: scriptData.hook || "",
+            hookStageDirections: {
+              bRoll: `${ideaDNA.visualStyle || "Dynamic"} opening shot`,
+              voiceStyle: `${ideaDNA.voiceTone || "Energetic"} hook delivery`,
+              overlay: "Attention-grabbing text",
+              sfx: "Hook sound effect"
+            },
+            hookDuration: 4,
+            beats: generatedBeats,
+            cta: scriptData.cta || "Follow for more tips!",
+            ctaStageDirections: {
+              bRoll: "Engaging closing shot",
+              voiceStyle: "Clear call to action",
+              overlay: "CTA text overlay",
+              sfx: "Closing sound"
+            },
+            ctaDuration: 3,
+            state: "draft",
+            version: 1
+          });
+          
+        } catch (parseError) {
+          // Fallback if JSON parsing fails
+          throw new Error("AI response was not in expected format");
+        }
+      }
+    } catch (error) {
+      console.error('Error generating script:', error);
+      // Fallback generation with DNA data
+      const numBeats = getBeatsFromLength(ideaDNA.videoLength || "30-60 seconds");
+      const fallbackBeats = Array.from({ length: numBeats - 1 }, (_, index) => ({
+        id: Date.now() + index,
+        text: `${ideaDNA.contentStyle || "Educational"} content beat ${index + 1} about ${ideaDNA.description || "the topic"}.`,
+        stageDirections: {
+          bRoll: `${ideaDNA.visualStyle || "Live action"} footage`,
+          voiceStyle: `${ideaDNA.voiceTone || "Energetic"} delivery`,
+          overlay: "Supporting text",
+          sfx: "Background audio"
+        },
+        duration: 8,
+        metrics: { scrollStop: 75, retention: 70, engagement: 65 }
+      }));
+
+      setScript(prev => ({
+        ...prev,
+        hook: `${ideaDNA.voiceTone || "Engaging"} hook about ${ideaDNA.description || "the topic"}`,
+        beats: fallbackBeats
+      }));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const addBeat = (afterIndex?: number) => {
     if (isLocked) return;
     const newBeat = {
@@ -443,9 +591,14 @@ const ScriptStudio = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Regenerate
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={generateScriptFromDNA}
+              disabled={isGenerating}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isGenerating ? 'animate-spin' : ''}`} />
+              {isGenerating ? 'Generating...' : 'Generate from DNA'}
             </Button>
             <Button variant="factory">
               <Save className="h-4 w-4 mr-2" />
