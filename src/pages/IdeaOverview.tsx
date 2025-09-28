@@ -119,9 +119,9 @@ const IdeaOverview = () => {
 
   const generateIdeaDNA = async () => {
     // Simulate AI generation with realistic values based on current content
-    setIdeaDNA(prev => ({
-      ...prev,
-      description: prev.description || "A quick, engaging video that teaches viewers something valuable in under 60 seconds with strong visual hooks and clear takeaways.",
+    const updatedDNA = {
+      ...ideaDNA,
+      description: ideaDNA.description || "A quick, engaging video that teaches viewers something valuable in under 60 seconds with strong visual hooks and clear takeaways.",
       voiceTone: "Energetic",
       targetAudience: "Gen Z (18-24)",
       musicMood: "Upbeat",
@@ -132,8 +132,18 @@ const IdeaOverview = () => {
       narratorType: "Character Narrator",
       visualStyle: "Live Action",
       videoLength: "15-30 seconds"
-    }));
-    toast.success("Idea DNA generated successfully!");
+    };
+
+    // If character narrator is selected, also generate character details
+    if (updatedDNA.narratorType === "Character Narrator") {
+      updatedDNA.characterAppearance = "Young, energetic person in their 20s with an approachable demeanor, expressive eyes, and confident posture";
+      updatedDNA.characterPersonality = "Enthusiastic, knowledgeable, speaks with passion and uses engaging hand gestures. Warm and relatable tone";
+      updatedDNA.characterBackground = "Content creator and educator with expertise in the video topic, positioned as a helpful guide and mentor";
+      updatedDNA.characterClothing = "Casual but polished - fitted jeans, stylish sneakers, and a vibrant colored top that complements the overall aesthetic";
+    }
+
+    setIdeaDNA(updatedDNA);
+    toast.success("Idea DNA regenerated successfully!");
   };
 
   const generateDescription = async () => {
@@ -150,6 +160,54 @@ const IdeaOverview = () => {
       description: randomDescription
     }));
     toast.success("Description regenerated!");
+  };
+
+  const generateCharacterAppearance = async () => {
+    const appearances = [
+      "Young, energetic person in their 20s with an approachable demeanor, expressive eyes, and confident posture",
+      "Mid-20s professional with a friendly smile, well-groomed appearance, and animated facial expressions",
+      "Creative individual with artistic flair, unique style, and engaging presence that draws viewers in",
+      "Knowledgeable expert with authoritative but approachable look, clear speaking voice, and professional demeanor"
+    ];
+    const randomAppearance = appearances[Math.floor(Math.random() * appearances.length)];
+    setIdeaDNA(prev => ({ ...prev, characterAppearance: randomAppearance }));
+    toast.success("Character appearance regenerated!");
+  };
+
+  const generateCharacterPersonality = async () => {
+    const personalities = [
+      "Enthusiastic, knowledgeable, speaks with passion and uses engaging hand gestures. Warm and relatable tone",
+      "Confident and articulate, uses humor effectively, maintains eye contact with camera, speaks clearly and with conviction",
+      "Energetic and motivational, uses storytelling techniques, varies vocal tone for emphasis, naturally charismatic",
+      "Patient and educational, breaks down complex topics simply, uses analogies, encouraging and supportive demeanor"
+    ];
+    const randomPersonality = personalities[Math.floor(Math.random() * personalities.length)];
+    setIdeaDNA(prev => ({ ...prev, characterPersonality: randomPersonality }));
+    toast.success("Character personality regenerated!");
+  };
+
+  const generateCharacterBackground = async () => {
+    const backgrounds = [
+      "Content creator and educator with expertise in the video topic, positioned as a helpful guide and mentor",
+      "Industry professional sharing insider knowledge and practical tips based on real experience",
+      "Passionate enthusiast who discovered valuable insights and wants to share them with others",
+      "Experienced practitioner with proven results, offering actionable advice and strategies"
+    ];
+    const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+    setIdeaDNA(prev => ({ ...prev, characterBackground: randomBackground }));
+    toast.success("Character background regenerated!");
+  };
+
+  const generateCharacterClothing = async () => {
+    const clothingStyles = [
+      "Casual but polished - fitted jeans, stylish sneakers, and a vibrant colored top that complements the overall aesthetic",
+      "Smart casual - well-fitted chinos, clean white sneakers, and a trendy hoodie or crew neck in brand colors",
+      "Professional casual - dark jeans, minimalist white/black top, and accessories that add personality without distraction",
+      "Creative casual - unique but accessible style with interesting textures, colors that pop on camera, comfortable yet stylish"
+    ];
+    const randomClothing = clothingStyles[Math.floor(Math.random() * clothingStyles.length)];
+    setIdeaDNA(prev => ({ ...prev, characterClothing: randomClothing }));
+    toast.success("Character clothing regenerated!");
   };
 
   const proceedToScript = () => {
@@ -627,7 +685,18 @@ const IdeaOverview = () => {
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">Physical Appearance</label>
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium">Physical Appearance</label>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={generateCharacterAppearance}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <Wand2 className="h-3 w-3 mr-1" />
+                            Regenerate
+                          </Button>
+                        </div>
                         <Textarea
                           placeholder="Describe the character's physical appearance (age, build, facial features, etc.)"
                           value={ideaDNA.characterAppearance}
@@ -636,7 +705,18 @@ const IdeaOverview = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">Personality & Mannerisms</label>
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium">Personality & Mannerisms</label>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={generateCharacterPersonality}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <Wand2 className="h-3 w-3 mr-1" />
+                            Regenerate
+                          </Button>
+                        </div>
                         <Textarea
                           placeholder="Describe personality traits, speaking style, gestures, quirks, etc."
                           value={ideaDNA.characterPersonality}
@@ -645,7 +725,18 @@ const IdeaOverview = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">Background & Role</label>
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium">Background & Role</label>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={generateCharacterBackground}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <Wand2 className="h-3 w-3 mr-1" />
+                            Regenerate
+                          </Button>
+                        </div>
                         <Textarea
                           placeholder="Character's background, expertise, role in the video"
                           value={ideaDNA.characterBackground}
@@ -654,7 +745,18 @@ const IdeaOverview = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">Clothing & Style</label>
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium">Clothing & Style</label>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={generateCharacterClothing}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <Wand2 className="h-3 w-3 mr-1" />
+                            Regenerate
+                          </Button>
+                        </div>
                         <Textarea
                           placeholder="Clothing style, colors, accessories, overall aesthetic"
                           value={ideaDNA.characterClothing}
@@ -670,7 +772,7 @@ const IdeaOverview = () => {
               <div className="flex gap-3 pt-4">
                 <Button variant="outline" onClick={generateIdeaDNA}>
                   <Wand2 className="h-4 w-4 mr-2" />
-                  Generate DNA
+                  Regenerate DNA
                 </Button>
               </div>
             </CardContent>
