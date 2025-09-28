@@ -356,177 +356,177 @@ const IdeaOverview = () => {
                   <Dna className="h-4 w-4" />
                   Creative DNA
                 </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Target className="h-4 w-4" />
-                    Voice & Tone
-                  </label>
-                  <Select value={ideaDNA.voiceTone} onValueChange={(value) => setIdeaDNA({...ideaDNA, voiceTone: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select voice tone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {voiceToneOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Target className="h-4 w-4" />
+                      Voice & Tone
+                    </label>
+                    <Select value={ideaDNA.voiceTone} onValueChange={(value) => setIdeaDNA({...ideaDNA, voiceTone: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select voice tone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {voiceToneOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Target Audience
-                  </label>
-                  <Select value={ideaDNA.targetAudience} onValueChange={(value) => setIdeaDNA({...ideaDNA, targetAudience: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select target audience" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {audienceOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      Target Audience
+                    </label>
+                    <Select value={ideaDNA.targetAudience} onValueChange={(value) => setIdeaDNA({...ideaDNA, targetAudience: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select target audience" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {audienceOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Music className="h-4 w-4" />
-                    Music Mood
-                  </label>
-                  <Select value={ideaDNA.musicMood} onValueChange={(value) => setIdeaDNA({...ideaDNA, musicMood: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select music mood" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {musicMoodOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Music className="h-4 w-4" />
+                      Music Mood
+                    </label>
+                    <Select value={ideaDNA.musicMood} onValueChange={(value) => setIdeaDNA({...ideaDNA, musicMood: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select music mood" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {musicMoodOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Type className="h-4 w-4" />
-                    Color Scheme
-                  </label>
-                  <Select value={ideaDNA.colorScheme} onValueChange={(value) => setIdeaDNA({...ideaDNA, colorScheme: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select color scheme" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {colorSchemeOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Type className="h-4 w-4" />
+                      Color Scheme
+                    </label>
+                    <Select value={ideaDNA.colorScheme} onValueChange={(value) => setIdeaDNA({...ideaDNA, colorScheme: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select color scheme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {colorSchemeOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Lightbulb className="h-4 w-4" />
-                    Content Style
-                  </label>
-                  <Select value={ideaDNA.contentStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, contentStyle: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select content style" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {contentStyleOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Lightbulb className="h-4 w-4" />
+                      Content Style
+                    </label>
+                    <Select value={ideaDNA.contentStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, contentStyle: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select content style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {contentStyleOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Type className="h-4 w-4" />
-                    Caption Style
-                  </label>
-                  <Select value={ideaDNA.captionStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, captionStyle: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select caption style" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {captionStyleOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Type className="h-4 w-4" />
+                      Caption Style
+                    </label>
+                    <Select value={ideaDNA.captionStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, captionStyle: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select caption style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {captionStyleOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Narrative POV
-                  </label>
-                  <Select value={ideaDNA.narrativePOV} onValueChange={(value) => setIdeaDNA({...ideaDNA, narrativePOV: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select narrative POV" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {narrativePOVOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      Narrative POV
+                    </label>
+                    <Select value={ideaDNA.narrativePOV} onValueChange={(value) => setIdeaDNA({...ideaDNA, narrativePOV: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select narrative POV" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {narrativePOVOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Volume2 className="h-4 w-4" />
-                    Narrator Type
-                  </label>
-                  <Select value={ideaDNA.narratorType} onValueChange={(value) => setIdeaDNA({...ideaDNA, narratorType: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select narrator type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {narratorTypeOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Volume2 className="h-4 w-4" />
+                      Narrator Type
+                    </label>
+                    <Select value={ideaDNA.narratorType} onValueChange={(value) => setIdeaDNA({...ideaDNA, narratorType: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select narrator type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {narratorTypeOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <Video className="h-4 w-4" />
-                    Visual Style
-                  </label>
-                  <Select value={ideaDNA.visualStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, visualStyle: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select visual style" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {visualStyleOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Video className="h-4 w-4" />
+                      Visual Style
+                    </label>
+                    <Select value={ideaDNA.visualStyle} onValueChange={(value) => setIdeaDNA({...ideaDNA, visualStyle: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select visual style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {visualStyleOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Video Length
-                  </label>
-                  <Select value={ideaDNA.videoLength} onValueChange={(value) => setIdeaDNA({...ideaDNA, videoLength: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select video length" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {videoLengthOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Video Length
+                    </label>
+                    <Select value={ideaDNA.videoLength} onValueChange={(value) => setIdeaDNA({...ideaDNA, videoLength: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select video length" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {videoLengthOptions.map(option => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              </div>
               </div>
 
               <div className="flex gap-3 pt-4">
