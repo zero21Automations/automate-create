@@ -4,23 +4,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { PipelineNav } from "@/components/PipelineNav";
+import { Progress } from "@/components/ui/progress";
+import { StandardPageLayout } from "@/components/StandardPageLayout";
+import { PayloadManager, usePayload } from "@/components/PayloadManager";
 
 import { useProjects } from "@/hooks/useProjects";
 import { useIdeas } from "@/hooks/useIdeas";
-import { Lightbulb, Target, Users, Music, Dna, Wand2, FileText, Type, Volume2, Video, ArrowLeft, Package, Clapperboard, Upload, BarChart3, Check, Lock, Hash, Globe, User, Ban } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { NavLink } from "react-router-dom";
+import { 
+  Lightbulb, Target, Users, Music, Dna, Wand2, FileText, Type, Volume2, Video, 
+  Hash, Globe, User, Ban, Package, Clapperboard, Upload, BarChart3, Check 
+} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import type { StageTask } from "@/components/StageProgressTracker";
 
-const IdeaOverview = () => {
+const IdeaOverviewContent = () => {
   const { projectId, ideaId } = useParams();
   const navigate = useNavigate();
   const { projects } = useProjects();
   const { ideas } = useIdeas(projectId || "");
+  const { payload, updatePayload, getStageCompletion, getStageBlockers } = usePayload();
   
   const project = projects.find(p => p.id === projectId);
   const idea = ideas.find(i => i.id === ideaId);
@@ -220,10 +225,16 @@ const IdeaOverview = () => {
 
   const proceedToScript = () => {
     if (projectId && ideaId) {
-      // Pass the idea DNA to the script studio
-      navigate(`/projects/${projectId}/ideas/${ideaId}/script`, {
-        state: { ideaDNA }
+      // Update payload with current idea DNA
+      updatePayload({
+        ideaData: {
+          ...payload.ideaData,
+          ...ideaDNA
+        }
       });
+      
+      // Navigate to script studio
+      navigate(`/projects/${projectId}/ideas/${ideaId}/script`);
     }
   };
 
@@ -258,99 +269,75 @@ const IdeaOverview = () => {
   const currentStageIndex = pipelineStages.findIndex(s => s.status === 'current');
   const progressPercentage = ((currentStageIndex + 1) / pipelineStages.length) * 100;
 
+  // Calculate progress and tasks for StandardPageLayout
+  const stageCompletion = getStageCompletion('idea');
+  const stageBlockers = getStageBlockers('idea');
+  
+  const tasks: StageTask[] = [
+    {
+      id: 'description',
+      label: 'Video Description',
+      status: ideaDNA.description ? 'completed' : 'pending',
+      description: 'Describe what this video will be about'
+    },
+    {
+      id: 'platforms',
+      label: 'Target Platforms',
+      status: ideaDNA.targetPlatforms.length > 0 ? 'completed' : 'pending',
+      description: 'Select platforms where content will be published'
+    },
+    {
+      id: 'voice-tone',
+      label: 'Voice & Tone',
+      status: ideaDNA.voiceTone ? 'completed' : 'pending',
+      description: 'Define the narrative voice and content tone'
+    },
+    {
+      id: 'creative-dna',
+      label: 'Creative DNA',
+      status: ideaDNA.targetAudience && ideaDNA.videoLength ? 'completed' : 'pending',
+      description: 'Complete audience targeting and video specifications'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
-      {/* Unified Header with Integrated Pipeline */}
+    <StandardPageLayout
+      projectName={project?.name || "Project"}
+      projectEmoji="🎯"
+      ideaTitle={idea?.title || "Untitled Idea"}
+      currentStage={{
+        id: 'idea',
+        title: 'Idea Overview',
+        description: 'Define creative direction and style for your content',
+        icon: Lightbulb
+      }}
+      projectId={projectId!}
+      ideaId={ideaId!}
+      stageNumber={1}
+      totalStages={6}
+      overallProgress={15}
+      stageProgress={stageCompletion}
+      tasks={tasks}
+      nextStage={{
+        id: 'script',
+        label: 'Script',
+        icon: FileText,
+        path: `/projects/${projectId}/ideas/${ideaId}/script`
+      }}
+      nextStageDisabled={!isFormComplete}
+      nextStageDisabledReason={stageBlockers.length > 0 ? stageBlockers[0] : undefined}
+      headerActions={
+        <Button 
+          onClick={generateIdeaDNA}
+          variant="outline"
+          className="bg-gradient-factory text-white"
+        >
+          <Wand2 className="h-4 w-4 mr-2" />
+          Generate DNA
+        </Button>
+      }
+    >
       <div className="space-y-6">
-        {/* Project & Idea Context */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            
-            <div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <span>{project?.name}</span>
-                <span>›</span>
-                <span className="text-primary font-medium">{idea?.title || "Untitled Idea"}</span>
-              </div>
-              
-              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
-                <Lightbulb className="h-6 w-6" />
-                Idea Overview
-                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
-                  Stage {currentStageIndex + 1}/{pipelineStages.length}
-                </Badge>
-              </h1>
-              
-              <p className="text-muted-foreground">Define creative direction and style for your content</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button 
-              onClick={proceedToScript}
-              disabled={!isFormComplete}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Next: Script
-            </Button>
-          </div>
-        </div>
-
-        {/* Integrated Pipeline Navigation */}
-        <Card className="card-factory-glow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-factory-gradient">Production Pipeline</h3>
-            <div className="flex items-center gap-2">
-              <Progress value={progressPercentage} className="w-32" />
-              <span className="text-sm text-muted-foreground">{Math.round(progressPercentage)}%</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between gap-4 overflow-x-auto pb-2">
-            {pipelineStages.map((stage, index) => {
-              const Icon = stage.icon;
-              const isActive = stage.status === 'current';
-              const isCompleted = false; // For idea stage, no stages are completed yet
-              const isLocked = stage.status === 'locked';
-              
-              return (
-                <div key={stage.id} className="flex items-center gap-2 min-w-0">
-                  <NavLink to={stage.path} className="flex items-center">
-                    <Button
-                      variant={isActive ? "default" : isCompleted ? "secondary" : "outline"}
-                      size="sm"
-                      className={`flex items-center gap-2 text-xs whitespace-nowrap ${
-                        isLocked ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                      disabled={isLocked}
-                      asChild
-                    >
-                      <div className="flex items-center w-full">
-                        <Icon className="h-4 w-4 mr-2" />
-                        {stage.label}
-                        {isCompleted && <Check className="h-3 w-3 ml-auto" />}
-                        {isLocked && <Lock className="h-3 w-3 ml-auto" />}
-                      </div>
-                    </Button>
-                  </NavLink>
-                  {index < pipelineStages.length - 1 && (
-                    <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} style={{ pointerEvents: 'none' }} />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="xl:col-span-2 space-y-6">
           {/* Idea DNA Configuration */}
@@ -961,7 +948,21 @@ const IdeaOverview = () => {
           </div>
         </div>
       </div>
-    </div>
+    </StandardPageLayout>
+  );
+};
+
+const IdeaOverview = () => {
+  const { projectId, ideaId } = useParams();
+  
+  if (!projectId || !ideaId) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <PayloadManager projectId={projectId} ideaId={ideaId}>
+      <IdeaOverviewContent />
+    </PayloadManager>
   );
 };
 
