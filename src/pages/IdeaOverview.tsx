@@ -713,7 +713,7 @@ const IdeaOverview = () => {
                           placeholder="Describe the character's physical appearance (age, build, facial features, etc.)"
                           value={ideaDNA.characterAppearance}
                           onChange={(e) => setIdeaDNA({...ideaDNA, characterAppearance: e.target.value})}
-                          className="min-h-[60px]"
+                          className="min-h-[100px]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -733,7 +733,7 @@ const IdeaOverview = () => {
                           placeholder="Describe personality traits, speaking style, gestures, quirks, etc."
                           value={ideaDNA.characterPersonality}
                           onChange={(e) => setIdeaDNA({...ideaDNA, characterPersonality: e.target.value})}
-                          className="min-h-[60px]"
+                          className="min-h-[100px]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -753,7 +753,7 @@ const IdeaOverview = () => {
                           placeholder="Character's background, expertise, role in the video"
                           value={ideaDNA.characterBackground}
                           onChange={(e) => setIdeaDNA({...ideaDNA, characterBackground: e.target.value})}
-                          className="min-h-[60px]"
+                          className="min-h-[100px]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -773,7 +773,7 @@ const IdeaOverview = () => {
                           placeholder="Clothing style, colors, accessories, overall aesthetic"
                           value={ideaDNA.characterClothing}
                           onChange={(e) => setIdeaDNA({...ideaDNA, characterClothing: e.target.value})}
-                          className="min-h-[60px]"
+                          className="min-h-[100px]"
                         />
                       </div>
                     </div>
@@ -793,30 +793,164 @@ const IdeaOverview = () => {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Progress Overview */}
           <Card>
             <CardHeader>
-              <CardTitle>Next Steps</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Progress Overview
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-semibold text-primary">1</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">DNA Completion</span>
+                <span className="text-sm font-medium">{Math.round((Object.entries(ideaDNA).filter(([key, value]) => {
+                  if (ideaDNA.narratorType !== "Character Narrator" && 
+                      ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+                    return true;
+                  }
+                  if (["bannedWords", "hashtags"].includes(key)) return true;
+                  if (Array.isArray(value)) return value.length > 0;
+                  return typeof value === 'string' && value.length > 0;
+                }).length / Object.entries(ideaDNA).filter(([key]) => {
+                  if (ideaDNA.narratorType !== "Character Narrator" && 
+                      ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+                    return false;
+                  }
+                  return !["bannedWords", "hashtags"].includes(key);
+                }).length) * 100)}%</span>
+              </div>
+              <Progress value={Math.round((Object.entries(ideaDNA).filter(([key, value]) => {
+                if (ideaDNA.narratorType !== "Character Narrator" && 
+                    ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+                  return true;
+                }
+                if (["bannedWords", "hashtags"].includes(key)) return true;
+                if (Array.isArray(value)) return value.length > 0;
+                return typeof value === 'string' && value.length > 0;
+              }).length / Object.entries(ideaDNA).filter(([key]) => {
+                if (ideaDNA.narratorType !== "Character Narrator" && 
+                    ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+                  return false;
+                }
+                return !["bannedWords", "hashtags"].includes(key);
+              }).length) * 100)} className="w-full" />
+              
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${ideaDNA.description ? 'bg-green-500' : 'bg-muted'}`} />
+                  <span className="text-xs">Video Concept</span>
                 </div>
-                <div>
-                  <p className="font-medium text-sm">Define Idea DNA</p>
-                  <p className="text-xs text-muted-foreground">Set creative direction</p>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${ideaDNA.targetPlatforms.length > 0 ? 'bg-green-500' : 'bg-muted'}`} />
+                  <span className="text-xs">Target Platforms</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${ideaDNA.voiceTone && ideaDNA.targetAudience && ideaDNA.contentStyle ? 'bg-green-500' : 'bg-muted'}`} />
+                  <span className="text-xs">Creative DNA</span>
+                </div>
+                {ideaDNA.narratorType === "Character Narrator" && (
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${ideaDNA.characterAppearance && ideaDNA.characterPersonality ? 'bg-green-500' : 'bg-muted'}`} />
+                    <span className="text-xs">Character Details</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quality Metrics */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                Quality Score
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {Math.round(85 + (isFormComplete ? 10 : 0) + (ideaDNA.hashtags.length > 0 ? 3 : 0) + (ideaDNA.bannedWords.length > 0 ? 2 : 0))}
+                </div>
+                <div className="text-xs text-muted-foreground">Overall Quality</div>
               </div>
               
-              <div className="flex items-center gap-3 p-3 rounded-lg opacity-50">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                  <span className="text-sm font-semibold">2</span>
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs">Concept Clarity</span>
+                  <Badge variant={ideaDNA.description ? "default" : "outline"} className="text-xs">
+                    {ideaDNA.description ? "Strong" : "Needs Work"}
+                  </Badge>
                 </div>
-                <div>
-                  <p className="font-medium text-sm">Script Writing</p>
-                  <p className="text-xs text-muted-foreground">Create detailed script</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs">Creative Direction</span>
+                  <Badge variant={ideaDNA.voiceTone && ideaDNA.visualStyle ? "default" : "outline"} className="text-xs">
+                    {ideaDNA.voiceTone && ideaDNA.visualStyle ? "Defined" : "Pending"}
+                  </Badge>
                 </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs">Platform Readiness</span>
+                  <Badge variant={ideaDNA.targetPlatforms.length > 0 ? "default" : "outline"} className="text-xs">
+                    {ideaDNA.targetPlatforms.length > 0 ? "Ready" : "Not Set"}
+                  </Badge>
+                </div>
+                {ideaDNA.narratorType === "Character Narrator" && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs">Character Dev</span>
+                    <Badge variant={ideaDNA.characterAppearance && ideaDNA.characterPersonality ? "default" : "outline"} className="text-xs">
+                      {ideaDNA.characterAppearance && ideaDNA.characterPersonality ? "Complete" : "Basic"}
+                    </Badge>
+                  </div>
+                )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Active Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Check className="h-4 w-4" />
+                Active Tasks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {!ideaDNA.description && (
+                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="text-xs">Add video description</span>
+                </div>
+              )}
+              {!ideaDNA.voiceTone && (
+                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="text-xs">Define voice & tone</span>
+                </div>
+              )}
+              {!ideaDNA.targetAudience && (
+                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="text-xs">Select target audience</span>
+                </div>
+              )}
+              {!ideaDNA.contentStyle && (
+                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="text-xs">Choose content style</span>
+                </div>
+              )}
+              {ideaDNA.narratorType === "Character Narrator" && !ideaDNA.characterAppearance && (
+                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="text-xs">Describe character</span>
+                </div>
+              )}
+              {isFormComplete && (
+                <div className="flex items-center gap-2 p-2 rounded bg-green-50 border border-green-200">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="text-xs">Ready for script phase</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
