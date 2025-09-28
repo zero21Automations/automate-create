@@ -8,11 +8,12 @@ import { PipelineNav } from "@/components/PipelineNav";
 
 import { useProjects } from "@/hooks/useProjects";
 import { useIdeas } from "@/hooks/useIdeas";
-import { Lightbulb, Target, Users, Music, Dna, Wand2, FileText, Type, Volume2, Video, ArrowLeft, Package, Clapperboard, Upload, BarChart3, Check, Lock, Hash, Globe } from "lucide-react";
+import { Lightbulb, Target, Users, Music, Dna, Wand2, FileText, Type, Volume2, Video, ArrowLeft, Package, Clapperboard, Upload, BarChart3, Check, Lock, Hash, Globe, User, Ban } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { NavLink } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 const IdeaOverview = () => {
@@ -29,6 +30,7 @@ const IdeaOverview = () => {
     description: "",
     targetPlatforms: [] as string[],
     hashtags: [] as string[],
+    bannedWords: [] as string[],
     // Creative DNA
     voiceTone: "",
     targetAudience: "",
@@ -39,7 +41,12 @@ const IdeaOverview = () => {
     narrativePOV: "",
     narratorType: "",
     visualStyle: "",
-    videoLength: ""
+    videoLength: "",
+    // Character Narrator Details (conditional)
+    characterAppearance: "",
+    characterPersonality: "",
+    characterBackground: "",
+    characterClothing: ""
   });
 
   // Initialize with idea data when available
@@ -55,7 +62,18 @@ const IdeaOverview = () => {
   });
 
   const platformOptions = [
-    "TikTok", "Instagram", "YouTube Shorts", "Facebook", "Twitter", "LinkedIn", "Snapchat"
+    "TikTok", "Instagram", "YouTube Shorts", "Facebook", "Twitter", "LinkedIn", "Snapchat", "Pinterest", "Reddit"
+  ];
+
+  const hashtagSuggestions = [
+    "fyp", "viral", "trending", "tips", "tutorial", "lifehack", "motivation", "productivity", 
+    "wellness", "fitness", "business", "entrepreneur", "success", "mindset", "growth", 
+    "tech", "ai", "innovation", "creative", "inspiration", "education", "learning"
+  ];
+
+  const bannedWordsSuggestions = [
+    "click", "subscribe", "like", "follow", "buy now", "limited time", "urgent", "hurry",
+    "guaranteed", "instant", "secret", "hack", "trick", "easy money", "get rich quick"
   ];
 
   const voiceToneOptions = [
@@ -143,7 +161,12 @@ const IdeaOverview = () => {
     }
   };
 
-  const isFormComplete = Object.values(ideaDNA).every(value => {
+  const isFormComplete = Object.entries(ideaDNA).every(([key, value]) => {
+    // Skip character fields if not character narrator
+    if (ideaDNA.narratorType !== "Character Narrator" && 
+        ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+      return true;
+    }
     if (Array.isArray(value)) return value.length > 0;
     return typeof value === 'string' && value.length > 0;
   });
@@ -307,19 +330,24 @@ const IdeaOverview = () => {
                         <Globe className="h-4 w-4" />
                         Target Platforms
                       </label>
-                      <Select 
-                        value={ideaDNA.targetPlatforms.join(",")} 
-                        onValueChange={(value) => setIdeaDNA({...ideaDNA, targetPlatforms: value ? value.split(",") : []})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select target platforms" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {platformOptions.map(platform => (
-                            <SelectItem key={platform} value={platform}>{platform}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="grid grid-cols-2 gap-2 p-3 border rounded-md">
+                        {platformOptions.map(platform => (
+                          <div key={platform} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={platform}
+                              checked={ideaDNA.targetPlatforms.includes(platform)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setIdeaDNA({...ideaDNA, targetPlatforms: [...ideaDNA.targetPlatforms, platform]});
+                                } else {
+                                  setIdeaDNA({...ideaDNA, targetPlatforms: ideaDNA.targetPlatforms.filter(p => p !== platform)});
+                                }
+                              }}
+                            />
+                            <label htmlFor={platform} className="text-sm cursor-pointer">{platform}</label>
+                          </div>
+                        ))}
+                      </div>
                       {ideaDNA.targetPlatforms.length > 0 && (
                         <div className="flex gap-1 flex-wrap">
                           {ideaDNA.targetPlatforms.map((platform) => (
@@ -334,19 +362,81 @@ const IdeaOverview = () => {
                         <Hash className="h-4 w-4" />
                         Hashtags
                       </label>
-                      <Input
-                        placeholder="Enter hashtags separated by commas"
-                        value={ideaDNA.hashtags.join(", ")}
-                        onChange={(e) => setIdeaDNA({...ideaDNA, hashtags: e.target.value.split(",").map(h => h.trim()).filter(h => h)})}
-                      />
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Enter custom hashtags separated by commas"
+                          value={ideaDNA.hashtags.join(", ")}
+                          onChange={(e) => setIdeaDNA({...ideaDNA, hashtags: e.target.value.split(",").map(h => h.trim()).filter(h => h)})}
+                        />
+                        <div className="text-xs text-muted-foreground mb-2">Popular suggestions:</div>
+                        <div className="flex gap-1 flex-wrap max-h-20 overflow-y-auto">
+                          {hashtagSuggestions.map((hashtag) => (
+                            <Badge 
+                              key={hashtag} 
+                              variant={ideaDNA.hashtags.includes(hashtag) ? "default" : "outline"} 
+                              className="text-xs cursor-pointer hover:bg-primary/10"
+                              onClick={() => {
+                                if (ideaDNA.hashtags.includes(hashtag)) {
+                                  setIdeaDNA({...ideaDNA, hashtags: ideaDNA.hashtags.filter(h => h !== hashtag)});
+                                } else {
+                                  setIdeaDNA({...ideaDNA, hashtags: [...ideaDNA.hashtags, hashtag]});
+                                }
+                              }}
+                            >
+                              #{hashtag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
                       {ideaDNA.hashtags.length > 0 && (
                         <div className="flex gap-1 flex-wrap">
                           {ideaDNA.hashtags.map((hashtag) => (
-                            <Badge key={hashtag} variant="outline" className="text-xs">#{hashtag}</Badge>
+                            <Badge key={hashtag} variant="default" className="text-xs">#{hashtag}</Badge>
                           ))}
                         </div>
                       )}
                     </div>
+                  </div>
+
+                  {/* Banned Words Section */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <Ban className="h-4 w-4" />
+                      Banned Words/Phrases
+                    </label>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Enter words/phrases to avoid, separated by commas"
+                        value={ideaDNA.bannedWords.join(", ")}
+                        onChange={(e) => setIdeaDNA({...ideaDNA, bannedWords: e.target.value.split(",").map(w => w.trim()).filter(w => w)})}
+                      />
+                      <div className="text-xs text-muted-foreground mb-2">Common words to avoid:</div>
+                      <div className="flex gap-1 flex-wrap max-h-16 overflow-y-auto">
+                        {bannedWordsSuggestions.map((word) => (
+                          <Badge 
+                            key={word} 
+                            variant={ideaDNA.bannedWords.includes(word) ? "destructive" : "outline"} 
+                            className="text-xs cursor-pointer hover:bg-destructive/10"
+                            onClick={() => {
+                              if (ideaDNA.bannedWords.includes(word)) {
+                                setIdeaDNA({...ideaDNA, bannedWords: ideaDNA.bannedWords.filter(w => w !== word)});
+                              } else {
+                                setIdeaDNA({...ideaDNA, bannedWords: [...ideaDNA.bannedWords, word]});
+                              }
+                            }}
+                          >
+                            {word}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    {ideaDNA.bannedWords.length > 0 && (
+                      <div className="flex gap-1 flex-wrap">
+                        {ideaDNA.bannedWords.map((word) => (
+                          <Badge key={word} variant="destructive" className="text-xs">{word}</Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -527,6 +617,54 @@ const IdeaOverview = () => {
                     </Select>
                   </div>
                 </div>
+
+                {/* Character Narrator Details - Conditional Section */}
+                {ideaDNA.narratorType === "Character Narrator" && (
+                  <div className="border-t pt-6 space-y-4">
+                    <h4 className="text-sm font-semibold text-primary flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Character Details
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Physical Appearance</label>
+                        <Textarea
+                          placeholder="Describe the character's physical appearance (age, build, facial features, etc.)"
+                          value={ideaDNA.characterAppearance}
+                          onChange={(e) => setIdeaDNA({...ideaDNA, characterAppearance: e.target.value})}
+                          className="min-h-[60px]"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Personality & Mannerisms</label>
+                        <Textarea
+                          placeholder="Describe personality traits, speaking style, gestures, quirks, etc."
+                          value={ideaDNA.characterPersonality}
+                          onChange={(e) => setIdeaDNA({...ideaDNA, characterPersonality: e.target.value})}
+                          className="min-h-[60px]"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Background & Role</label>
+                        <Textarea
+                          placeholder="Character's background, expertise, role in the video"
+                          value={ideaDNA.characterBackground}
+                          onChange={(e) => setIdeaDNA({...ideaDNA, characterBackground: e.target.value})}
+                          className="min-h-[60px]"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Clothing & Style</label>
+                        <Textarea
+                          placeholder="Clothing style, colors, accessories, overall aesthetic"
+                          value={ideaDNA.characterClothing}
+                          onChange={(e) => setIdeaDNA({...ideaDNA, characterClothing: e.target.value})}
+                          className="min-h-[60px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3 pt-4">
