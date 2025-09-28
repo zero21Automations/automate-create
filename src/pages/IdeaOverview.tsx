@@ -185,21 +185,24 @@ const IdeaOverview = () => {
               
               return (
                 <div key={stage.id} className="flex items-center gap-2 min-w-0">
-                  <Button
-                    variant={isActive ? "default" : isCompleted ? "secondary" : "outline"}
-                    size="sm"
-                    className={`flex items-center gap-2 text-xs whitespace-nowrap ${
-                      isLocked ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    disabled={isLocked}
-                  >
-                    <NavLink to={stage.path} className="flex items-center w-full">
-                      <Icon className="h-4 w-4 mr-2" />
-                      {stage.label}
-                      {isCompleted && <Check className="h-3 w-3 ml-auto" />}
-                      {isLocked && <Lock className="h-3 w-3 ml-auto" />}
-                    </NavLink>
-                  </Button>
+                  <NavLink to={stage.path} className="flex items-center">
+                    <Button
+                      variant={isActive ? "default" : isCompleted ? "secondary" : "outline"}
+                      size="sm"
+                      className={`flex items-center gap-2 text-xs whitespace-nowrap ${
+                        isLocked ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      disabled={isLocked}
+                      asChild
+                    >
+                      <div className="flex items-center w-full">
+                        <Icon className="h-4 w-4 mr-2" />
+                        {stage.label}
+                        {isCompleted && <Check className="h-3 w-3 ml-auto" />}
+                        {isLocked && <Lock className="h-3 w-3 ml-auto" />}
+                      </div>
+                    </Button>
+                  </NavLink>
                   {index < pipelineStages.length - 1 && (
                     <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} style={{ pointerEvents: 'none' }} />
                   )}
