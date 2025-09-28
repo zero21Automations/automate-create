@@ -791,17 +791,16 @@ const IdeaOverview = () => {
           </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Progress Overview */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Progress Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+        {/* Sticky Quality & Progress Sidebar */}
+        <div className="xl:col-span-1 space-y-4">
+          <div className="sticky top-6 space-y-4">
+            {/* Progress Overview */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">DNA Progress</h3>
+              </div>
+              <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">DNA Completion</span>
                 <span className="text-sm font-medium">{(() => {
@@ -866,18 +865,16 @@ const IdeaOverview = () => {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+              </div>
+            </Card>
 
-          {/* Quality Metrics */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                Quality Score
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+            {/* Quality Metrics */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Quality Score</h3>
+              </div>
+            <div className="space-y-3">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
                   {Math.round(85 + (isFormComplete ? 10 : 0) + (ideaDNA.hashtags.length > 0 ? 3 : 0) + (ideaDNA.bannedWords.length > 0 ? 2 : 0))}
@@ -913,18 +910,16 @@ const IdeaOverview = () => {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+              </div>
+            </Card>
 
-          {/* Tasks */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Check className="h-4 w-4" />
-                Tasks
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+            {/* Tasks */}
+            <Card className="card-factory-glow p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Check className="h-4 w-4 text-primary" />
+                <h3 className="font-semibold">Tasks</h3>
+              </div>
+            <div className="space-y-2">
               {!ideaDNA.description && (
                 <div className="flex items-center gap-2 p-2 rounded bg-muted/50 border border-border">
                   <div className="w-2 h-2 rounded-full bg-warning" />
@@ -961,8 +956,9 @@ const IdeaOverview = () => {
                   <span className="text-xs">Ready for script phase</span>
                 </div>
               )}
-            </CardContent>
-          </Card>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
