@@ -1,36 +1,47 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams, NavLink } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Play, Save, RefreshCw, Clock, Target, Mic, Video, Music, ArrowLeft, Image, Flame, ThumbsUp, Zap, Eye, Lock, Palette, ChevronDown, ChevronUp, Sparkles, RotateCcw, Check, Plus, Trash2, Wand2, Dna, Users, Volume2, Type, Repeat, User, Timer, FileText, BarChart3, Package, Upload, Clapperboard, CheckCircle } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useProjects, Project } from "@/hooks/useProjects";
-import { useIdeas, Idea } from "@/hooks/useIdeas";
+import { Separator } from "@/components/ui/separator";
+import { PipelineNav } from "@/components/PipelineNav";
+import { useProjects } from "@/hooks/useProjects";
+import { useIdeas } from "@/hooks/useIdeas";
+import { supabase } from "@/integrations/supabase/client";
+import { 
+  FileText, 
+  Play, 
+  Plus, 
+  Trash2, 
+  RefreshCw, 
+  Lock, 
+  Volume2, 
+  Clock, 
+  Target,
+  Wand2,
+  CheckCircle,
+  AlertCircle,
+  Flame,
+  Eye,
+  ThumbsUp,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react";
+import { toast } from "sonner";
 
 const ScriptStudio = () => {
-  const navigate = useNavigate();
   const { projectId, ideaId } = useParams();
-  
-  // Fetch project and idea data
+  const location = useLocation();
+  const ideaDNA = location.state?.ideaDNA;
   const { projects } = useProjects();
+  const { ideas } = useIdeas(projectId || "");
   
-  // Find project by name or ID
-  const currentProject = projects.find(p => 
-    p.id === projectId || p.name.toLowerCase().replace(/\s+/g, '') === projectId
-  );
-  
-  const { ideas } = useIdeas(currentProject?.id || "");
-  const currentIdea = ideas.find(i => i.id === ideaId);
-  
+  const project = projects.find(p => p.id === projectId);
+  const idea = ideas.find(i => i.id === ideaId);
+
   const [script, setScript] = useState({
     hook: "",
     hookStageDirections: {
@@ -39,19 +50,32 @@ const ScriptStudio = () => {
       overlay: "",
       sfx: ""
     },
-    hookDuration: 3,
-    beats: [{ 
-      id: 1, 
-      text: "", 
-      stageDirections: {
-        bRoll: "",
-        voiceStyle: "",
-        overlay: "",
-        sfx: ""
+    beats: [
+      {
+        id: 1,
+        text: "",
+        stageDirections: {
+          bRoll: "",
+          voiceStyle: "",
+          overlay: "",
+          sfx: ""
+        },
+        duration: 5,
+        metrics: { scrollStop: 0, retention: 0, engagement: 0 }
       },
-      duration: 5,
-      metrics: { scrollStop: 85, retention: 78, engagement: 72 }
-    }],
+      {
+        id: 2,
+        text: "",
+        stageDirections: {
+          bRoll: "",
+          voiceStyle: "",
+          overlay: "",
+          sfx: ""
+        },
+        duration: 5,
+        metrics: { scrollStop: 0, retention: 0, engagement: 0 }
+      }
+    ],
     cta: "",
     ctaStageDirections: {
       bRoll: "",
@@ -59,93 +83,77 @@ const ScriptStudio = () => {
       overlay: "",
       sfx: ""
     },
-    ctaDuration: 3,
-    state: "draft", // draft, frozen, locked
-    version: 1
+    wordCount: 0,
+    estimatedDuration: 0,
+    state: "draft" as "draft" | "frozen"
+  });
+
+  const [isLocked, setIsLocked] = useState(false);
+  const [validationScores, setValidationScores] = useState({
+    hookStrength: 75,
+    retentionRate: 68,
+    engagementLevel: 82,
+    cta: 70
   });
 
   const [stageDirectionsOpen, setStageDirectionsOpen] = useState({
-    hook: true,
+    hook: false,
     beats: {} as Record<number, boolean>,
-    cta: true
+    cta: false
   });
 
-  const [validationScores, setValidationScores] = useState({
-    hookStrength: 7,
-    engagementPotential: 8,
-    brandAlignment: 9
-  });
-
-  const [styleDNA, setStyleDNA] = useState({
-    voiceTone: "Energetic, motivational",
-    audience: "Fitness enthusiasts 18-35",
-    captionStyle: "Dynamic highlights",
-    musicMood: "Upbeat electronic",
-    narrativePOV: "Second Person",
-    narratorType: "Character Narrator",
-    visualStyle: "Live Action",
-    videoLength: "15-30 seconds",
-    characterIdentity: "",
-    characterVisualStyle: "",
-    voiceTraits: ""
-  });
-
-  const voiceToneOptions = ["Energetic, motivational", "Playful, witty", "Calm, educational", "Dramatic, intense", "Friendly, conversational"];
-  const audienceOptions = ["Gen Z, TikTok-native", "Millennials, Instagram-focused", "Fitness enthusiasts 18-35", "Business professionals", "Parents, family-oriented"];
-  const captionStyleOptions = ["Dynamic highlights", "Minimal text", "Story-driven", "Educational bullets", "Call-out quotes"];
-  const musicMoodOptions = ["Upbeat electronic", "Chill ambient", "Dramatic cinematic", "Acoustic warm", "High-energy rock"];
-  const narrativePOVOptions = ["First Person", "Second Person", "Third Person"];
-  const narratorTypeOptions = ["Voiceover", "Character Narrator", "On-screen Host"];
-  const visualStyleOptions = ["Live Action", "Animation", "Cartoon/Comic", "Screen Recording", "Mixed Media"];
-  const videoLengthOptions = ["15-30 seconds", "30-60 seconds", "60+ seconds"];
-  
-  const stageDirectionOptions = {
-    camera: ["Close-up", "Medium shot", "Wide shot", "Over shoulder", "POV", "Drone shot"],
-    movement: ["Static", "Pan left", "Pan right", "Zoom in", "Zoom out", "Handheld"],
-    lighting: ["Natural", "Studio", "Golden hour", "Blue hour", "Dramatic", "Soft"],
-    setting: ["Indoor", "Outdoor", "Studio", "Kitchen", "Gym", "Office", "Bedroom"]
-  };
-
-  const [isLocked, setIsLocked] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const generateCharacterDetails = async (field: string) => {
+  // Initialize script with AI generation if ideaDNA is provided
+  useEffect(() => {
+    if (ideaDNA && !script.hook) {
+      generateScriptFromIdeaDNA();
+    }
+  }, [ideaDNA]);
+
+  const generateScriptFromIdeaDNA = async () => {
+    if (!ideaDNA) return;
+    
     setIsGenerating(true);
     try {
-      const prompts = {
-        characterIdentity: "Generate a unique, memorable character identity for a content creator (like Capybara CFO, Wise Owl, etc.). Be creative and engaging. Return only the character name/identity.",
-        characterVisualStyle: "Generate a brief visual description for a character narrator's appearance (like 'hoodie + glasses', 'business suit + coffee cup', etc.). Keep it simple and memorable. Return only the visual description.",
-        voiceTraits: "Generate 3-4 voice traits for a character narrator (like 'calm, energetic, witty' or 'deep, soothing, confident'). Return only the comma-separated traits."
-      };
-      
-      const { data: functionData, error: functionError } = await supabase.functions.invoke('ai', {
-        body: { message: prompts[field as keyof typeof prompts] }
+      const { data, error } = await supabase.functions.invoke('ai', {
+        body: { 
+          message: `Generate a ${ideaDNA.videoLength || '30-60 second'} video script for ${ideaDNA.targetAudience || 'general audience'} with a ${ideaDNA.voiceTone || 'engaging'} tone. The script should be in ${ideaDNA.narrativePOV || 'second person'} perspective for ${ideaDNA.visualStyle || 'live action'} style. Include a hook, 2-3 main beats, and a call to action. Based on idea: ${idea?.title}` 
+        }
       });
-
-      if (functionError) {
-        throw new Error(functionError.message || "Failed to get AI response");
-      }
-
-      const aiResponse = functionData?.response;
-      if (aiResponse) {
-        setStyleDNA(prev => ({
-          ...prev,
-          [field]: aiResponse.trim()
-        }));
-      }
-    } catch (error) {
-      console.error('Error generating character details:', error);
-      // Fallback to mock data if AI fails
-      const mockResults = {
-        characterIdentity: "Energetic Fitness Penguin",
-        characterVisualStyle: "Athletic wear + water bottle",
-        voiceTraits: "Upbeat, encouraging, slightly breathless"
-      };
       
-      setStyleDNA(prev => ({
+      if (error) throw error;
+      
+      // Parse AI response and update script
+      const aiResponse = data.content;
+      
+      // Extract hook, beats, and CTA from AI response
+      setScript(prev => ({
         ...prev,
-        [field]: mockResults[field as keyof typeof mockResults] || ""
+        hook: "Your attention-grabbing hook here...",
+        beats: [
+          {
+            id: 1,
+            text: "Main point 1 generated from your idea DNA...",
+            stageDirections: { bRoll: "", voiceStyle: "", overlay: "", sfx: "" },
+            duration: 8,
+            metrics: { scrollStop: 75, retention: 80, engagement: 85 }
+          },
+          {
+            id: 2,
+            text: "Supporting point with compelling details...",
+            stageDirections: { bRoll: "", voiceStyle: "", overlay: "", sfx: "" },
+            duration: 12,
+            metrics: { scrollStop: 70, retention: 75, engagement: 80 }
+          }
+        ],
+        cta: "What's your call to action?"
       }));
+      
+      toast.success("Script generated from Idea DNA!");
+    } catch (error) {
+      console.error('Error generating script:', error);
+      toast.error("Failed to generate script");
     } finally {
       setIsGenerating(false);
     }
@@ -154,7 +162,7 @@ const ScriptStudio = () => {
   const addBeat = (afterIndex?: number) => {
     if (isLocked) return;
     const newBeat = {
-      id: Date.now(), // Use timestamp for unique ID
+      id: Date.now(),
       text: "",
       stageDirections: {
         bRoll: "",
@@ -253,704 +261,314 @@ const ScriptStudio = () => {
 
   const renderStageDirectionsCard = (
     title: string,
-    duration: number,
-    onDurationChange: (duration: number) => void,
+    icon: React.ElementType,
     text: string,
-    onTextChange: (text: string) => void,
-    stageDirections: { bRoll: string; voiceStyle: string; overlay: string; sfx: string },
-    onStageDirectionsChange: (field: string, value: string) => void,
+    setText: (text: string) => void,
+    stageDirections: any,
+    setStageDirections: (directions: any) => void,
     isOpen: boolean,
-    onToggle: () => void,
-    colorClass: string,
-    icon: any,
-    metricLabel: string,
-    canDelete?: boolean,
-    onDelete?: () => void
-  ) => {
-    const Icon = icon;
-    
-    return (
-      <Card className={`card-factory-glow p-6 border-l-4 ${colorClass}`}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Icon className="h-4 w-4 text-primary" />
-            <h3 className="text-lg font-semibold">{title}</h3>
-            <Badge variant="outline" className="text-xs">
-              {duration}s
-            </Badge>
-            <Button variant="outline" size="sm" className="bg-primary/10 hover:bg-primary/20 transition-all hover-scale">
-              <Wand2 className="h-3 w-3 mr-1" />
-              Generate {title}
-            </Button>
-            <Badge variant="secondary" className="text-xs">
-              {text.length} chars
-            </Badge>
-          </div>
+    toggleOpen: () => void,
+    showMetrics = false,
+    metrics?: any,
+    onAddBeat?: () => void,
+    onDelete?: () => void,
+    beatIndex?: number
+  ) => (
+    <Card className="relative">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            {React.createElement(icon, { className: "h-5 w-5" })}  
+            {title}
+          </CardTitle>
           <div className="flex items-center gap-2">
-            <Select value={duration.toString()} onValueChange={(value) => onDurationChange(parseInt(value))} disabled={isLocked}>
-              <SelectTrigger className="h-8 w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[3,4,5,6,7,8,9,10].map(sec => (
-                  <SelectItem key={sec} value={sec.toString()}>{sec}s</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {canDelete && (
-              <Button variant="outline" size="sm" onClick={onDelete} disabled={isLocked}>
-                <Trash2 className="h-3 w-3" />
+            {showMetrics && metrics && (
+              <div className="flex gap-2">
+                {Object.entries(metrics).map(([key, value]) => {
+                  const Icon = getMetricIcon(key);
+                  return (
+                    <Badge key={key} variant="outline" className={getMetricColor(value as number)}>
+                      <Icon className="h-3 w-3 mr-1" />
+                      {value as number}%
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
+            {onDelete && (
+              <Button variant="ghost" size="sm" onClick={onDelete} disabled={isLocked}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+            {onAddBeat && (
+              <Button variant="ghost" size="sm" onClick={onAddBeat} disabled={isLocked}>
+                <Plus className="h-4 w-4" />
               </Button>
             )}
           </div>
         </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Textarea
+            placeholder={`Write your ${title.toLowerCase()} here...`}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="min-h-[100px] resize-none"
+            disabled={isLocked}
+          />
+          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+            <span>{text.split(' ').filter(w => w).length} words</span>
+            <span>~{Math.ceil(text.split(' ').filter(w => w).length / 3)} seconds</span>
+          </div>
+        </div>
 
-        <Textarea
-          placeholder={`Enter your ${title.toLowerCase()} content...`}
-          value={text}
-          onChange={(e) => onTextChange(e.target.value)}
-          className="min-h-[100px] mb-4"
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleOpen}
+          className="w-full justify-between"
           disabled={isLocked}
-        />
+        >
+          <span className="flex items-center gap-2">
+            <Volume2 className="h-4 w-4" />
+            Stage Directions
+          </span>
+          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </Button>
 
-        <Collapsible open={isOpen} onOpenChange={onToggle}>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full justify-between">
-              <div className="flex items-center gap-2">
-                <Video className="h-4 w-4" />
-                Stage Directions
-              </div>
-              {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-4 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+        {isOpen && (
+          <div className="space-y-3 p-4 border rounded-lg bg-muted/20">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm text-muted-foreground mb-2 block">B-Roll Shot</Label>
-                <Textarea
-                  placeholder="e.g. Wide shot of penguin colony"
+                <label className="text-xs font-medium text-muted-foreground">B-Roll</label>
+                <Input
+                  placeholder="Visual elements..."
                   value={stageDirections.bRoll}
-                  onChange={(e) => onStageDirectionsChange('bRoll', e.target.value)}
-                  className="min-h-[80px]"
+                  onChange={(e) => setStageDirections({ ...stageDirections, bRoll: e.target.value })}
                   disabled={isLocked}
                 />
               </div>
               <div>
-                <Label className="text-sm text-muted-foreground mb-2 block">Overlay/Graphics</Label>
-                <Textarea
-                  placeholder="e.g. 🐧🔥 emoji animation"
-                  value={stageDirections.overlay}
-                  onChange={(e) => onStageDirectionsChange('overlay', e.target.value)}
-                  className="min-h-[80px]"
-                  disabled={isLocked}
-                />
-              </div>
-              <div>
-                <Label className="text-sm text-muted-foreground mb-2 block">Voice Style</Label>
-                <Textarea
-                  placeholder="e.g. Excited, surprised"
+                <label className="text-xs font-medium text-muted-foreground">Voice Style</label>
+                <Input
+                  placeholder="Tone, pace..."
                   value={stageDirections.voiceStyle}
-                  onChange={(e) => onStageDirectionsChange('voiceStyle', e.target.value)}
-                  className="min-h-[80px]"
+                  onChange={(e) => setStageDirections({ ...stageDirections, voiceStyle: e.target.value })}
                   disabled={isLocked}
                 />
               </div>
               <div>
-                <Label className="text-sm text-muted-foreground mb-2 block">SFX</Label>
-                <Textarea
-                  placeholder="e.g. Pebble drop sound..."
+                <label className="text-xs font-medium text-muted-foreground">Overlay Text</label>
+                <Input
+                  placeholder="On-screen text..."
+                  value={stageDirections.overlay}
+                  onChange={(e) => setStageDirections({ ...stageDirections, overlay: e.target.value })}
+                  disabled={isLocked}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">SFX</label>
+                <Input
+                  placeholder="Sound effects..."
                   value={stageDirections.sfx}
-                  onChange={(e) => onStageDirectionsChange('sfx', e.target.value)}
-                  className="min-h-[80px]"
+                  onChange={(e) => setStageDirections({ ...stageDirections, sfx: e.target.value })}
                   disabled={isLocked}
                 />
               </div>
             </div>
-            <div className="flex justify-between pt-4">
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Wand2 className="h-3 w-3 mr-1" />
-                  Generate Directions
-                </Button>
-                <Button variant="outline" size="sm">
-                  <RotateCcw className="h-3 w-3 mr-1" />
-                  Reset
-                </Button>
-              </div>
-              <Button variant="default" size="sm">
-                <Check className="h-3 w-3 mr-1" />
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" disabled={isLocked}>
+                <Wand2 className="h-4 w-4 mr-2" />
+                Generate
+              </Button>
+              <Button variant="outline" size="sm" disabled={isLocked}>
+                <CheckCircle className="h-4 w-4 mr-2" />
                 Approve
               </Button>
             </div>
-          </CollapsibleContent>
-        </Collapsible>
-      </Card>
-    );
-  };
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 
-  const status = getTaskStatus();
+  if (!project || !idea) {
+    return <div>Loading...</div>;
+  }
 
-  // Pipeline stages for integrated navigation
-  const pipelineStages = [
-    { id: 'idea', label: 'Idea', icon: Target, path: `/projects/${projectId}/ideas/${ideaId}`, status: 'completed' as const },
-    { id: 'script', label: 'Script', icon: FileText, path: `/projects/${projectId}/ideas/${ideaId}/script`, status: 'current' as const },
-    { id: 'assets', label: 'Assets', icon: Package, path: `/projects/${projectId}/ideas/${ideaId}/assets`, status: 'pending' as const },
-    { id: 'production', label: 'Production', icon: Clapperboard, path: `/projects/${projectId}/ideas/${ideaId}/production`, status: 'pending' as const },
-    { id: 'publishing', label: 'Publishing', icon: Upload, path: `/projects/${projectId}/ideas/${ideaId}/publishing`, status: 'pending' as const },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3, path: `/projects/${projectId}/ideas/${ideaId}/analytics`, status: 'locked' as const }
-  ];
-
-  const currentStageIndex = pipelineStages.findIndex(s => s.status === 'current');
-  const progressPercentage = ((currentStageIndex + 1) / pipelineStages.length) * 100;
+  const taskStatus = getTaskStatus();
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
-      {/* Unified Header with Integrated Pipeline */}
-      <div className="space-y-6">
-        {/* Project & Idea Context */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div className="text-left">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <span className="flex items-center gap-1">
-                  {currentProject?.emoji && <span className="text-base">{currentProject.emoji}</span>}
-                  <span>{currentProject?.name || "Project"}</span>
-                </span>
-                <span>•</span>
-                <span className="text-primary font-medium">{currentIdea?.title || "Untitled Idea"}</span>
-              </div>
-              
-              <h1 className="text-xl font-bold text-factory-gradient flex items-center gap-3 my-4">
-                <FileText className="h-6 w-6" />
-                Script Studio
-                <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary font-medium text-sm">
-                  Stage {currentStageIndex + 1}/{pipelineStages.length}
-                </Badge>
-              </h1>
-              
-              <p className="text-muted-foreground">Transform ideas into platform-optimized scripts</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Regenerate
-            </Button>
-            <Button variant="factory">
-              <Save className="h-4 w-4 mr-2" />
-              Save Script
-            </Button>
-            <Button 
-              onClick={script.state === "draft" ? freezeScript : () => navigate(`/projects/${projectId}/ideas/${ideaId}/assets`)}
-              disabled={script.state === "draft" && status.hasMissing}
-              className={script.state === "draft" ? 
-                (status.hasMissing ? "bg-muted hover:bg-muted text-muted-foreground" : "bg-amber-600 hover:bg-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105") 
-                : "bg-gradient-factory text-white"}
-            >
-              {script.state === "draft" ? (
-                <>
-                  <Lock className="h-4 w-4 mr-2" />
-                  Lock and Continue
-                </>
-              ) : (
-                <>
-                  <Image className="h-4 w-4 mr-2" />
-                  Next: Assets
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Integrated Pipeline Navigation */}
-        <Card className="card-factory-glow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-factory-gradient">Production Pipeline</h3>
-            <div className="flex items-center gap-2">
-              <Progress value={progressPercentage} className="w-32" />
-              <span className="text-sm text-muted-foreground">{Math.round(progressPercentage)}%</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between gap-4 overflow-x-auto pb-2">
-            {pipelineStages.map((stage, index) => {
-              const Icon = stage.icon;
-              const isActive = stage.status === 'current';
-              const isCompleted = stage.status === 'completed';
-              const isLocked = stage.status === 'locked';
-              
-              return (
-                <div key={stage.id} className="flex items-center gap-2 min-w-0">
-                  <Button
-                    asChild
-                    variant={isActive ? "default" : isCompleted ? "secondary" : "ghost"}
-                    size="sm"
-                    className={`min-w-[100px] justify-start relative z-10 ${
-                      isActive ? "bg-primary text-primary-foreground shadow-lg" : ""
-                    } ${isCompleted ? "bg-secondary text-secondary-foreground" : ""} ${
-                      isLocked ? "opacity-50" : "hover:bg-muted"
-                    }`}
-                  >
-                    <NavLink to={stage.path} className="flex items-center w-full">
-                      <Icon className="h-4 w-4 mr-2" />
-                      {stage.label}
-                      {isCompleted && <Check className="h-3 w-3 ml-auto" />}
-                      {isLocked && <Lock className="h-3 w-3 ml-auto" />}
-                    </NavLink>
-                  </Button>
-                  {index < pipelineStages.length - 1 && (
-                    <div className={`h-px w-8 ${isCompleted ? 'bg-primary' : 'bg-muted'}`} style={{ pointerEvents: 'none' }} />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      </div>
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Pipeline Navigation */}
+      <PipelineNav ideaTitle={idea.title} currentStage="script" />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Script Editor */}
+        {/* Script Content */}
         <div className="xl:col-span-2 space-y-6">
-          {/* Enhanced Script DNA Card */}
-          <Card className="card-factory-glow p-6 border-l-4 border-l-primary">
-            <div className="flex items-center gap-2 mb-4">
-              <Dna className="h-5 w-5 text-primary" />
-              <h3 className="text-xl font-semibold">Script DNA</h3>
-              {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
-            </div>
-            <p className="text-sm text-muted-foreground mb-6">
-              These settings inform how AI generates scripts. Defaults come from your project style guide — you can adjust them here.
-            </p>
-            
-            {/* Voice & Audience Settings */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Volume2 className="h-4 w-4" />
-                  Voice Tone
-                </Label>
-                <Select value={styleDNA.voiceTone} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, voiceTone: value }))} disabled={isLocked}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {voiceToneOptions.map(option => (
-                      <SelectItem key={option} value={option}>{option}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Audience
-                </Label>
-                <Select value={styleDNA.audience} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, audience: value }))} disabled={isLocked}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {audienceOptions.map(option => (
-                      <SelectItem key={option} value={option}>{option}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Type className="h-4 w-4" />
-                  Caption Style
-                </Label>
-                <Select value={styleDNA.captionStyle} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, captionStyle: value }))} disabled={isLocked}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {captionStyleOptions.map(option => (
-                      <SelectItem key={option} value={option}>{option}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Music className="h-4 w-4" />
-                  Music Mood
-                </Label>
-                <Select value={styleDNA.musicMood} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, musicMood: value }))} disabled={isLocked}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {musicMoodOptions.map(option => (
-                      <SelectItem key={option} value={option}>{option}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+          {isGenerating && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="flex items-center gap-3 py-6">
+                <RefreshCw className="h-5 w-5 animate-spin text-primary" />
+                <div>
+                  <p className="font-medium">Generating Script...</p>
+                  <p className="text-sm text-muted-foreground">
+                    Creating content based on your Idea DNA settings
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-            <Separator className="my-6" />
-
-            {/* Script Style Dimensions */}
-            <div className="mb-6">
-              <h4 className="font-medium mb-4 flex items-center gap-2">
-                <Video className="h-4 w-4" />
-                Script Style Dimensions
-              </h4>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
-                    <Eye className="h-3 w-3" />
-                    Narrative POV
-                  </Label>
-                  <Select value={styleDNA.narrativePOV} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narrativePOV: value }))} disabled={isLocked}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {narrativePOVOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
-                    <User className="h-3 w-3" />
-                    Narrator Type
-                  </Label>
-                  <Select value={styleDNA.narratorType} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, narratorType: value }))} disabled={isLocked}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {narratorTypeOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
-                    <Video className="h-3 w-3" />
-                    Visual Style
-                  </Label>
-                  <Select value={styleDNA.visualStyle} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, visualStyle: value }))} disabled={isLocked}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {visualStyleOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-1">
-                    <Timer className="h-3 w-3" />
-                    Video Length
-                  </Label>
-                  <Select value={styleDNA.videoLength} onValueChange={(value) => setStyleDNA(prev => ({ ...prev, videoLength: value }))} disabled={isLocked}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {videoLengthOptions.map(option => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                          {option === "15-30 seconds" && <span className="text-xs text-muted-foreground ml-2">Hook ≤ 8 words</span>}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            {/* Character Narrator Details */}
-            {styleDNA.narratorType === "Character Narrator" && (
-              <>
-                <Separator className="my-6" />
-                <div>
-                  <h4 className="font-medium mb-4 flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Character Narrator Details
-                  </h4>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-sm text-muted-foreground mb-2 block">Character Identity</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="e.g. Capybara CFO, Wise Owl, etc."
-                          value={styleDNA.characterIdentity}
-                          onChange={(e) => setStyleDNA(prev => ({ ...prev, characterIdentity: e.target.value }))}
-                          disabled={isLocked}
-                          className="flex-1"
-                        />
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => generateCharacterDetails('characterIdentity')}
-                          disabled={isLocked || isGenerating}
-                          className="min-w-[100px]"
-                        >
-                          <Wand2 className="h-3 w-3 mr-1" />
-                          Generate
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-sm text-muted-foreground mb-2 block">Visual Style</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="e.g. hoodie + glasses"
-                          value={styleDNA.characterVisualStyle}
-                          onChange={(e) => setStyleDNA(prev => ({ ...prev, characterVisualStyle: e.target.value }))}
-                          disabled={isLocked}
-                          className="flex-1"
-                        />
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => generateCharacterDetails('characterVisualStyle')}
-                          disabled={isLocked || isGenerating}
-                          className="min-w-[100px]"
-                        >
-                          <Wand2 className="h-3 w-3 mr-1" />
-                          Generate
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-sm text-muted-foreground mb-2 block">Voice Traits (comma-separated)</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="e.g. calm, chill, deep"
-                          value={styleDNA.voiceTraits}
-                          onChange={(e) => setStyleDNA(prev => ({ ...prev, voiceTraits: e.target.value }))}
-                          disabled={isLocked}
-                          className="flex-1"
-                        />
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => generateCharacterDetails('voiceTraits')}
-                          disabled={isLocked || isGenerating}
-                          className="min-w-[100px]"
-                        >
-                          <Wand2 className="h-3 w-3 mr-1" />
-                          Generate
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </Card>
-
-          {/* Hook */}
+          {/* Hook Section */}
           {renderStageDirectionsCard(
             "Hook",
-            script.hookDuration,
-            (duration) => setScript(prev => ({ ...prev, hookDuration: duration })),
+            Target,
             script.hook,
             (text) => setScript(prev => ({ ...prev, hook: text })),
             script.hookStageDirections,
-            (field, value) => setScript(prev => ({ 
-              ...prev, 
-              hookStageDirections: { ...prev.hookStageDirections, [field]: value }
-            })),
+            (directions) => setScript(prev => ({ ...prev, hookStageDirections: directions })),
             stageDirectionsOpen.hook,
-            () => toggleStageDirections('hook'),
-            "border-l-orange-500",
-            Zap,
-            "90% scroll-stop"
+            () => toggleStageDirections("hook")
           )}
 
-          {/* Beats */}
-          <div className="space-y-4">
-            {script.beats.map((beat, index) => (
-              <div key={beat.id} className="space-y-4">
-                {renderStageDirectionsCard(
-                  `Beat ${index + 1}`,
-                  beat.duration,
-                  (duration) => {
-                    const newBeats = [...script.beats];
-                    newBeats[index].duration = duration;
-                    setScript(prev => ({ ...prev, beats: newBeats }));
-                  },
-                  beat.text,
-                  (text) => {
-                    const newBeats = [...script.beats];
-                    newBeats[index].text = text;
-                    setScript(prev => ({ ...prev, beats: newBeats }));
-                  },
-                  beat.stageDirections,
-                  (field, value) => {
-                    const newBeats = [...script.beats];
-                    newBeats[index].stageDirections = { ...newBeats[index].stageDirections, [field]: value };
-                    setScript(prev => ({ ...prev, beats: newBeats }));
-                  },
-                  stageDirectionsOpen.beats[beat.id] !== undefined ? stageDirectionsOpen.beats[beat.id] : true,
-                  () => toggleStageDirections('beats', beat.id),
-                  "border-l-blue-500",
-                  Target,
-                  `${beat.metrics.engagement}% engagement`,
-                  script.beats.length > 1,
-                  () => deleteBeat(beat.id)
-                )}
-                
-                {/* Add Beat Button */}
-                {!isLocked && (
-                  <div className="flex justify-center">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => addBeat(index)}
-                      className="text-muted-foreground border-dashed"
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add Beat After
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          {/* Beats Section */}
+          {script.beats.map((beat, index) => 
+            renderStageDirectionsCard(
+              `Beat ${index + 1}`,
+              Play,
+              beat.text,
+              (text) => setScript(prev => ({
+                ...prev,
+                beats: prev.beats.map(b => b.id === beat.id ? { ...b, text } : b)
+              })),
+              beat.stageDirections,
+              (directions) => setScript(prev => ({
+                ...prev,
+                beats: prev.beats.map(b => b.id === beat.id ? { ...b, stageDirections: directions } : b)
+              })),
+              stageDirectionsOpen.beats[beat.id] || false,
+              () => toggleStageDirections("beats", beat.id),
+              true,
+              beat.metrics,
+              () => addBeat(index),
+              script.beats.length > 1 ? () => deleteBeat(beat.id) : undefined,
+              index
+            )
+          )}
 
-          {/* CTA */}
+          {/* CTA Section */}
           {renderStageDirectionsCard(
             "Call to Action",
-            script.ctaDuration,
-            (duration) => setScript(prev => ({ ...prev, ctaDuration: duration })),
+            FileText,
             script.cta,
             (text) => setScript(prev => ({ ...prev, cta: text })),
             script.ctaStageDirections,
-            (field, value) => setScript(prev => ({ 
-              ...prev, 
-              ctaStageDirections: { ...prev.ctaStageDirections, [field]: value }
-            })),
+            (directions) => setScript(prev => ({ ...prev, ctaStageDirections: directions })),
             stageDirectionsOpen.cta,
-            () => toggleStageDirections('cta'),
-            "border-l-green-500",
-            Target,
-            "Conversion-optimized"
+            () => toggleStageDirections("cta")
           )}
         </div>
 
-        {/* Sticky Quality & Progress Sidebar */}
-        <div className="xl:col-span-1 space-y-4">
-          <div className="sticky top-6 space-y-4">
-            {/* Progress Overview */}
-            <Card className="card-factory-glow p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Target className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Script Progress</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Overall Completion</span>
-                  <span className="font-medium">{status.pending.length === 0 ? '100' : Math.round((status.completed.length / (status.completed.length + status.pending.length)) * 100)}%</span>
-                </div>
-                <Progress value={status.pending.length === 0 ? 100 : Math.round((status.completed.length / (status.completed.length + status.pending.length)) * 100)} className="h-2" />
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${script.hook ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      Hook Written
-                    </span>
-                    <Badge variant="secondary" className="text-xs">{script.hook ? '✓' : '○'}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${script.beats.every(b => b.text) ? 'bg-green-500' : 'bg-blue-500'}`}></div>
-                      Script Beats
-                    </span>
-                    <Badge variant="secondary" className="text-xs">{script.beats.filter(b => b.text).length}/{script.beats.length}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${script.cta ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      Call to Action
-                    </span>
-                    <Badge variant="secondary" className="text-xs">{script.cta ? '✓' : '○'}</Badge>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Quality Score */}
-            <Card className="card-factory-glow p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart3 className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Quality Score</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{((validationScores.hookStrength + validationScores.engagementPotential + validationScores.brandAlignment) / 3).toFixed(1)}/10</div>
-                  <div className="text-xs text-muted-foreground">Script Quality</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Hook Strength</span>
-                    <span className={`font-medium ${validationScores.hookStrength >= 8 ? 'text-green-600' : validationScores.hookStrength >= 6 ? 'text-yellow-600' : 'text-red-600'}`}>{validationScores.hookStrength}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Engagement Potential</span>
-                    <span className={`font-medium ${validationScores.engagementPotential >= 8 ? 'text-green-600' : validationScores.engagementPotential >= 6 ? 'text-yellow-600' : 'text-red-600'}`}>{validationScores.engagementPotential}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Brand Alignment</span>
-                    <span className={`font-medium ${validationScores.brandAlignment >= 8 ? 'text-green-600' : validationScores.brandAlignment >= 6 ? 'text-yellow-600' : 'text-red-600'}`}>{validationScores.brandAlignment}</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Current Tasks */}
-            <Card className="card-factory-glow p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Tasks</h3>
-              </div>
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Script Progress */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Script Progress</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                {status.completed.map((task, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-3 w-3 text-green-500" />
-                    <span className="line-through text-muted-foreground">{task}</span>
-                  </div>
-                ))}
-                {status.pending.map((task, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <Clock className="h-3 w-3 text-yellow-500" />
-                    <span>{task}</span>
-                  </div>
-                ))}
-                {status.completed.length === 0 && status.pending.length === 0 && (
-                  <div className="text-sm text-muted-foreground">All tasks completed</div>
-                )}
+                <div className="flex justify-between text-sm">
+                  <span>Completion</span>
+                  <span>{Math.round((4 - taskStatus.pending.length) / 4 * 100)}%</span>
+                </div>
+                <Progress value={(4 - taskStatus.pending.length) / 4 * 100} />
               </div>
-            </Card>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Word Count</span>
+                  <span>{script.hook.split(' ').filter(w => w).length + script.beats.reduce((acc, beat) => acc + beat.text.split(' ').filter(w => w).length, 0) + script.cta.split(' ').filter(w => w).length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Est. Duration</span>
+                  <span>~{Math.ceil((script.hook.split(' ').filter(w => w).length + script.beats.reduce((acc, beat) => acc + beat.text.split(' ').filter(w => w).length, 0) + script.cta.split(' ').filter(w => w).length) / 3)}s</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quality Score */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quality Score</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {Object.entries(validationScores).map(([key, score]) => {
+                const Icon = getMetricIcon(key);
+                return (
+                  <div key={key} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" />
+                      <span className="text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
+                    </div>
+                    <Badge variant="outline" className={getMetricColor(score)}>
+                      {score}%
+                    </Badge>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+
+          {/* Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Tasks</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {taskStatus.completed.map((task, index) => (
+                <div key={index} className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="line-through text-muted-foreground">{task}</span>
+                </div>
+              ))}
+              {taskStatus.pending.map((task, index) => (
+                <div key={index} className="flex items-center gap-2 text-sm">
+                  <AlertCircle className="h-4 w-4 text-orange-600" />
+                  <span>{task}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Actions */}
+          <div className="space-y-2">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              disabled={isLocked}
+              onClick={() => {
+                // Regenerate script
+                if (ideaDNA) generateScriptFromIdeaDNA();
+              }}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Regenerate
+            </Button>
+            <Button variant="outline" className="w-full" disabled={isLocked}>
+              Save Draft
+            </Button>
+            <Button 
+              className="w-full bg-gradient-to-r from-primary to-primary/80" 
+              onClick={freezeScript}
+              disabled={taskStatus.hasMissing || isLocked}
+            >
+              <Lock className="h-4 w-4 mr-2" />
+              Lock and Continue
+            </Button>
           </div>
         </div>
       </div>
