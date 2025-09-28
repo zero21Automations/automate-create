@@ -8,9 +8,11 @@ import { PipelineNav } from "@/components/PipelineNav";
 
 import { useProjects } from "@/hooks/useProjects";
 import { useIdeas } from "@/hooks/useIdeas";
-import { Lightbulb, Target, Users, Music, Palette, Wand2, FileText, Type, Volume2, Video, ArrowLeft, Package, Clapperboard, Upload, BarChart3, Check, Lock } from "lucide-react";
+import { Lightbulb, Target, Users, Music, Dna, Wand2, FileText, Type, Volume2, Video, ArrowLeft, Package, Clapperboard, Upload, BarChart3, Check, Lock, Hash, Globe } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { NavLink } from "react-router-dom";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 const IdeaOverview = () => {
@@ -23,6 +25,11 @@ const IdeaOverview = () => {
   const idea = ideas.find(i => i.id === ideaId);
 
   const [ideaDNA, setIdeaDNA] = useState({
+    // Idea Details (first part of DNA)
+    description: "",
+    targetPlatforms: [] as string[],
+    hashtags: [] as string[],
+    // Creative DNA
     voiceTone: "",
     targetAudience: "",
     musicMood: "",
@@ -34,6 +41,22 @@ const IdeaOverview = () => {
     visualStyle: "",
     videoLength: ""
   });
+
+  // Initialize with idea data when available
+  useState(() => {
+    if (idea) {
+      setIdeaDNA(prev => ({
+        ...prev,
+        description: idea.video_concept || "",
+        targetPlatforms: idea.target_platforms || [],
+        hashtags: idea.hashtags || []
+      }));
+    }
+  });
+
+  const platformOptions = [
+    "TikTok", "Instagram", "YouTube Shorts", "Facebook", "Twitter", "LinkedIn", "Snapchat"
+  ];
 
   const voiceToneOptions = [
     "Professional", "Casual", "Energetic", "Calm", "Humorous", "Serious", "Inspirational", "Educational"
@@ -77,8 +100,10 @@ const IdeaOverview = () => {
   ];
 
   const generateIdeaDNA = async () => {
-    // Simulate AI generation with realistic values
-    setIdeaDNA({
+    // Simulate AI generation with realistic values based on current content
+    setIdeaDNA(prev => ({
+      ...prev,
+      description: prev.description || "A quick, engaging video that teaches viewers something valuable in under 60 seconds with strong visual hooks and clear takeaways.",
       voiceTone: "Energetic",
       targetAudience: "Gen Z (18-24)",
       musicMood: "Upbeat",
@@ -89,8 +114,24 @@ const IdeaOverview = () => {
       narratorType: "Character Narrator",
       visualStyle: "Live Action",
       videoLength: "15-30 seconds"
-    });
+    }));
     toast.success("Idea DNA generated successfully!");
+  };
+
+  const generateDescription = async () => {
+    // Simulate AI generation of description
+    const descriptions = [
+      "A quick, engaging tutorial that teaches viewers a valuable skill in under 60 seconds with clear step-by-step instructions.",
+      "An entertaining and informative video that solves a common problem with a creative approach and strong visual storytelling.",
+      "A fast-paced, visually appealing demonstration that showcases useful tips and tricks with immediate actionable value.",
+      "An inspiring and educational piece that transforms complex concepts into simple, digestible content with engaging visuals."
+    ];
+    const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
+    setIdeaDNA(prev => ({
+      ...prev,
+      description: randomDescription
+    }));
+    toast.success("Description regenerated!");
   };
 
   const proceedToScript = () => {
@@ -102,7 +143,10 @@ const IdeaOverview = () => {
     }
   };
 
-  const isFormComplete = Object.values(ideaDNA).every(value => value.length > 0);
+  const isFormComplete = Object.values(ideaDNA).every(value => {
+    if (Array.isArray(value)) return value.length > 0;
+    return typeof value === 'string' && value.length > 0;
+  });
 
   if (!project || !idea) {
     return <div>Loading...</div>;
@@ -220,7 +264,7 @@ const IdeaOverview = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
+                <Dna className="h-5 w-5" />
                 Idea DNA
               </CardTitle>
               <CardDescription>
@@ -228,6 +272,90 @@ const IdeaOverview = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Idea Overview Section */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-primary flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  Video Concept
+                </h4>
+                
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium">Description</label>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={generateDescription}
+                        className="h-7 px-2 text-xs"
+                      >
+                        <Wand2 className="h-3 w-3 mr-1" />
+                        Regenerate
+                      </Button>
+                    </div>
+                    <Textarea
+                      placeholder="Describe what this video will be about..."
+                      value={ideaDNA.description}
+                      onChange={(e) => setIdeaDNA({...ideaDNA, description: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium flex items-center gap-2">
+                        <Globe className="h-4 w-4" />
+                        Target Platforms
+                      </label>
+                      <Select 
+                        value={ideaDNA.targetPlatforms.join(",")} 
+                        onValueChange={(value) => setIdeaDNA({...ideaDNA, targetPlatforms: value ? value.split(",") : []})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select target platforms" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {platformOptions.map(platform => (
+                            <SelectItem key={platform} value={platform}>{platform}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {ideaDNA.targetPlatforms.length > 0 && (
+                        <div className="flex gap-1 flex-wrap">
+                          {ideaDNA.targetPlatforms.map((platform) => (
+                            <Badge key={platform} variant="secondary" className="text-xs">{platform}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium flex items-center gap-2">
+                        <Hash className="h-4 w-4" />
+                        Hashtags
+                      </label>
+                      <Input
+                        placeholder="Enter hashtags separated by commas"
+                        value={ideaDNA.hashtags.join(", ")}
+                        onChange={(e) => setIdeaDNA({...ideaDNA, hashtags: e.target.value.split(",").map(h => h.trim()).filter(h => h)})}
+                      />
+                      {ideaDNA.hashtags.length > 0 && (
+                        <div className="flex gap-1 flex-wrap">
+                          {ideaDNA.hashtags.map((hashtag) => (
+                            <Badge key={hashtag} variant="outline" className="text-xs">#{hashtag}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-6">
+                <h4 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
+                  <Dna className="h-4 w-4" />
+                  Creative DNA
+                </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium flex items-center gap-2">
@@ -282,7 +410,7 @@ const IdeaOverview = () => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium flex items-center gap-2">
-                    <Palette className="h-4 w-4" />
+                    <Type className="h-4 w-4" />
                     Color Scheme
                   </label>
                   <Select value={ideaDNA.colorScheme} onValueChange={(value) => setIdeaDNA({...ideaDNA, colorScheme: value})}>
@@ -399,6 +527,7 @@ const IdeaOverview = () => {
                   </Select>
                 </div>
               </div>
+              </div>
 
               <div className="flex gap-3 pt-4">
                 <Button variant="outline" onClick={generateIdeaDNA}>
@@ -406,41 +535,6 @@ const IdeaOverview = () => {
                   Generate DNA
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Idea Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Idea Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Video Concept</h4>
-                <p className="text-sm text-muted-foreground">{idea.video_concept || "No concept defined yet"}</p>
-              </div>
-              
-              {idea.target_platforms && idea.target_platforms.length > 0 && (
-                <div>
-                  <h4 className="font-medium mb-2">Target Platforms</h4>
-                  <div className="flex gap-2 flex-wrap">
-                    {idea.target_platforms.map((platform) => (
-                      <Badge key={platform} variant="secondary">{platform}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {idea.hashtags && idea.hashtags.length > 0 && (
-                <div>
-                  <h4 className="font-medium mb-2">Hashtags</h4>
-                  <div className="flex gap-2 flex-wrap">
-                    {idea.hashtags.map((hashtag) => (
-                      <Badge key={hashtag} variant="outline">#{hashtag}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>
