@@ -804,37 +804,47 @@ const IdeaOverview = () => {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">DNA Completion</span>
-                <span className="text-sm font-medium">{Math.round((Object.entries(ideaDNA).filter(([key, value]) => {
-                  if (ideaDNA.narratorType !== "Character Narrator" && 
-                      ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+                <span className="text-sm font-medium">{(() => {
+                  const requiredFields = Object.entries(ideaDNA).filter(([key]) => {
+                    // Skip character fields if not character narrator
+                    if (ideaDNA.narratorType !== "Character Narrator" && 
+                        ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+                      return false;
+                    }
+                    // Skip optional fields
+                    if (["bannedWords", "hashtags"].includes(key)) {
+                      return false;
+                    }
                     return true;
-                  }
-                  if (["bannedWords", "hashtags"].includes(key)) return true;
-                  if (Array.isArray(value)) return value.length > 0;
-                  return typeof value === 'string' && value.length > 0;
-                }).length / Object.entries(ideaDNA).filter(([key]) => {
+                  });
+                  
+                  const completedFields = requiredFields.filter(([key, value]) => {
+                    if (Array.isArray(value)) return value.length > 0;
+                    return typeof value === 'string' && value.length > 0;
+                  });
+                  
+                  return Math.round((completedFields.length / requiredFields.length) * 100);
+                })()}%</span>
+              </div>
+              <Progress value={(() => {
+                const requiredFields = Object.entries(ideaDNA).filter(([key]) => {
                   if (ideaDNA.narratorType !== "Character Narrator" && 
                       ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
                     return false;
                   }
-                  return !["bannedWords", "hashtags"].includes(key);
-                }).length) * 100)}%</span>
-              </div>
-              <Progress value={Math.round((Object.entries(ideaDNA).filter(([key, value]) => {
-                if (ideaDNA.narratorType !== "Character Narrator" && 
-                    ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+                  if (["bannedWords", "hashtags"].includes(key)) {
+                    return false;
+                  }
                   return true;
-                }
-                if (["bannedWords", "hashtags"].includes(key)) return true;
-                if (Array.isArray(value)) return value.length > 0;
-                return typeof value === 'string' && value.length > 0;
-              }).length / Object.entries(ideaDNA).filter(([key]) => {
-                if (ideaDNA.narratorType !== "Character Narrator" && 
-                    ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
-                  return false;
-                }
-                return !["bannedWords", "hashtags"].includes(key);
-              }).length) * 100)} className="w-full" />
+                });
+                
+                const completedFields = requiredFields.filter(([key, value]) => {
+                  if (Array.isArray(value)) return value.length > 0;
+                  return typeof value === 'string' && value.length > 0;
+                });
+                
+                return Math.round((completedFields.length / requiredFields.length) * 100);
+              })()} className="w-full" />
               
               <div className="space-y-2 pt-2">
                 <div className="flex items-center gap-2">
@@ -906,48 +916,48 @@ const IdeaOverview = () => {
             </CardContent>
           </Card>
 
-          {/* Active Tasks */}
+          {/* Tasks */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Check className="h-4 w-4" />
-                Active Tasks
+                Tasks
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {!ideaDNA.description && (
-                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <div className="flex items-center gap-2 p-2 rounded bg-muted/50 border border-border">
+                  <div className="w-2 h-2 rounded-full bg-warning" />
                   <span className="text-xs">Add video description</span>
                 </div>
               )}
               {!ideaDNA.voiceTone && (
-                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <div className="flex items-center gap-2 p-2 rounded bg-muted/50 border border-border">
+                  <div className="w-2 h-2 rounded-full bg-warning" />
                   <span className="text-xs">Define voice & tone</span>
                 </div>
               )}
               {!ideaDNA.targetAudience && (
-                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <div className="flex items-center gap-2 p-2 rounded bg-muted/50 border border-border">
+                  <div className="w-2 h-2 rounded-full bg-warning" />
                   <span className="text-xs">Select target audience</span>
                 </div>
               )}
               {!ideaDNA.contentStyle && (
-                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <div className="flex items-center gap-2 p-2 rounded bg-muted/50 border border-border">
+                  <div className="w-2 h-2 rounded-full bg-warning" />
                   <span className="text-xs">Choose content style</span>
                 </div>
               )}
               {ideaDNA.narratorType === "Character Narrator" && !ideaDNA.characterAppearance && (
-                <div className="flex items-center gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <div className="flex items-center gap-2 p-2 rounded bg-muted/50 border border-border">
+                  <div className="w-2 h-2 rounded-full bg-warning" />
                   <span className="text-xs">Describe character</span>
                 </div>
               )}
               {isFormComplete && (
-                <div className="flex items-center gap-2 p-2 rounded bg-green-50 border border-green-200">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                <div className="flex items-center gap-2 p-2 rounded bg-muted/50 border border-border">
+                  <div className="w-2 h-2 rounded-full bg-success" />
                   <span className="text-xs">Ready for script phase</span>
                 </div>
               )}
