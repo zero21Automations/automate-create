@@ -55,8 +55,16 @@ const IdeaOverview = () => {
       setIdeaDNA(prev => ({
         ...prev,
         description: idea.video_concept || "",
-        targetPlatforms: idea.target_platforms || [],
+        targetPlatforms: idea.target_platforms && idea.target_platforms.length > 0 
+          ? idea.target_platforms 
+          : ["TikTok"], // Default to TikTok if no platforms defined
         hashtags: idea.hashtags || []
+      }));
+    } else {
+      // If no idea data yet, set TikTok as default
+      setIdeaDNA(prev => ({
+        ...prev,
+        targetPlatforms: ["TikTok"]
       }));
     }
   });
@@ -223,6 +231,10 @@ const IdeaOverview = () => {
     // Skip character fields if not character narrator
     if (ideaDNA.narratorType !== "Character Narrator" && 
         ["characterAppearance", "characterPersonality", "characterBackground", "characterClothing"].includes(key)) {
+      return true;
+    }
+    // Skip banned words and hashtags as they're not required
+    if (["bannedWords", "hashtags"].includes(key)) {
       return true;
     }
     if (Array.isArray(value)) return value.length > 0;
