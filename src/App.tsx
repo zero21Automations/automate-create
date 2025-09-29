@@ -15,7 +15,8 @@ import IdeaOverview from "./pages/IdeaOverview";
 import AssetManager from "./pages/AssetManager";
 import Production from "./pages/Production";
 import Publishing from "./pages/Publishing";
-import GlobalAnalytics from "./pages/GlobalAnalytics";
+import GlobalResearch from "./pages/GlobalResearch";
+import SystemArchitecture from "./pages/SystemArchitecture";
 import IdeaAnalytics from "./pages/IdeaAnalytics";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +41,9 @@ const App = () => (
             <Route path="projects/:projectId/ideas/:ideaId/production" element={<Production />} />
             <Route path="projects/:projectId/ideas/:ideaId/publishing" element={<Publishing />} />
             <Route path="projects/:projectId/ideas/:ideaId/analytics" element={<IdeaAnalytics />} />
+            <Route path="analytics" element={<GlobalAnalytics />} />
+            <Route path="research" element={<GlobalResearch />} />
+            <Route path="architecture" element={<SystemArchitecture />} />
             <Route path="setup" element={<ProjectSetup />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
