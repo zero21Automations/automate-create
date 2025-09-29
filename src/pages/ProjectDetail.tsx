@@ -353,10 +353,10 @@ const ProjectDetail = () => {
                         };
                       case 'validated':
                         return { 
-                          text: 'View Overview', 
+                          text: 'Setup DNA', 
                           icon: Eye, 
                           disabled: false,
-                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}`)
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/dna`)
                         };
                       case 'scripted':
                         return { 

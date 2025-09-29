@@ -121,21 +121,29 @@ export type Database = {
       }
       ideas: {
         Row: {
+          banned_words: string[] | null
           call_to_action: string | null
           complexity_level: string | null
+          concept: Json | null
           content_pillars: string[] | null
           created_at: string
+          creative_dna: Json | null
           description: string | null
           hashtags: string[] | null
           hook_type: string | null
           id: string
+          idea_references: Json | null
           metadata: Json | null
+          narrator_type: string | null
+          progress: Json | null
           project_id: string
           score: number | null
+          seed: Json | null
           source: string | null
           status: string
           target_duration: number | null
           target_platforms: string[] | null
+          targeting: Json | null
           title: string
           tone: string | null
           updated_at: string
@@ -143,21 +151,29 @@ export type Database = {
           visual_style: string | null
         }
         Insert: {
+          banned_words?: string[] | null
           call_to_action?: string | null
           complexity_level?: string | null
+          concept?: Json | null
           content_pillars?: string[] | null
           created_at?: string
+          creative_dna?: Json | null
           description?: string | null
           hashtags?: string[] | null
           hook_type?: string | null
           id?: string
+          idea_references?: Json | null
           metadata?: Json | null
+          narrator_type?: string | null
+          progress?: Json | null
           project_id: string
           score?: number | null
+          seed?: Json | null
           source?: string | null
           status?: string
           target_duration?: number | null
           target_platforms?: string[] | null
+          targeting?: Json | null
           title: string
           tone?: string | null
           updated_at?: string
@@ -165,21 +181,29 @@ export type Database = {
           visual_style?: string | null
         }
         Update: {
+          banned_words?: string[] | null
           call_to_action?: string | null
           complexity_level?: string | null
+          concept?: Json | null
           content_pillars?: string[] | null
           created_at?: string
+          creative_dna?: Json | null
           description?: string | null
           hashtags?: string[] | null
           hook_type?: string | null
           id?: string
+          idea_references?: Json | null
           metadata?: Json | null
+          narrator_type?: string | null
+          progress?: Json | null
           project_id?: string
           score?: number | null
+          seed?: Json | null
           source?: string | null
           status?: string
           target_duration?: number | null
           target_platforms?: string[] | null
+          targeting?: Json | null
           title?: string
           tone?: string | null
           updated_at?: string
