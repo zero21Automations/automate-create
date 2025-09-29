@@ -17,6 +17,7 @@ import Production from "./pages/Production";
 import Publishing from "./pages/Publishing";
 import GlobalAnalytics from "./pages/GlobalAnalytics";
 import IdeaAnalytics from "./pages/IdeaAnalytics";
+import { DNAWizard } from "./components/idea-dna/DNAWizard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,7 +36,7 @@ const App = () => (
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:projectId" element={<ProjectDetail />} />
             <Route path="projects/:projectId/ideas/:ideaId" element={<IdeaOverview />} />
-            <Route path="projects/:projectId/ideas/:ideaId/dna" element={<div>DNA Wizard coming soon</div>} />
+            <Route path="projects/:projectId/ideas/:ideaId/dna" element={<DNAWizard />} />
             <Route path="projects/:projectId/ideas/:ideaId/script" element={<ScriptStudio />} />
             <Route path="projects/:projectId/ideas/:ideaId/assets" element={<AssetManager />} />
             <Route path="projects/:projectId/ideas/:ideaId/production" element={<Production />} />
