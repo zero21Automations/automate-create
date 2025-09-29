@@ -189,6 +189,7 @@ const ProjectDetail = () => {
 
   const ideaStats = {
     generated: getIdeasByStatus('generated').length,
+    seed: getIdeasByStatus('seed').length,
     validated: getIdeasByStatus('validated').length,
     scripted: getIdeasByStatus('scripted').length,
     assets_ready: getIdeasByStatus('assets_ready').length,
@@ -291,6 +292,7 @@ const ProjectDetail = () => {
                   <SelectContent className="bg-background border border-border z-50">
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="generated">Generated</SelectItem>
+                    <SelectItem value="seed">Seed</SelectItem>
                     <SelectItem value="validated">Validated</SelectItem>
                     <SelectItem value="scripted">Scripted</SelectItem>
                     <SelectItem value="assets_ready">Assets Ready</SelectItem>
@@ -331,6 +333,7 @@ const ProjectDetail = () => {
                   const getStatusColor = (status: string) => {
                     switch (status) {
                       case 'generated': return 'bg-gray-400';
+                      case 'seed': return 'bg-amber-500';
                       case 'validated': return 'bg-blue-500';
                       case 'scripted': return 'bg-green-500';
                       case 'assets_ready': return 'bg-purple-500';
@@ -343,6 +346,7 @@ const ProjectDetail = () => {
                   const getStatusIcon = (status: string) => {
                     switch (status) {
                       case 'generated': return Lightbulb;
+                      case 'seed': return Target;
                       case 'validated': return CheckCircle;
                       case 'scripted': return FileText;
                       case 'assets_ready': return Upload;
@@ -355,6 +359,13 @@ const ProjectDetail = () => {
                   const getNextAction = (status: string) => {
                     switch (status) {
                       case 'generated':
+                        return { 
+                          text: 'Validate Idea', 
+                          icon: CheckCircle, 
+                          disabled: false,
+                          action: () => handleValidateIdea(idea.id, 'validated')
+                        };
+                      case 'seed':
                         return { 
                           text: 'Validate Idea', 
                           icon: CheckCircle, 
