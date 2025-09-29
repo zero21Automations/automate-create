@@ -116,67 +116,30 @@ export const useIdeas = (projectId: string) => {
     }
   };
 
-  const generateIdeas = async () => {
+  const generateIdeas = async (numIdeas: number = 3) => {
     try {
-      // Simulate AI idea generation with enhanced video fields
-      const mockIdeas = [
-        {
-          title: "5 Morning Habits That Changed My Life",
-          description: "Personal transformation through simple daily routines",
-          video_concept: "Split-screen before/after showing 5 quick habit demonstrations with upbeat music",
-          source: "AI Research Agent",
-          score: 85,
-          hashtags: ["productivity", "morningroutine", "selfcare"],
-          target_duration: 60,
-          visual_style: "clean",
-          target_platforms: ["tiktok", "instagram"],
-          call_to_action: "Comment your current morning routine!",
-          content_pillars: ["productivity", "wellness"],
-          tone: "motivational",
-          hook_type: "transformation",
-          complexity_level: "easy",
-        },
-        {
-          title: "Why Everyone's Wrong About Remote Work",
-          description: "Contrarian take on remote work misconceptions",
-          video_concept: "Fast-paced myth-busting format with statistics overlay and dynamic transitions",
-          source: "Trend Analysis",
-          score: 78,
-          hashtags: ["remotework", "productivity", "worklife"],
-          target_duration: 90,
-          visual_style: "dynamic",
-          target_platforms: ["tiktok", "youtube"],
-          call_to_action: "Are you team remote or office?",
-          content_pillars: ["business", "lifestyle"],
-          tone: "controversial",
-          hook_type: "contrarian",
-          complexity_level: "medium",
-        },
-        {
-          title: "The Secret Ingredient in Every Viral Video",
-          description: "Pattern analysis of top-performing content",
-          video_concept: "Behind-the-scenes breakdown of viral video patterns with examples and analysis",
-          source: "Competitor Analysis",
-          score: 92,
-          hashtags: ["viral", "contentcreation", "socialmedia"],
-          target_duration: 75,
-          visual_style: "analytical",
-          target_platforms: ["tiktok", "youtube", "instagram"],
-          call_to_action: "Try this formula in your next video!",
-          content_pillars: ["education", "marketing"],
-          tone: "educational",
-          hook_type: "revelation",
-          complexity_level: "advanced",
-        },
-      ];
-
-      const promises = mockIdeas.map(idea => createIdea(idea));
-      await Promise.all(promises);
-      
       toast({
-        title: "Ideas generated",
-        description: `Generated ${mockIdeas.length} new ideas for your project`,
+        title: "Generating ideas...",
+        description: "AI is creating personalized content ideas based on your project setup",
       });
+
+      const { data, error } = await supabase.functions.invoke('ai-idea-generation', {
+        body: { projectId, numIdeas }
+      });
+
+      if (error) throw error;
+
+      if (data?.success && data?.ideas) {
+        // Update local state with new ideas
+        setIdeas(prev => [...(data.ideas as Idea[]), ...prev]);
+        
+        toast({
+          title: "Ideas generated successfully",
+          description: `Generated ${data.count} personalized ideas based on your project setup`,
+        });
+      } else {
+        throw new Error('Failed to generate ideas');
+      }
     } catch (error) {
       console.error('Error generating ideas:', error);
       toast({

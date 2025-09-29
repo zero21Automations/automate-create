@@ -156,11 +156,32 @@ export default function ProjectSetup() {
 
     setLoading(true);
     try {
-      // In real implementation, save to database
-      console.log("Creating project with data:", formData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Create comprehensive project data structure
+      const projectData = {
+        name: formData.project.name,
+        description: formData.project.description,
+        emoji: formData.project.icon || "🎬",
+        status: 'active' as const,
+        user_id: user.id,
+        brand_kit: {
+          ...formData.brandkit,
+          niche: formData.project.niche,
+          audience_profile: formData.audience_profile,
+          style_guide: formData.style_guide
+        },
+        posting_rules: formData.publishing_rules
+      };
+
+      const { data: project, error } = await supabase
+        .from('projects')
+        .insert(projectData)
+        .select()
+        .single();
+
+      if (error) throw error;
       
       toast({
         title: "Project Created Successfully",
@@ -168,9 +189,10 @@ export default function ProjectSetup() {
       });
 
       // Redirect to project dashboard
-      // navigate(`/projects/${projectId}`);
+      window.location.href = `/projects/${project.id}`;
       
     } catch (error) {
+      console.error('Project creation error:', error);
       toast({
         title: "Project Creation Failed",
         description: "Unable to create project. Please try again.",

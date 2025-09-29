@@ -257,7 +257,7 @@ const ProjectDetail = () => {
                     />
                   </DialogContent>
                 </Dialog>
-                <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
+                <Button onClick={() => generateIdeas()} disabled={!project?.id || ideasLoading}>
                   {ideasLoading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -319,7 +319,7 @@ const ProjectDetail = () => {
                   <p className="text-muted-foreground text-center mb-4">
                     Start by generating some content ideas using AI research
                   </p>
-                  <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
+                  <Button onClick={() => generateIdeas()} disabled={!project?.id || ideasLoading}>
                     <Plus className="h-4 w-4 mr-2" />
                     Generate First Ideas
                   </Button>
