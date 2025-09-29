@@ -38,7 +38,7 @@ const tools = [
 ];
 
 const documentation = [
-  { name: "System Architecture", href: "/docs/architecture", icon: FileText },
+  { name: "System Architecture", href: "/architecture", icon: FileText },
 ];
 
 export function Sidebar() {
