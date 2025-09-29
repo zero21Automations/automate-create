@@ -246,6 +246,16 @@ const ProjectDetail = () => {
                       Add Idea
                     </Button>
                   </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Add New Idea</DialogTitle>
+                    </DialogHeader>
+                    <EnhancedIdeaForm
+                      onSubmit={handleAddIdea}
+                      onCancel={() => setIsAddingIdea(false)}
+                      loading={ideasLoading}
+                    />
+                  </DialogContent>
                 </Dialog>
                 <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
                   {ideasLoading ? (
