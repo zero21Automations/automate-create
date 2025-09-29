@@ -512,10 +512,10 @@ const ProjectDetail = () => {
                         };
                       case 'validated':
                         return { 
-                          text: 'Create Script', 
-                          icon: FileText, 
+                          text: 'View Overview', 
+                          icon: Eye, 
                           disabled: false,
-                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/script`)
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}`)
                         };
                       case 'scripted':
                         return { 
