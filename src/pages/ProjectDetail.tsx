@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useProjects, type Project } from "@/hooks/useProjects";
 import { useIdeas, type Idea } from "@/hooks/useIdeas";
 import { useToast } from "@/hooks/use-toast";
-
+import EnhancedIdeaForm from "@/components/EnhancedIdeaForm";
 import {
   ArrowLeft,
   Plus,
@@ -59,6 +60,8 @@ const ProjectDetail = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("created_at");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddingIdea, setIsAddingIdea] = useState(false);
+  // Remove the old newIdea state as we're using EnhancedIdeaForm
   const creatingRef = useRef(false);
   const isUuid = (val?: string) => !!val && /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i.test(val);
   // Use the actual project UUID once available; avoid passing slugs like "fitlife"
@@ -168,7 +171,7 @@ const ProjectDetail = () => {
         score: Math.floor(Math.random() * 40) + 60, // Random score 60-100
       });
 
-      
+      setIsAddingIdea(false);
       
       toast({
         title: "Idea added",
@@ -180,34 +183,6 @@ const ProjectDetail = () => {
         title: "Error adding idea",
         description: "Please try again later",
         variant: "destructive",
-      });
-    }
-  };
-
-  const handleCreateNewIdea = async () => {
-    if (!project?.id) return;
-
-    try {
-      const newIdea = await createIdea({
-        title: 'New Content Idea',
-        description: 'Click to start building your content DNA',
-        status: 'generated',
-        score: 0
-      });
-
-      if (newIdea) {
-        toast({
-          title: 'New idea created',
-          description: 'Starting DNA setup wizard...'
-        });
-        navigate(`/projects/${projectId}/ideas/${newIdea.id}/dna`);
-      }
-    } catch (error) {
-      console.error('Error creating idea:', error);
-      toast({
-        title: 'Error creating idea',
-        description: 'Please try again later',
-        variant: 'destructive'
       });
     }
   };
@@ -264,14 +239,14 @@ const ProjectDetail = () => {
                 <p className="text-muted-foreground">Track your content ideas through each stage</p>
               </div>
               <div className="flex gap-2">
-                <Button 
-                  variant="outline"
-                  onClick={handleCreateNewIdea}
-                  disabled={!project?.id}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Idea
-                </Button>
+                <Dialog open={isAddingIdea} onOpenChange={setIsAddingIdea}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Idea
+                    </Button>
+                  </DialogTrigger>
+                </Dialog>
                 <Button onClick={generateIdeas} disabled={!project?.id || ideasLoading}>
                   {ideasLoading ? (
                     <>
@@ -370,19 +345,18 @@ const ProjectDetail = () => {
                   const getNextAction = (status: string) => {
                     switch (status) {
                       case 'generated':
-                      case 'seed':
                         return { 
-                          text: 'Setup DNA', 
+                          text: 'Validate Idea', 
                           icon: CheckCircle, 
                           disabled: false,
-                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/dna`)
+                          action: () => handleValidateIdea(idea.id, 'validated')
                         };
                       case 'validated':
                         return { 
-                          text: 'Setup DNA', 
+                          text: 'View Overview', 
                           icon: Eye, 
                           disabled: false,
-                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}/dna`)
+                          action: () => navigate(`/projects/${projectId}/ideas/${idea.id}`)
                         };
                       case 'scripted':
                         return { 
