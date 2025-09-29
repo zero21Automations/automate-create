@@ -555,7 +555,11 @@ const ProjectDetail = () => {
                   const StatusIcon = getStatusIcon(idea.status);
 
                   return (
-                    <Card key={idea.id} className="hover:shadow-md transition-all cursor-pointer group">
+                    <Card 
+                      key={idea.id} 
+                      className="hover:shadow-md transition-all cursor-pointer group"
+                      onClick={() => navigate(`/projects/${projectId}/ideas/${idea.id}`)}
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4 flex-1">
@@ -644,7 +648,10 @@ const ProjectDetail = () => {
                             <Button 
                               size="sm" 
                               disabled={nextAction.disabled}
-                              onClick={nextAction.action}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                nextAction.action();
+                              }}
                               className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                             >
                               <NextIcon className="h-4 w-4 mr-2" />
