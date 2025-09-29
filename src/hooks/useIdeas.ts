@@ -10,7 +10,7 @@ export type Idea = {
   source?: string | null;
   score: number;
   hashtags?: string[] | null;
-  status: 'generated' | 'seed' | 'validated' | 'rejected' | 'scripted' | 'assets_ready' | 'assembled' | 'published';
+  status: 'generated' | 'validated' | 'rejected' | 'scripted' | 'assets_ready' | 'assembled' | 'published';
   metadata?: any;
   created_at: string;
   updated_at: string;
@@ -24,11 +24,6 @@ export type Idea = {
   tone?: string | null;
   hook_type?: string | null;
   complexity_level?: string | null;
-  // DNA fields
-  seed?: any;
-  concept?: any;
-  targeting?: any;
-  creative_dna?: any;
 };
 
 export const useIdeas = (projectId: string) => {
@@ -62,45 +57,18 @@ export const useIdeas = (projectId: string) => {
 
   const createIdea = async (ideaData: Partial<Idea>) => {
     try {
-      // Generate DNA based on the idea data
-      const { data: dnaResponse, error: dnaError } = await supabase.functions.invoke('generate-idea-dna', {
-        body: { ideaData }
-      });
-
-      let finalIdeaData: any = { 
-        title: ideaData.title || '',
-        description: ideaData.description,
-        source: ideaData.source,
-        score: ideaData.score || 0,
-        hashtags: ideaData.hashtags,
-        status: ideaData.status || 'generated',
-        metadata: ideaData.metadata,
-        project_id: projectId,
-        video_concept: ideaData.video_concept,
-        target_duration: ideaData.target_duration,
-        visual_style: ideaData.visual_style,
-        target_platforms: ideaData.target_platforms,
-        call_to_action: ideaData.call_to_action,
-        content_pillars: ideaData.content_pillars,
-        tone: ideaData.tone,
-        hook_type: ideaData.hook_type,
-        complexity_level: ideaData.complexity_level,
-      };
-
-      if (dnaResponse?.dnaData && !dnaError) {
-        finalIdeaData = {
-          ...finalIdeaData,
-          seed: dnaResponse.dnaData.seed,
-          concept: dnaResponse.dnaData.concept,
-          targeting: dnaResponse.dnaData.targeting,
-          creative_dna: dnaResponse.dnaData.creative_dna,
-          status: 'seed' // Update status since DNA is now populated
-        };
-      }
-
       const { data, error } = await supabase
         .from('ideas')
-        .insert(finalIdeaData)
+        .insert({
+          title: ideaData.title || '',
+          description: ideaData.description,
+          source: ideaData.source,
+          score: ideaData.score || 0,
+          hashtags: ideaData.hashtags,
+          status: ideaData.status || 'generated',
+          metadata: ideaData.metadata,
+          project_id: projectId,
+        })
         .select()
         .single();
 
@@ -109,9 +77,7 @@ export const useIdeas = (projectId: string) => {
       setIdeas(prev => [data as Idea, ...prev]);
       toast({
         title: "Idea created",
-        description: dnaResponse?.dnaData ? 
-          "Your new idea has been added with AI-generated DNA" : 
-          "Your new idea has been added to the pipeline",
+        description: "Your new idea has been added to the pipeline",
       });
       
       return data;
@@ -204,13 +170,12 @@ export const useIdeas = (projectId: string) => {
         },
       ];
 
-      // Generate DNA for each idea using the createIdea function which handles DNA generation
       const promises = mockIdeas.map(idea => createIdea(idea));
       await Promise.all(promises);
       
       toast({
         title: "Ideas generated",
-        description: `Generated ${mockIdeas.length} new ideas with AI-powered DNA`,
+        description: `Generated ${mockIdeas.length} new ideas for your project`,
       });
     } catch (error) {
       console.error('Error generating ideas:', error);
