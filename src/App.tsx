@@ -15,6 +15,7 @@ import IdeaOverview from "./pages/IdeaOverview";
 import AssetManager from "./pages/AssetManager";
 import Production from "./pages/Production";
 import Publishing from "./pages/Publishing";
+import GlobalAnalytics from "./pages/GlobalAnalytics";
 import GlobalResearch from "./pages/GlobalResearch";
 import SystemArchitecture from "./pages/SystemArchitecture";
 import IdeaAnalytics from "./pages/IdeaAnalytics";
