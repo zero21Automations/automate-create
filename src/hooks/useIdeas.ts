@@ -33,8 +33,13 @@ export const useIdeas = (projectId: string) => {
   const { toast } = useToast();
 
   const fetchIdeas = async () => {
-    if (!projectId) return;
+    if (!projectId) {
+      setIdeas([]);
+      setLoading(false);
+      return;
+    }
     
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('ideas')
