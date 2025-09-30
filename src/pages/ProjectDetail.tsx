@@ -49,6 +49,7 @@ import {
   Smartphone,
   Tablet,
   Palette,
+  RefreshCw,
 } from "lucide-react";
 
 const ProjectDetail = () => {
@@ -65,7 +66,7 @@ const ProjectDetail = () => {
   const creatingRef = useRef(false);
   const isUuid = (val?: string) => !!val && /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i.test(val);
   // Use the actual project UUID once available; avoid passing slugs like "fitlife"
-  const { ideas, loading: ideasLoading, generateIdeas, updateIdea, createIdea } = useIdeas(project?.id || '');
+  const { ideas, loading: ideasLoading, generateIdeas, updateIdea, createIdea, isGenerating } = useIdeas(project?.id || '');
 
   useEffect(() => {
     if (!projectId) return;
@@ -319,9 +320,18 @@ const ProjectDetail = () => {
                   <p className="text-muted-foreground text-center mb-4">
                     Start by generating some content ideas using AI research
                   </p>
-                  <Button onClick={() => generateIdeas()} disabled={!project?.id || ideasLoading}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Generate First Ideas
+                  <Button onClick={() => generateIdeas()} disabled={!project?.id || isGenerating}>
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Generate First Ideas
+                      </>
+                    )}
                   </Button>
                 </CardContent>
               </Card>

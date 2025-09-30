@@ -29,6 +29,7 @@ export type Idea = {
 export const useIdeas = (projectId: string) => {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
   const fetchIdeas = async () => {
@@ -117,6 +118,9 @@ export const useIdeas = (projectId: string) => {
   };
 
   const generateIdeas = async (numIdeas: number = 3) => {
+    if (isGenerating) return;
+    
+    setIsGenerating(true);
     try {
       toast({
         title: "Generating ideas...",
@@ -147,6 +151,8 @@ export const useIdeas = (projectId: string) => {
         description: "Please try again later",
         variant: "destructive",
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -160,6 +166,7 @@ export const useIdeas = (projectId: string) => {
     createIdea,
     updateIdea,
     generateIdeas,
+    isGenerating,
     refetch: fetchIdeas,
   };
 };
