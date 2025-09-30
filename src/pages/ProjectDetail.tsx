@@ -258,10 +258,10 @@ const ProjectDetail = () => {
                     />
                   </DialogContent>
                 </Dialog>
-                <Button onClick={() => generateIdeas()} disabled={!project?.id || ideasLoading}>
-                  {ideasLoading ? (
+                <Button onClick={() => generateIdeas()} disabled={!project?.id || isGenerating}>
+                  {isGenerating ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                       Generating...
                     </>
                   ) : (
