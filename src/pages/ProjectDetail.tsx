@@ -88,7 +88,16 @@ const ProjectDetail = () => {
 
   // Auto-create demo project when visiting a slug (non-UUID) and none exists yet
   useEffect(() => {
-    if (!projectId || isUuid(projectId) || project || creatingRef.current) return;
+    if (!projectId || isUuid(projectId) || project || creatingRef.current || projects.length === 0) return;
+    
+    // Double-check that no project exists with this name pattern
+    const lower = projectId.toLowerCase();
+    const existingProject = projects.find((p) => p.name?.toLowerCase().startsWith(lower));
+    if (existingProject) {
+      setProject(existingProject);
+      return;
+    }
+    
     creatingRef.current = true;
     createProject({
       name: `${projectId.charAt(0).toUpperCase()}${projectId.slice(1)} Project`,
@@ -106,7 +115,7 @@ const ProjectDetail = () => {
       .finally(() => {
         creatingRef.current = false;
       });
-  }, [projectId, project, createProject, navigate]);
+  }, [projectId, project, createProject, navigate, projects]);
 
   if (!project && projects.length > 0) {
     return (
