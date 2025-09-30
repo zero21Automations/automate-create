@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useProjects, Project } from "@/hooks/useProjects";
 import { useIdeas, Idea } from "@/hooks/useIdeas";
+import { StageGenerateButton } from "@/components/StageGenerateButton";
 
 const ScriptStudio = () => {
   const navigate = useNavigate();
@@ -883,6 +884,15 @@ const ScriptStudio = () => {
                 {status.completed.length === 0 && status.pending.length === 0 && (
                   <div className="text-sm text-muted-foreground">All tasks completed</div>
                 )}
+              </div>
+              
+              {/* Generate Script Button */}
+              <div className="mt-4">
+                <StageGenerateButton
+                  stage="script"
+                  hasExistingContent={script.hook.length > 0 || script.beats.some(beat => beat.text.length > 0)}
+                  onGenerate={generateScriptFromDNA}
+                />
               </div>
             </Card>
           </div>

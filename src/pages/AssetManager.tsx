@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StageGenerateButton } from "@/components/StageGenerateButton";
+import { NextButton } from "@/components/NextButton";
 import { 
   Mic, 
   Music, 
@@ -35,7 +37,6 @@ import {
   Trash2,
   Layers
 } from "lucide-react";
-import { NextButton } from "@/components/NextButton";
 
 const AssetManager = () => {
   const navigate = useNavigate();
@@ -934,6 +935,18 @@ const AssetManager = () => {
                     </div>
                   ))
                 )}
+              </div>
+              
+              {/* Generate Assets Button */}
+              <div className="mt-4">
+                <StageGenerateButton
+                  stage="assets"
+                  hasExistingContent={assetManifest.voice.status === 'ready' || assetManifest.music.status === 'ready' || assetManifest.captions.status === 'ready'}
+                  onGenerate={async () => {
+                    // Generate assets based on script
+                    console.log("Generating assets based on locked script");
+                  }}
+                />
               </div>
             </Card>
           </div>

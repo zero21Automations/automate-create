@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { StageGenerateButton } from "@/components/StageGenerateButton";
+import { NextButton } from "@/components/NextButton";
 import { 
   Play, 
   Pause, 
@@ -36,7 +38,6 @@ import {
   Lock
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { NextButton } from "@/components/NextButton";
 
 const Production = () => {
   const navigate = useNavigate();
@@ -601,9 +602,21 @@ const Production = () => {
                     <span>Fix scene 2 issues</span>
                   </div>
                 </div>
+                </div>
+                
+                {/* Generate Video Button */}
+                <div className="mt-4">
+                  <StageGenerateButton
+                    stage="production"
+                    hasExistingContent={renderStatus.status === 'draft_rendered'}
+                    onGenerate={async () => {
+                      // Generate video based on assets and timeline
+                      console.log("Generating video production from assets");
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
         </div>
       </div>
       

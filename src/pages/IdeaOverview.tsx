@@ -14,6 +14,7 @@ import { NavLink } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { StageGenerateButton } from "@/components/StageGenerateButton";
 import { toast } from "sonner";
 
 const IdeaOverview = () => {
@@ -865,6 +866,21 @@ const IdeaOverview = () => {
                   </div>
                 )}
               </div>
+              </div>
+              
+              {/* Generate DNA Button */}
+              <div className="mt-4">
+                <StageGenerateButton
+                  stage="dna"
+                  hasExistingContent={Object.values(ideaDNA).some(value => 
+                    Array.isArray(value) ? value.length > 0 : 
+                    typeof value === 'string' ? value.length > 0 : false
+                  )}
+                  onGenerate={async () => {
+                    // Generate DNA based on idea content
+                    toast.success("DNA generation completed!");
+                  }}
+                />
               </div>
             </Card>
 

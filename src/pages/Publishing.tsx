@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
+import { StageGenerateButton } from "@/components/StageGenerateButton";
 import { 
   Upload, 
   Calendar as CalendarIcon, 
@@ -437,6 +438,18 @@ const Publishing = () => {
                   <Clock className="h-3 w-3 text-blue-500" />
                   <span>Review and publish</span>
                 </div>
+              </div>
+              
+              {/* Generate Publishing Content Button */}
+              <div className="mt-4">
+                <StageGenerateButton
+                  stage="publishing"
+                  hasExistingContent={true} // Assume content exists if we're at publishing stage
+                  onGenerate={async () => {
+                    // Generate publishing content based on video
+                    console.log("Generating publishing content from video");
+                  }}
+                />
               </div>
             </Card>
           </div>
