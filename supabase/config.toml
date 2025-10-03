@@ -132,3 +132,18 @@ verify_jwt = false
 
 [functions.generate-idea-overview]
 verify_jwt = false
+
+[functions.factory-orchestrator]
+verify_jwt = false
+
+[functions.script-generator]
+verify_jwt = false
+
+[functions.asset-generator]
+verify_jwt = false
+
+[functions.video-assembler]
+verify_jwt = false
+
+[functions.publisher-agent]
+verify_jwt = false

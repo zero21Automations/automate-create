@@ -11,6 +11,19 @@ export type Project = {
   brand_kit?: any;
   posting_rules?: any;
   status: 'setup' | 'active' | 'paused';
+  dna_locked?: boolean;
+  dna_locked_at?: string | null;
+  automation_config?: {
+    auto_validate_ideas?: boolean;
+    auto_generate_scripts?: boolean;
+    auto_generate_assets?: boolean;
+    auto_assemble_videos?: boolean;
+    auto_publish?: boolean;
+    quality_threshold?: number;
+    batch_size?: number;
+    generation_schedule?: string;
+    checkpoint_timeout_hours?: number;
+  };
   created_at: string;
   updated_at: string;
 };

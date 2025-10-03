@@ -119,6 +119,262 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          factory_job_id: string | null
+          id: string
+          project_id: string
+          stage: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          factory_job_id?: string | null
+          id?: string
+          project_id: string
+          stage?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          factory_job_id?: string | null
+          id?: string
+          project_id?: string
+          stage?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_factory_job_id_fkey"
+            columns: ["factory_job_id"]
+            isOneToOne: false
+            referencedRelation: "factory_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automation_rules: {
+        Row: {
+          checkpoint_required: boolean | null
+          checkpoint_timeout_hours: number | null
+          created_at: string
+          enabled: boolean | null
+          fallback_action: string | null
+          id: string
+          project_id: string
+          retry_count: number | null
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          checkpoint_required?: boolean | null
+          checkpoint_timeout_hours?: number | null
+          created_at?: string
+          enabled?: boolean | null
+          fallback_action?: string | null
+          id?: string
+          project_id: string
+          retry_count?: number | null
+          stage: string
+          updated_at?: string
+        }
+        Update: {
+          checkpoint_required?: boolean | null
+          checkpoint_timeout_hours?: number | null
+          created_at?: string
+          enabled?: boolean | null
+          fallback_action?: string | null
+          id?: string
+          project_id?: string
+          retry_count?: number | null
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_rules_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checkpoint_overrides: {
+        Row: {
+          action: string
+          created_at: string
+          factory_job_id: string
+          id: string
+          modifications: Json | null
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          factory_job_id: string
+          id?: string
+          modifications?: Json | null
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          factory_job_id?: string
+          id?: string
+          modifications?: Json | null
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkpoint_overrides_factory_job_id_fkey"
+            columns: ["factory_job_id"]
+            isOneToOne: false
+            referencedRelation: "factory_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copilot_suggestions: {
+        Row: {
+          action_payload: Json | null
+          applied: boolean | null
+          created_at: string
+          description: string | null
+          dismissed: boolean | null
+          id: string
+          idea_id: string | null
+          priority: number | null
+          project_id: string
+          stage: string
+          suggestion_type: string
+          title: string
+        }
+        Insert: {
+          action_payload?: Json | null
+          applied?: boolean | null
+          created_at?: string
+          description?: string | null
+          dismissed?: boolean | null
+          id?: string
+          idea_id?: string | null
+          priority?: number | null
+          project_id: string
+          stage: string
+          suggestion_type: string
+          title: string
+        }
+        Update: {
+          action_payload?: Json | null
+          applied?: boolean | null
+          created_at?: string
+          description?: string | null
+          dismissed?: boolean | null
+          id?: string
+          idea_id?: string | null
+          priority?: number | null
+          project_id?: string
+          stage?: string
+          suggestion_type?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copilot_suggestions_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copilot_suggestions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      factory_jobs: {
+        Row: {
+          checkpoint_expires_at: string | null
+          checkpoint_required: boolean | null
+          completed_at: string | null
+          created_at: string
+          current_stage: string
+          error_count: number | null
+          id: string
+          idea_id: string | null
+          last_error: string | null
+          metadata: Json | null
+          project_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          checkpoint_expires_at?: string | null
+          checkpoint_required?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          current_stage: string
+          error_count?: number | null
+          id?: string
+          idea_id?: string | null
+          last_error?: string | null
+          metadata?: Json | null
+          project_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          checkpoint_expires_at?: string | null
+          checkpoint_required?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          current_stage?: string
+          error_count?: number | null
+          id?: string
+          idea_id?: string | null
+          last_error?: string | null
+          metadata?: Json | null
+          project_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factory_jobs_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factory_jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ideas: {
         Row: {
           banned_words: string[] | null
@@ -222,9 +478,12 @@ export type Database = {
       }
       projects: {
         Row: {
+          automation_config: Json | null
           brand_kit: Json | null
           created_at: string
           description: string | null
+          dna_locked: boolean | null
+          dna_locked_at: string | null
           emoji: string | null
           id: string
           name: string
@@ -234,9 +493,12 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          automation_config?: Json | null
           brand_kit?: Json | null
           created_at?: string
           description?: string | null
+          dna_locked?: boolean | null
+          dna_locked_at?: string | null
           emoji?: string | null
           id?: string
           name: string
@@ -246,9 +508,12 @@ export type Database = {
           user_id: string
         }
         Update: {
+          automation_config?: Json | null
           brand_kit?: Json | null
           created_at?: string
           description?: string | null
+          dna_locked?: boolean | null
+          dna_locked_at?: string | null
           emoji?: string | null
           id?: string
           name?: string
